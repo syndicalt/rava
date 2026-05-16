@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VerificationReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "id",
+    "nonce",
+    "verifier",
+    "action_id",
+    "actor",
+    "capability_id",
+    "capability_chain_hash",
+    "context_hash",
+    "decision",
+    "reason",
+    "verified_at",
+    "proof"
+  ],
+  "properties": {
+    "version": { "const": "rava-verification-receipt-v0" },
+    "id": { "type": "string", "pattern": "^ver_[0-9a-f]{32}$" },
+    "nonce": { "type": "string" },
+    "verifier": { "type": "string" },
+    "action_id": { "type": "string", "pattern": "^act_[0-9a-f]{32}$" },
+    "actor": { "type": "string" },
+    "capability_id": { "type": "string", "pattern": "^cap_[0-9a-f]{32}$" },
+    "capability_chain_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "context_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "decision": { "enum": ["accepted", "rejected"] },
+    "reason": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "subject"],
+          "properties": {
+            "code": { "type": "string" },
+            "subject": {
+              "anyOf": [
+                { "type": "null" },
+                { "type": "string" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "verified_at": { "$ref": "#/$defs/offset_date_time" },
+    "proof": { "$ref": "#/$defs/proof" }
+  },
+  "$defs": {
+    "offset_date_time": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": { "type": "integer" }
+    },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signature_hex"],
+      "properties": {
+        "signature_hex": { "type": "string", "pattern": "^[0-9a-f]+$" }
+      }
+    }
+  }
+}

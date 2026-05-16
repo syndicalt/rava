@@ -1,0 +1,20 @@
+{
+  "version": "rava-action-v0",
+  "id": "act_e5b47b36c025b7ba36ea44fd12979a9f",
+  "nonce": "7ec43d84-fdac-4c43-9470-a8d13b4ee95f",
+  "actor": "rava:agent:bb6684b823a5e41580b09ebf83a6f922",
+  "controller": "rava:human:51bfc7b8ddd4d614e868b62bb5c55905",
+  "intent": "book_flight",
+  "resource": "travel.booking",
+  "operation": "purchase",
+  "constraints": {
+    "amount_usd": {
+      "integer": 750
+    }
+  },
+  "capability_id": "cap_e8d8c2d9e388ac12dede5e115cb8c103",
+  "context_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "proof": {
+    "signature_hex": "c8ec9eae10718d26b7cb47de2bdcae012f04e28d2766bf16806f509624c52ea6439ca7cecd03643a792083ef7fc73209f893ad137c76f4e8388524bc58f9e50e"
+  }
+}

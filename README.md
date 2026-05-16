@@ -1,0 +1,238 @@
+# Rava
+
+Rava is action-native authorization for autonomous agents.
+
+Most auth systems start by asking who is logged in. Rava starts by asking whether this exact signed action is allowed right now by this exact signed delegation chain.
+
+Rava V0 is a draft reference implementation, not production-ready security software. It is suitable for protocol development, examples, interop work, and review. It has not received an external cryptographic or security audit.
+
+## Table of Contents
+
+- [Status](#status)
+- [What Rava Implements](#what-rava-implements)
+- [What Rava Does Not Implement](#what-rava-does-not-implement)
+- [Security Posture](#security-posture)
+- [Mental Model](#mental-model)
+- [Repository Layout](#repository-layout)
+- [Requirements](#requirements)
+- [Quickstart](#quickstart)
+- [CLI Reference](#cli-reference)
+- [HTTP Verifier Preview](#http-verifier-preview)
+- [Examples, Test Vectors, and Schemas](#examples-test-vectors-and-schemas)
+- [Verification Gates](#verification-gates)
+- [Roadmap](#roadmap)
+- [License Model](#license-model)
+
+## Status
+
+Rava V0 is an early Rust reference implementation of the core protocol. The current implementation focuses on signed actions, delegated capabilities, replay/revocation checks, receipts, attestations, examples, and language-neutral wire artifacts.
+
+This repository should be treated as a draft protocol package until the roadmap release-readiness items are complete.
+
+## What Rava Implements
+
+The current Rust core and CLI implement:
+
+- deterministic canonical JSON for signed payloads;
+- strict V0 protocol version checks for signed protocol objects;
+- canonical UUID v4 nonce checks for signed protocol objects;
+- non-empty, sorted, duplicate-free capability operation lists;
+- local Ed25519 signer identities;
+- signer IDs bound to their public key prefix;
+- signed capability minting;
+- attenuated capability delegation;
+- verifier-enforced delegation attenuation for received capability chains;
+- delegation cannot remove parent constraint keys;
+- signed action envelopes;
+- root capability issuer must match the action controller;
+- strict SHA-256 action context references;
+- in-memory and file-backed one-time action replay checks;
+- in-memory and file-backed revocation checks;
+- delegated action verification;
+- action constraints must be contained by final capability constraints;
+- signed verification receipts bound to the verified capability chain hash;
+- signed post-action attestations;
+- strict SHA-256 attestation evidence references;
+- local key generation and owner-only private-key file handling on Unix;
+- a read-only inspector for wire objects;
+- a local preview HTTP verifier;
+- committed flight-booking examples, test vectors, and wire-shape schemas.
+
+## What Rava Does Not Implement
+
+Rava V0 is not a global identity provider, reputation market, wallet, custody system, OAuth replacement, blockchain protocol, or distributed revocation network.
+
+V0 assumes verifier callers provide authentic public keys and sufficiently fresh replay/revocation registries. DID resolution, key custody, distributed freshness, managed audit storage, and production service operations are roadmap work, not implemented guarantees today.
+
+## Security Posture
+
+The trusted core is Rust. `unsafe` is forbidden. Rava uses existing cryptographic crates and does not invent cryptographic primitives.
+
+The verifier fails closed: malformed, unsigned, tampered, expired, revoked, replayed, or over-scoped inputs are rejected.
+
+The V0 threat model is documented in [docs/security/threat-model-v0.md](docs/security/threat-model-v0.md). It distinguishes implemented guarantees from verifier input assumptions and non-goals.
+
+The current repo audit note is [docs/security/release-audit-v0.md](docs/security/release-audit-v0.md). It is an internal readiness audit, not an external security assessment.
+
+## Mental Model
+
+- **Identity:** who can sign.
+- **Signature:** proof that a signer approved exact bytes.
+- **Capability:** what a signer is allowed to do.
+- **Delegation:** a narrowed capability passed from one signer to another.
+- **Action:** what an agent is trying to do now.
+- **Replay check:** prevents the same accepted signed action from being consumed twice.
+- **Verifier:** the judge that checks signatures, expiry, revocation, delegation, resource, operation, actor, and constraints.
+- **Verification receipt:** signed proof that a verifier accepted or rejected an action at a specific time.
+- **Attestation:** signed evidence about what happened after verification.
+
+## Repository Layout
+
+- `crates/rava-core`: trusted protocol core, canonicalization, signing, verification, replay, revocation, receipts, and attestations.
+- `crates/rava-cli`: CLI, demos, fixture generation, inspection, and local verifier service preview.
+- `docs/protocol/rava-v0.md`: V0 protocol specification.
+- `docs/security/threat-model-v0.md`: V0 threat model.
+- `docs/security/release-audit-v0.md`: current publication-readiness audit notes.
+- `docs/roadmap.md`: functional protocol roadmap.
+- `docs/interop/roadmap-v0.md`: wrapper and adapter sequencing.
+- `docs/schemas/v0`: wire-shape JSON Schemas.
+- `examples/flight-booking`: committed example wire objects.
+- `test-vectors/v0`: language-neutral compatibility vectors.
+
+## Requirements
+
+- Rust toolchain with Cargo.
+- A shell capable of running the commands below.
+- No external services are required for the local demo or test suite.
+
+## Quickstart
+
+Run the full local demo:
+
+```bash
+cargo run -p rava -- demo flight-booking
+```
+
+Expected output:
+
+```text
+Rava verification accepted: true
+Rava replay rejected: true
+Rava receipt verified: true
+```
+
+Generate fresh demo fixtures:
+
+```bash
+cargo run -p rava -- demo flight-booking --write-fixtures /tmp/rava-fixtures
+```
+
+Run the workspace tests:
+
+```bash
+cargo test --workspace
+```
+
+## CLI Reference
+
+The examples below assume `rava` is installed or otherwise available on `PATH`. From this repository, prefix CLI commands with `cargo run -p rava --`.
+
+Generate a local verifier key:
+
+```bash
+rava key generate --kind service --out verifier-key.json
+```
+
+Verify a signed action against a capability chain:
+
+```bash
+rava verify action \
+  --action action.json \
+  --capability-chain capability-chain.json \
+  --actor-key <actor-public-key-hex> \
+  --issuer-key <issuer-id=issuer-public-key-hex> \
+  --now-unix 1650000000 \
+  --replay-store replay.json \
+  --revocation-store revocations.json \
+  --receipt-out receipt.json \
+  --receipt-key verifier-key.json
+```
+
+Verify a signed receipt:
+
+```bash
+rava verify receipt \
+  --receipt receipt.json \
+  --verifier-key <verifier-public-key-hex>
+```
+
+Sign and verify a post-action attestation:
+
+```bash
+rava attest sign \
+  --key evaluator-key.json \
+  --out attestation.json \
+  --action-id act_demo \
+  --outcome accepted \
+  --subject travel.booking \
+  --occurred-at-unix 1650000000 \
+  --evidence-hash sha256:<64-lowercase-hex>
+
+rava verify attestation \
+  --attestation attestation.json \
+  --evaluator-key <evaluator-public-key-hex>
+```
+
+Inspect wire objects without making an authorization decision:
+
+```bash
+rava inspect action --action action.json
+rava inspect capability-chain --capability-chain capability-chain.json
+```
+
+`--receipt-out` signs the decision and prints the verifier public key needed to verify that receipt. If `--receipt-key` is omitted, the CLI uses an ephemeral verifier key. Local key files contain private key material and should be treated as secrets.
+
+`rava inspect` is read-only and does not verify signatures, replay state, revocation state, expiry, or attenuation. Use `rava verify` for authorization decisions.
+
+`rava key generate` refuses to overwrite an existing key file unless `--force` is passed. On Unix, Rava writes local key files with owner-only permissions and rejects loading private key files that are readable, writable, or executable by group or others.
+
+## HTTP Verifier Preview
+
+Start the local preview verifier:
+
+```bash
+rava serve verify --addr 127.0.0.1:8787
+```
+
+It exposes `POST /verify/action` for JSON requests containing an action, capability chain, actor public key, issuer public key map, and `now_unix`.
+
+The preview service is not a production authorization service. It does not implement key discovery, replay consumption, distributed revocation freshness, request authentication, rate limiting, or persistent audit storage.
+
+## Examples, Test Vectors, and Schemas
+
+Committed wire examples live in `examples/flight-booking`. They include a signed action, capability chain, receipt, attestation, public keys, empty replay/revocation stores, and tampered receipt/attestation examples for verifier checks. They intentionally do not include private key material.
+
+Language-neutral V0 test vectors live in `test-vectors/v0`. They are intended for independent implementations and are validated by the Rust CLI regression suite.
+
+Wire-shape schemas live in `docs/schemas/v0`. They are parser/preflight aids only; they are not a substitute for verifier checks.
+
+## Verification Gates
+
+Before claiming a release candidate is ready, run:
+
+```bash
+cargo fmt --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace
+cargo run -p rava -- demo flight-booking
+```
+
+These gates verify formatting, lint cleanliness, Rust regression tests, and the local flight-booking demo. They do not replace an external security review.
+
+## Roadmap
+
+The functional roadmap is [docs/roadmap.md](docs/roadmap.md). Interop sequencing for WASM, TypeScript, DID/key resolution, MCP adapters, and OAuth exchange is documented in [docs/interop/roadmap-v0.md](docs/interop/roadmap-v0.md).
+
+## License Model
+
+Rava uses an open-core model. The protocol specification, Rust core, CLI, and examples are open source under Apache-2.0. Commercial products can be built above the core: hosted verification, managed revocation, enterprise policy, audit tooling, custody integrations, support, and certification.

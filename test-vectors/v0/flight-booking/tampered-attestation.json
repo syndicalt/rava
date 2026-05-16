@@ -1,0 +1,24 @@
+{
+  "version": "rava-attestation-v0",
+  "id": "att_d232bba5cd1f831880594070fa823864",
+  "nonce": "74524cc4-c5c6-4c7e-8b8b-71171ecbf550",
+  "action_id": "act_e5b47b36c025b7ba36ea44fd12979a9f",
+  "evaluator": "rava:service:567115b3a12b3160fbc9cb2c9fc9b526",
+  "outcome": "rejected",
+  "subject": "travel.booking",
+  "occurred_at": [
+    2022,
+    105,
+    5,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "evidence_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+  "proof": {
+    "signature_hex": "0bc53bc12e991296d018da0da46f96436c84d9b4a59859367b87808d7cb569b5f8300692e475dd24243dac65de9b0f668d05144e5ddb2a5124f15db6a9dbb30d"
+  }
+}

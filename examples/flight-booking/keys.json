@@ -1,0 +1,12 @@
+{
+  "actor": "rava:agent:bb6684b823a5e41580b09ebf83a6f922",
+  "actor_public_key_hex": "bb6684b823a5e41580b09ebf83a6f922d4eb1811daa5d414fbf418d4c0a37e1d",
+  "issuer_public_keys": {
+    "rava:agent:5de0ec602d4e9a3ade3e507e44338aa3": "5de0ec602d4e9a3ade3e507e44338aa3e059811522cbdd0cf01f039ec5301f5f",
+    "rava:human:51bfc7b8ddd4d614e868b62bb5c55905": "51bfc7b8ddd4d614e868b62bb5c559059e078ba1f50ef3c8b5eaff431f5dcaa7"
+  },
+  "verifier": "rava:service:009a7b29707f098b07a5362808433adc",
+  "verifier_public_key_hex": "009a7b29707f098b07a5362808433adcda68a42dbf70731a620636a3d943f5d4",
+  "evaluator": "rava:service:567115b3a12b3160fbc9cb2c9fc9b526",
+  "evaluator_public_key_hex": "567115b3a12b3160fbc9cb2c9fc9b5269b47bd1387fb3a7f96f53410237f0878"
+}

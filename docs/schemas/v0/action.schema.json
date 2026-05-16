@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ActionEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "id",
+    "nonce",
+    "actor",
+    "controller",
+    "intent",
+    "resource",
+    "operation",
+    "constraints",
+    "capability_id",
+    "context_hash",
+    "proof"
+  ],
+  "properties": {
+    "version": { "const": "rava-action-v0" },
+    "id": { "type": "string", "pattern": "^act_[0-9a-f]{32}$" },
+    "nonce": { "type": "string" },
+    "actor": { "type": "string" },
+    "controller": { "type": "string" },
+    "intent": { "type": "string", "minLength": 1 },
+    "resource": { "type": "string", "minLength": 1 },
+    "operation": { "type": "string", "minLength": 1 },
+    "constraints": { "$ref": "#/$defs/constraints" },
+    "capability_id": { "type": "string", "pattern": "^cap_[0-9a-f]{32}$" },
+    "context_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "proof": { "$ref": "#/$defs/proof" }
+  },
+  "$defs": {
+    "constraints": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/constraint_value" }
+    },
+    "constraint_value": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["integer"],
+          "properties": { "integer": { "type": "integer", "minimum": 0 } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["text"],
+          "properties": { "text": { "type": "string" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["bool"],
+          "properties": { "bool": { "type": "boolean" } }
+        }
+      ]
+    },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signature_hex"],
+      "properties": {
+        "signature_hex": { "type": "string", "pattern": "^[0-9a-f]+$" }
+      }
+    }
+  }
+}

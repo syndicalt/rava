@@ -1,0 +1,66 @@
+[
+  {
+    "version": "rava-capability-v0",
+    "id": "cap_99266832305d7f91dd3f5da6bc6f4c8b",
+    "nonce": "ed58dc4e-6f98-44ff-b103-64a8cc7f8dd2",
+    "issuer": "rava:human:51bfc7b8ddd4d614e868b62bb5c55905",
+    "subject": "rava:agent:5de0ec602d4e9a3ade3e507e44338aa3",
+    "resource": "travel.booking",
+    "operations": [
+      "purchase"
+    ],
+    "constraints": {
+      "max_amount_usd": {
+        "integer": 1200
+      }
+    },
+    "expires_at": [
+      2027,
+      15,
+      8,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "delegable": true,
+    "parent_id": null,
+    "proof": {
+      "signature_hex": "0553e899a17f05cd5f0688c255c396f15444540727e0fce56511a9e63f7b81694c1bbfe0258b21b7c753562c34b536f6f13850bf749d21a0c7ecaadb9708e70e"
+    }
+  },
+  {
+    "version": "rava-capability-v0",
+    "id": "cap_e8d8c2d9e388ac12dede5e115cb8c103",
+    "nonce": "ab3f517d-d4a2-42ce-a58c-064dae1489ca",
+    "issuer": "rava:agent:5de0ec602d4e9a3ade3e507e44338aa3",
+    "subject": "rava:agent:bb6684b823a5e41580b09ebf83a6f922",
+    "resource": "travel.booking",
+    "operations": [
+      "purchase"
+    ],
+    "constraints": {
+      "max_amount_usd": {
+        "integer": 800
+      }
+    },
+    "expires_at": [
+      2023,
+      318,
+      22,
+      13,
+      20,
+      0,
+      0,
+      0,
+      0
+    ],
+    "delegable": false,
+    "parent_id": "cap_99266832305d7f91dd3f5da6bc6f4c8b",
+    "proof": {
+      "signature_hex": "2b0300e6d05a934bbf4ea7143e7eeab098cfdbf5e9bf07a49a717071a5dc2a40b94a921d654697d71d09b38e3bdd761ca25013d3817f6035761548b1d15ebc04"
+    }
+  }
+]
