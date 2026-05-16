@@ -1,0 +1,26 @@
+{
+  "schema_version": "rava-test-vectors-v0",
+  "description": "Language-neutral Rava V0 wire vectors. These files contain public keys and signed protocol objects only; they intentionally exclude private key material.",
+  "vectors": [
+    {
+      "id": "flight-booking-accepted-v0",
+      "kind": "flight-booking-accepted",
+      "description": "Valid delegated flight-booking action with valid receipt and attestation, plus tampered receipt and attestation rejection vectors.",
+      "now_unix": 1650000000,
+      "expected_action_verification": "accepted",
+      "expected_receipt_verification": true,
+      "expected_attestation_verification": true,
+      "files": {
+        "action": "flight-booking/action.json",
+        "capability_chain": "flight-booking/capability-chain.json",
+        "keys": "flight-booking/keys.json",
+        "replay_store": "flight-booking/replay.json",
+        "revocation_store": "flight-booking/revocations.json",
+        "receipt": "flight-booking/receipt.json",
+        "attestation": "flight-booking/attestation.json",
+        "tampered_receipt": "flight-booking/tampered-receipt.json",
+        "tampered_attestation": "flight-booking/tampered-attestation.json"
+      }
+    }
+  ]
+}

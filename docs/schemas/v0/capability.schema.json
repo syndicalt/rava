@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Capability",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "id",
+    "nonce",
+    "issuer",
+    "subject",
+    "resource",
+    "operations",
+    "constraints",
+    "expires_at",
+    "delegable",
+    "parent_id",
+    "proof"
+  ],
+  "properties": {
+    "version": { "const": "rava-capability-v0" },
+    "id": { "type": "string", "pattern": "^cap_[0-9a-f]{32}$" },
+    "nonce": { "type": "string" },
+    "issuer": { "type": "string" },
+    "subject": { "type": "string" },
+    "resource": { "type": "string", "minLength": 1 },
+    "operations": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "constraints": { "$ref": "#/$defs/constraints" },
+    "expires_at": { "$ref": "#/$defs/offset_date_time" },
+    "delegable": { "type": "boolean" },
+    "parent_id": {
+      "anyOf": [
+        { "type": "null" },
+        { "type": "string", "pattern": "^cap_[0-9a-f]{32}$" }
+      ]
+    },
+    "proof": { "$ref": "#/$defs/proof" }
+  },
+  "$defs": {
+    "offset_date_time": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": { "type": "integer" }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/constraint_value" }
+    },
+    "constraint_value": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["integer"],
+          "properties": { "integer": { "type": "integer", "minimum": 0 } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["text"],
+          "properties": { "text": { "type": "string" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["bool"],
+          "properties": { "bool": { "type": "boolean" } }
+        }
+      ]
+    },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signature_hex"],
+      "properties": {
+        "signature_hex": { "type": "string", "pattern": "^[0-9a-f]+$" }
+      }
+    }
+  }
+}

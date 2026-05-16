@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RevocationStore",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["revoked_ids"],
+  "properties": {
+    "revoked_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    }
+  }
+}

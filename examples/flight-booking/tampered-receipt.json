@@ -1,0 +1,27 @@
+{
+  "version": "rava-verification-receipt-v0",
+  "id": "ver_2eae8582e373f182153929dc9ce3187e",
+  "nonce": "4350fd80-e8d1-48fe-a6fc-c083aa0b47f1",
+  "verifier": "rava:service:009a7b29707f098b07a5362808433adc",
+  "action_id": "act_e5b47b36c025b7ba36ea44fd12979a9f",
+  "actor": "rava:agent:bb6684b823a5e41580b09ebf83a6f922",
+  "capability_id": "cap_e8d8c2d9e388ac12dede5e115cb8c103",
+  "capability_chain_hash": "sha256:1197c60fbc42716584bd0a575f10cfca6150e53874786fc1bb40bc7bd9d0535c",
+  "context_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "decision": "rejected",
+  "reason": null,
+  "verified_at": [
+    2022,
+    105,
+    5,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "proof": {
+    "signature_hex": "ae332b329bc847366ed6f1d6252857d518a23f1482cffcfbf990ae2d51be8e3fdecdc641b22404eeb4e3b282b47092d4ab53ceff89a8ca81eaf86167f395a106"
+  }
+}

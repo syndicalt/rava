@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReplayStore",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action_ids"],
+  "properties": {
+    "action_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^act_[0-9a-f]{32}$" },
+      "uniqueItems": true
+    }
+  }
+}

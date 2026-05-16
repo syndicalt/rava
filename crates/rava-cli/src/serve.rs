@@ -1,0 +1,182 @@
+use std::collections::BTreeMap;
+use std::error::Error;
+use std::io::{Read, Write};
+use std::net::{TcpListener, TcpStream};
+
+use rava_core::action::ActionEnvelope;
+use rava_core::capability::Capability;
+use rava_core::revocation::InMemoryRevocationRegistry;
+use rava_core::verifier::{verify_action, VerificationResult, VerifyActionInput};
+use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
+
+use crate::cli::ServeVerifyArgs;
+
+const SERVICE_NAME: &str = "rava-verifier-preview-v0";
+
+#[derive(Debug, Deserialize)]
+struct VerifyActionRequest {
+    action: ActionEnvelope,
+    capability_chain: Vec<Capability>,
+    actor_public_key_hex: String,
+    issuer_public_keys: BTreeMap<String, String>,
+    now_unix: i64,
+}
+
+#[derive(Debug, Serialize)]
+struct VerifyActionResponse {
+    service: &'static str,
+    accepted: bool,
+    rejection: Option<VerifyActionRejection>,
+}
+
+#[derive(Debug, Serialize)]
+struct VerifyActionRejection {
+    code: String,
+    subject: Option<String>,
+}
+
+pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
+    let listener = TcpListener::bind(&args.addr)?;
+    println!(
+        "Rava verifier service listening: {}",
+        listener.local_addr()?
+    );
+
+    for stream in listener.incoming() {
+        match stream {
+            Ok(mut stream) => {
+                if let Err(error) = handle_connection(&mut stream) {
+                    write_json_response(
+                        &mut stream,
+                        "500 Internal Server Error",
+                        &serde_json::json!({
+                            "service": SERVICE_NAME,
+                            "error": error.to_string()
+                        }),
+                    )?;
+                }
+            }
+            Err(error) => return Err(error.into()),
+        }
+    }
+
+    Ok(())
+}
+
+fn handle_connection(stream: &mut TcpStream) -> Result<(), Box<dyn Error>> {
+    let request = read_http_request(stream)?;
+    if request.method != "POST" || request.path != "/verify/action" {
+        write_json_response(
+            stream,
+            "404 Not Found",
+            &serde_json::json!({
+                "service": SERVICE_NAME,
+                "error": "only POST /verify/action is supported"
+            }),
+        )?;
+        return Ok(());
+    }
+
+    let request: VerifyActionRequest = serde_json::from_slice(&request.body)?;
+    let now = OffsetDateTime::from_unix_timestamp(request.now_unix)?;
+    let revocations = InMemoryRevocationRegistry::default();
+    let result = verify_action(VerifyActionInput {
+        action: &request.action,
+        capability_chain: &request.capability_chain,
+        actor_public_key_hex: &request.actor_public_key_hex,
+        capability_issuer_public_keys: &request.issuer_public_keys,
+        revocations: &revocations,
+        now,
+    })?;
+    let response = match result {
+        VerificationResult::Accepted => VerifyActionResponse {
+            service: SERVICE_NAME,
+            accepted: true,
+            rejection: None,
+        },
+        VerificationResult::Rejected(error) => VerifyActionResponse {
+            service: SERVICE_NAME,
+            accepted: false,
+            rejection: Some(VerifyActionRejection {
+                code: error.code().to_owned(),
+                subject: error.subject(),
+            }),
+        },
+    };
+
+    write_json_response(stream, "200 OK", &response)?;
+    Ok(())
+}
+
+struct HttpRequest {
+    method: String,
+    path: String,
+    body: Vec<u8>,
+}
+
+fn read_http_request(stream: &mut TcpStream) -> Result<HttpRequest, Box<dyn Error>> {
+    let mut bytes = Vec::new();
+    let header_end = loop {
+        let mut chunk = [0_u8; 512];
+        let count = stream.read(&mut chunk)?;
+        if count == 0 {
+            return Err("connection closed before headers completed".into());
+        }
+        bytes.extend_from_slice(&chunk[..count]);
+        if let Some(position) = find_header_end(&bytes) {
+            break position;
+        }
+    };
+
+    let header_bytes = &bytes[..header_end];
+    let headers = std::str::from_utf8(header_bytes)?;
+    let mut lines = headers.split("\r\n");
+    let request_line = lines.next().ok_or("missing HTTP request line")?;
+    let mut request_parts = request_line.split_whitespace();
+    let method = request_parts
+        .next()
+        .ok_or("missing HTTP method")?
+        .to_owned();
+    let path = request_parts.next().ok_or("missing HTTP path")?.to_owned();
+    let content_length = lines
+        .filter_map(|line| line.split_once(':'))
+        .find_map(|(name, value)| {
+            if name.eq_ignore_ascii_case("content-length") {
+                Some(value.trim().parse::<usize>())
+            } else {
+                None
+            }
+        })
+        .ok_or("missing content-length")??;
+
+    let body_start = header_end + 4;
+    let mut body = bytes[body_start..].to_vec();
+    while body.len() < content_length {
+        let mut chunk = vec![0_u8; content_length - body.len()];
+        stream.read_exact(&mut chunk)?;
+        body.extend_from_slice(&chunk);
+    }
+    body.truncate(content_length);
+
+    Ok(HttpRequest { method, path, body })
+}
+
+fn find_header_end(bytes: &[u8]) -> Option<usize> {
+    bytes.windows(4).position(|window| window == b"\r\n\r\n")
+}
+
+fn write_json_response<T: Serialize>(
+    stream: &mut TcpStream,
+    status: &str,
+    body: &T,
+) -> Result<(), Box<dyn Error>> {
+    let body = serde_json::to_vec(body)?;
+    let response = format!(
+        "HTTP/1.1 {status}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+        body.len()
+    );
+    stream.write_all(response.as_bytes())?;
+    stream.write_all(&body)?;
+    Ok(())
+}

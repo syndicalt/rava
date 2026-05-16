@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Attestation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "id",
+    "nonce",
+    "action_id",
+    "evaluator",
+    "outcome",
+    "subject",
+    "occurred_at",
+    "evidence_hash",
+    "proof"
+  ],
+  "properties": {
+    "version": { "const": "rava-attestation-v0" },
+    "id": { "type": "string", "pattern": "^att_[0-9a-f]{32}$" },
+    "nonce": { "type": "string" },
+    "action_id": { "type": "string", "pattern": "^act_[0-9a-f]{32}$" },
+    "evaluator": { "type": "string" },
+    "outcome": { "enum": ["accepted", "rejected"] },
+    "subject": { "type": "string" },
+    "occurred_at": { "$ref": "#/$defs/offset_date_time" },
+    "evidence_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "proof": { "$ref": "#/$defs/proof" }
+  },
+  "$defs": {
+    "offset_date_time": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": { "type": "integer" }
+    },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signature_hex"],
+      "properties": {
+        "signature_hex": { "type": "string", "pattern": "^[0-9a-f]+$" }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+use std::error::Error;
+use std::path::{Path, PathBuf};
+
+#[test]
+fn protocol_documents_replay_and_revocation_registry_contracts() -> Result<(), Box<dyn Error>> {
+    let protocol = std::fs::read_to_string(repository_root().join("docs/protocol/rava-v0.md"))?;
+
+    assert!(protocol.contains("Replay registry contract"));
+    assert!(protocol.contains("recording an accepted action ID must be durable before the verifier reports one-time verification success"));
+    assert!(protocol.contains("Rejected actions must not be recorded"));
+    assert!(protocol.contains("Revocation registry contract"));
+    assert!(protocol.contains(
+        "Registry lookup failures must fail closed before verification claims acceptance"
+    ));
+    assert!(protocol.contains("Freshness and distribution are caller responsibilities in V0"));
+    Ok(())
+}
+
+fn repository_root() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
+}
