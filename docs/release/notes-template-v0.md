@@ -44,6 +44,12 @@ State whether this release changes:
 
 If any compatibility-impacting change exists, link to the relevant migration note and tests.
 
+## Roadmap Status
+
+Link to `docs/roadmap.md` and summarize any roadmap evidence maps that changed in this release.
+
+List remaining external blockers, including external security review, publishing or tagging decisions, and production systems that are still documented requirements rather than implemented guarantees.
+
 ## Known Non-Goals and External Requirements
 
 Repeat any important non-goals or external requirements:
