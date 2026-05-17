@@ -911,6 +911,7 @@ fn ci_workflow_runs_the_documented_local_gate() -> Result<(), Box<dyn Error>> {
         "cargo check -p rava-wasm --target wasm32-unknown-unknown",
         "npm --prefix packages/rava-wasm-js test",
         "npm pack --dry-run",
+        "FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true",
     ] {
         assert!(
             workflow.contains(required),
