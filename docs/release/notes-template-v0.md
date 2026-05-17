@@ -26,8 +26,10 @@ Record the exact gate output or CI run used for the release:
 - `cargo check --manifest-path fuzz/Cargo.toml`
 - `cargo check -p rava-wasm --target wasm32-unknown-unknown`
 - `npm --prefix packages/rava-wasm-js test`
+- `npm pack --dry-run` from `packages/rava-wasm-js`
 
 Record whether deterministic fixtures and `test-vectors/v0` were regenerated and whether the diff was expected.
+Record whether the TypeScript package dry-run contained only intended files.
 
 ## Compatibility
 

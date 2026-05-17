@@ -800,6 +800,7 @@ fn release_notes_template_preserves_draft_status_and_compatibility_tracking(
         "cargo fmt --check",
         "cargo test --workspace",
         "cargo package --workspace",
+        "npm pack --dry-run",
         "## Compatibility",
         "protocol version",
         "test vectors",
