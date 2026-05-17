@@ -17,6 +17,7 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
         "cargo clippy --workspace --all-targets -- -D warnings",
         "cargo test --workspace",
         "cargo run -p rava -- demo flight-booking",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
         "--deterministic-fixtures",
         "--max-request-bytes",
         "--replay-store",

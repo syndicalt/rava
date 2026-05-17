@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/rava-core", "crates/rava-cli"]
+members = ["crates/rava-core", "crates/rava-cli", "crates/rava-wasm"]
 exclude = ["fuzz"]
 resolver = "2"
 
