@@ -17,6 +17,7 @@ cargo package --workspace
 cargo check --manifest-path fuzz/Cargo.toml
 cargo check -p rava-wasm --target wasm32-unknown-unknown
 npm --prefix packages/rava-wasm-js test
+(cd packages/rava-wasm-js && npm pack --dry-run)
 ```
 
 Regenerate deterministic fixtures and confirm the diff is expected:

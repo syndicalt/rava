@@ -69,7 +69,11 @@ cargo fmt --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 cargo run -p rava -- demo flight-booking
+cargo package --workspace
 cargo check --manifest-path fuzz/Cargo.toml
+cargo check -p rava-wasm --target wasm32-unknown-unknown
+npm --prefix packages/rava-wasm-js test
+(cd packages/rava-wasm-js && npm pack --dry-run)
 ```
 
 Optional fixture drift check:
