@@ -221,8 +221,9 @@ fn operator_rejection_code_docs_cover_stable_verifier_codes() -> Result<(), Box<
 
 #[test]
 fn time_semantics_docs_state_expiry_and_freshness_assumptions() -> Result<(), Box<dyn Error>> {
-    let docs =
-        std::fs::read_to_string(repository_root().join("docs/protocol/time-semantics-v0.md"))?;
+    let root = repository_root();
+    let docs = std::fs::read_to_string(root.join("docs/protocol/time-semantics-v0.md"))?;
+    let verifier = std::fs::read_to_string(root.join("crates/rava-core/src/verifier.rs"))?;
 
     for required in [
         "# Rava V0 Time Semantics",
@@ -231,12 +232,14 @@ fn time_semantics_docs_state_expiry_and_freshness_assumptions() -> Result<(), Bo
         "Rava V0 does not apply implicit clock skew.",
         "Revocation and replay freshness are caller responsibilities.",
         "Use one verifier time source for all checks in a verification decision.",
+        "Boundary regression coverage verifies that a capability is accepted immediately before `expires_at` and rejected exactly at `expires_at`.",
     ] {
         assert!(
             docs.contains(required),
             "missing time-semantics docs: {required}"
         );
     }
+    assert!(verifier.contains("capability_expiry_boundary_rejects_at_exact_expiry_without_skew"));
 
     Ok(())
 }

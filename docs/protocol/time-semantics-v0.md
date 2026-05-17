@@ -18,6 +18,8 @@ This means:
 - a capability is not valid exactly at its `expires_at` timestamp;
 - child capabilities must expire no later than their parent capability.
 
+Boundary regression coverage verifies that a capability is accepted immediately before `expires_at` and rejected exactly at `expires_at`.
+
 ## Clock Skew
 
 Rava V0 does not apply implicit clock skew.
