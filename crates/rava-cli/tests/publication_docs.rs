@@ -338,6 +338,52 @@ fn production_trust_docs_define_external_operational_requirements() -> Result<()
 }
 
 #[test]
+fn audit_storage_runbook_defines_managed_audit_requirements_without_preview_claims(
+) -> Result<(), Box<dyn Error>> {
+    let runbook =
+        std::fs::read_to_string(repository_root().join("docs/operations/audit-storage-v0.md"))?;
+    let production =
+        std::fs::read_to_string(repository_root().join("docs/operations/production-trust-v0.md"))?;
+    let audit =
+        std::fs::read_to_string(repository_root().join("docs/security/release-audit-v0.md"))?;
+
+    for required in [
+        "# Rava Production Audit Storage V0",
+        "not implemented by the V0 preview service",
+        "## Required Properties",
+        "retention",
+        "privacy",
+        "export",
+        "tamper evidence",
+        "access control",
+        "## Failure Policy",
+        "fail closed",
+        "## Correlation",
+        "verification receipt",
+        "attestation",
+        "resolver evidence",
+        "downstream tool or API call",
+        "## Data Minimization",
+        "raw action payloads",
+    ] {
+        assert!(
+            runbook.contains(required),
+            "missing audit storage runbook docs: {required}"
+        );
+    }
+
+    for docs in [production, audit] {
+        assert!(
+            docs.contains("audit-storage-v0.md")
+                || docs.contains("../operations/audit-storage-v0.md"),
+            "production and release audit docs must link to the audit storage runbook"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn fuzz_targets_cover_parser_canonicalization_and_verifier_entrypoints(
 ) -> Result<(), Box<dyn Error>> {
     let root = repository_root();

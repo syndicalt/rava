@@ -51,6 +51,7 @@ The preview service is useful for local integration, but it does not implement p
 - Wire schemas are documented as preflight shape checks only, not verifier substitutes.
 - The threat model documents V0 assets, trusted computing base, attacker capabilities, assumptions, and non-goals.
 - External review findings have a dedicated tracking register at [review-register-v0.md](review-register-v0.md).
+- Production audit-storage requirements are tracked in [../operations/audit-storage-v0.md](../operations/audit-storage-v0.md).
 
 ## Remaining Risks
 
