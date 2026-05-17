@@ -187,6 +187,42 @@ fn compatibility_policy_defines_v0_change_boundaries() -> Result<(), Box<dyn Err
 }
 
 #[test]
+fn fuzz_targets_cover_parser_canonicalization_and_verifier_entrypoints(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let manifest = std::fs::read_to_string(root.join("fuzz/Cargo.toml"))?;
+    let target = std::fs::read_to_string(root.join("fuzz/fuzz_targets/v0_wire_entrypoints.rs"))?;
+
+    for required in [
+        "[[bin]]",
+        "v0_wire_entrypoints",
+        "libfuzzer_sys",
+        "rava-core",
+    ] {
+        assert!(
+            manifest.contains(required),
+            "missing fuzz manifest entry: {required}"
+        );
+    }
+
+    for required in [
+        "serde_json::from_slice",
+        "canonical_json",
+        "verify_action",
+        "verify_verification_receipt",
+        "verify_attestation",
+        "no_main",
+    ] {
+        assert!(
+            target.contains(required),
+            "missing fuzz target coverage: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn workspace_publish_metadata_uses_real_repository_url() -> Result<(), Box<dyn Error>> {
     let manifest = std::fs::read_to_string(repository_root().join("Cargo.toml"))?;
 

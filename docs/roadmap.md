@@ -27,7 +27,7 @@ Goal: strengthen the draft core without adding speculative product surface.
 Candidate work:
 
 - Add property tests for canonicalization, attenuation monotonicity, replay consumption, and malformed signed objects.
-- Add fuzz targets for JSON parsing and signature verification entry points.
+- Keep fuzz targets current for JSON parsing, canonicalization, and signature verification entry points.
 - Keep deterministic fixture regeneration checks current so committed examples cannot drift silently.
 - Keep rejection-code documentation current for operators and wrapper authors.
 - Use the V0 review guide for independent review of canonicalization, signature binding, nonce validation, replay semantics, and revocation semantics.
