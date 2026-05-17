@@ -25,6 +25,7 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
         "--revocation-store",
         "--audit-log",
         "--auth-token-env",
+        "--rate-limit-per-minute",
         "GET /healthz",
         "From this repository, prefix CLI commands with `cargo run -p rava --`.",
         "The preview service is not a production authorization service.",

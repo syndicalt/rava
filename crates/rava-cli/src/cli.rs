@@ -123,6 +123,9 @@ pub struct ServeVerifyArgs {
 
     #[arg(long = "auth-token-env")]
     pub auth_token_env: Option<String>,
+
+    #[arg(long = "rate-limit-per-minute")]
+    pub rate_limit_per_minute: Option<usize>,
 }
 
 #[derive(Debug, Subcommand)]

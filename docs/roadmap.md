@@ -42,7 +42,7 @@ Goal: provide a stable developer-facing package while keeping Rust core semantic
 Candidate work:
 
 - Stabilize CLI command names, JSON request and response shapes, and rejection-code subjects.
-- Continue hardening the verifier service boundary beyond current request-size limits, health checks, local file-backed replay/revocation stores, local audit output, and optional bearer-token ingress: caller identity, rate limiting, and distributed replay/revocation backends.
+- Continue hardening the verifier service boundary beyond current request-size limits, health checks, local file-backed replay/revocation stores, local audit output, optional bearer-token ingress, and local per-process rate limiting: caller identity and distributed replay/revocation/rate-limit backends.
 - Publish versioned crates and artifacts only after release gates and review notes are current.
 - Add migration notes for any wire or CLI change from V0 draft to V1 preview.
 - Keep compatibility policy current for test vectors and schemas.

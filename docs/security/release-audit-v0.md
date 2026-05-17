@@ -45,6 +45,7 @@ The preview service is useful for local integration, but it does not implement p
 - The preview verifier service can consume local file-backed replay and revocation stores when configured.
 - The preview verifier service can append local decision-metadata audit logs without raw action payload fields when configured.
 - The preview verifier service can require a bearer token read from an environment variable when configured.
+- The preview verifier service can apply a local per-process request rate limit when configured.
 - The WASM wrapper compiles against `wasm32-unknown-unknown` and calls the Rust verifier instead of reimplementing verification logic.
 - The TypeScript package builds the WASM wrapper and runs V0 flight-booking vectors through the TypeScript API.
 - Wire schemas are documented as preflight shape checks only, not verifier substitutes.
@@ -55,7 +56,7 @@ The preview service is useful for local integration, but it does not implement p
 - No external security review has been completed.
 - Fuzz targets are compile-checked, but long-running fuzz campaigns are not part of the default gate.
 - DID/key resolution, distributed replay, distributed revocation freshness, key custody, and audit storage are caller or roadmap responsibilities.
-- The preview HTTP verifier still lacks caller identity, rate limiting, and distributed replay/revocation backends.
+- The preview HTTP verifier still lacks caller identity and distributed replay/revocation/rate-limit backends.
 
 ## Release Gate
 
