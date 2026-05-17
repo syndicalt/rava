@@ -897,6 +897,30 @@ fn release_artifact_ignores_exclude_generated_outputs() -> Result<(), Box<dyn Er
     Ok(())
 }
 
+#[test]
+fn ci_workflow_runs_the_documented_local_gate() -> Result<(), Box<dyn Error>> {
+    let workflow = std::fs::read_to_string(repository_root().join(".github/workflows/ci.yml"))?;
+
+    for required in [
+        "cargo fmt --check",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo test --workspace",
+        "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
+        "npm --prefix packages/rava-wasm-js test",
+        "npm pack --dry-run",
+    ] {
+        assert!(
+            workflow.contains(required),
+            "CI workflow missing local gate command: {required}"
+        );
+    }
+
+    Ok(())
+}
+
 fn repository_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }

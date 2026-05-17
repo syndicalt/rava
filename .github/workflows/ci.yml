@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  local-gate:
+    name: Full local gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          components: rustfmt, clippy
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: packages/rava-wasm-js/package-lock.json
+
+      - name: Install cargo tools
+        run: cargo install wasm-bindgen-cli --version 0.2.121 --locked
+
+      - name: Install TypeScript wrapper dependencies
+        run: npm --prefix packages/rava-wasm-js ci
+
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Run Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Run Rust tests
+        run: cargo test --workspace
+
+      - name: Run flight-booking demo
+        run: cargo run -p rava -- demo flight-booking
+
+      - name: Package Rust crates
+        run: cargo package --workspace
+
+      - name: Check fuzz target compilation
+        run: cargo check --manifest-path fuzz/Cargo.toml
+
+      - name: Check WASM wrapper
+        run: cargo check -p rava-wasm --target wasm32-unknown-unknown
+
+      - name: Test TypeScript wrapper
+        run: npm --prefix packages/rava-wasm-js test
+
+      - name: Dry-run TypeScript package
+        working-directory: packages/rava-wasm-js
+        run: npm pack --dry-run
