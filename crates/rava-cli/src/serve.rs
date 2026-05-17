@@ -5,6 +5,7 @@ use std::fs::OpenOptions;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
 use std::path::Path;
+use std::time::{Duration, Instant};
 
 use rava_core::action::ActionEnvelope;
 use rava_core::capability::Capability;
@@ -47,6 +48,7 @@ struct VerifyActionRejection {
 
 pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     let listener = TcpListener::bind(&args.addr)?;
+    let mut rate_limit = args.rate_limit_per_minute.map(RateLimitState::new);
     println!(
         "Rava verifier service listening: {}",
         listener.local_addr()?
@@ -55,7 +57,7 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                if let Err(error) = handle_connection(&mut stream, &args) {
+                if let Err(error) = handle_connection(&mut stream, &args, &mut rate_limit) {
                     write_json_response(
                         &mut stream,
                         "500 Internal Server Error",
@@ -73,7 +75,11 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn handle_connection(stream: &mut TcpStream, args: &ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
+fn handle_connection(
+    stream: &mut TcpStream,
+    args: &ServeVerifyArgs,
+    rate_limit: &mut Option<RateLimitState>,
+) -> Result<(), Box<dyn Error>> {
     let Some(request) = read_http_request(stream, args.max_request_bytes)? else {
         return Ok(());
     };
@@ -88,6 +94,20 @@ fn handle_connection(stream: &mut TcpStream, args: &ServeVerifyArgs) -> Result<(
         )?;
         return Ok(());
     }
+    if let Some(rate_limit) = rate_limit {
+        if !rate_limit.allow_request() {
+            write_json_response(
+                stream,
+                "429 Too Many Requests",
+                &serde_json::json!({
+                    "service": SERVICE_NAME,
+                    "error": "rate limit exceeded",
+                    "rate_limit_per_minute": rate_limit.limit,
+                }),
+            )?;
+            return Ok(());
+        }
+    }
     if request.method == "GET" && request.path == "/healthz" {
         write_json_response(
             stream,
@@ -100,6 +120,7 @@ fn handle_connection(stream: &mut TcpStream, args: &ServeVerifyArgs) -> Result<(
                 "revocation_store_configured": args.revocation_store.is_some(),
                 "audit_log_configured": args.audit_log.is_some(),
                 "auth_required": args.auth_token_env.is_some(),
+                "rate_limit_per_minute": args.rate_limit_per_minute,
             }),
         )?;
         return Ok(());
@@ -146,6 +167,35 @@ fn handle_connection(stream: &mut TcpStream, args: &ServeVerifyArgs) -> Result<(
 
     write_json_response(stream, "200 OK", &response)?;
     Ok(())
+}
+
+#[derive(Debug)]
+struct RateLimitState {
+    limit: usize,
+    window_started: Instant,
+    used: usize,
+}
+
+impl RateLimitState {
+    fn new(limit: usize) -> Self {
+        Self {
+            limit,
+            window_started: Instant::now(),
+            used: 0,
+        }
+    }
+
+    fn allow_request(&mut self) -> bool {
+        if self.window_started.elapsed() >= Duration::from_secs(60) {
+            self.window_started = Instant::now();
+            self.used = 0;
+        }
+        if self.used >= self.limit {
+            return false;
+        }
+        self.used += 1;
+        true
+    }
 }
 
 fn request_is_authorized(

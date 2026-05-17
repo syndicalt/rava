@@ -173,7 +173,7 @@ V0 verifier callers must provide authentic public keys for action actors and cap
 The Rust CLI includes a local preview service:
 
 ```text
-RAVA_VERIFIER_TOKEN=<secret> rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN
+RAVA_VERIFIER_TOKEN=<secret> rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --rate-limit-per-minute 120
 ```
 
 It exposes `POST /verify/action` as an HTTP wrapper around the V0 Rust verifier. Request JSON must include:
@@ -190,6 +190,7 @@ It also exposes `GET /healthz`, which returns the service name, `ok` status, and
 `--revocation-store` loads a local revoked-ID snapshot for signer and capability checks on each request.
 `--audit-log` appends newline-delimited JSON decision metadata without raw action intent, resource, constraints, capability envelopes, or signatures.
 `--auth-token-env` requires `Authorization: Bearer <token>` on every request and reads the token from an environment variable so it is not exposed in command arguments.
+`--rate-limit-per-minute` applies a local per-process request limit.
 
 The response includes:
 
@@ -197,7 +198,7 @@ The response includes:
 - `accepted`;
 - `rejection`, with stable verifier `code` and optional `subject` when rejected.
 
-The preview service is not a new trust boundary. It does not discover keys, coordinate distributed replay state, distribute revocations, prove revocation freshness, identify callers, rate-limit callers, provide managed audit retention/export, or make verifier trust-policy decisions.
+The preview service is not a new trust boundary. It does not discover keys, coordinate distributed replay state, distribute revocations, prove revocation freshness, identify callers, provide distributed rate limiting, provide managed audit retention/export, or make verifier trust-policy decisions.
 
 ## Verification Receipts
 

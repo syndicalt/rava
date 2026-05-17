@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 use std::error::Error;
-use std::io::{Read, Write};
+use std::io::{ErrorKind, Read, Write};
 use std::net::{TcpListener, TcpStream};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
@@ -122,6 +122,35 @@ fn serve_verify_with_auth_token_env_accepts_matching_bearer_token() -> Result<()
         json.get("auth_required")
             .and_then(serde_json::Value::as_bool),
         Some(true)
+    );
+    Ok(())
+}
+
+#[test]
+fn serve_verify_with_rate_limit_rejects_excess_requests() -> Result<(), Box<dyn Error>> {
+    let responses = run_server_raw_requests(
+        &["--rate-limit-per-minute", "1"],
+        &[
+            "GET /healthz HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
+            "GET /healthz HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
+        ],
+    )?;
+
+    assert!(
+        responses[0].starts_with("HTTP/1.1 200 OK"),
+        "{}",
+        responses[0]
+    );
+    assert!(
+        responses[1].starts_with("HTTP/1.1 429 Too Many Requests"),
+        "{}",
+        responses[1]
+    );
+    let response_body = response_body(&responses[1])?;
+    let json: serde_json::Value = serde_json::from_str(response_body)?;
+    assert_eq!(
+        json.get("error").and_then(serde_json::Value::as_str),
+        Some("rate limit exceeded")
     );
     Ok(())
 }
@@ -355,6 +384,25 @@ fn run_server_raw_request_with_env(
     envs: &[(&str, &str)],
     request: &str,
 ) -> Result<String, Box<dyn Error>> {
+    let responses = run_server_raw_requests_with_env(extra_args, envs, &[request])?;
+    responses
+        .into_iter()
+        .next()
+        .ok_or_else(|| "missing server response".into())
+}
+
+fn run_server_raw_requests(
+    extra_args: &[&str],
+    requests: &[&str],
+) -> Result<Vec<String>, Box<dyn Error>> {
+    run_server_raw_requests_with_env(extra_args, &[], requests)
+}
+
+fn run_server_raw_requests_with_env(
+    extra_args: &[&str],
+    envs: &[(&str, &str)],
+    requests: &[&str],
+) -> Result<Vec<String>, Box<dyn Error>> {
     let address = free_loopback_address()?;
     let mut args = vec!["serve", "verify", "--addr", &address];
     args.extend_from_slice(extra_args);
@@ -365,15 +413,18 @@ fn run_server_raw_request_with_env(
     }
     let mut server = command.spawn()?;
 
-    let response = match raw_request_when_ready(&address, request) {
-        Ok(response) => response,
-        Err(error) => {
-            terminate(&mut server);
-            return Err(error);
+    let mut responses = Vec::new();
+    for request in requests {
+        match raw_request_when_ready(&address, request) {
+            Ok(response) => responses.push(response),
+            Err(error) => {
+                terminate(&mut server);
+                return Err(error);
+            }
         }
-    };
+    }
     terminate(&mut server);
-    Ok(response)
+    Ok(responses)
 }
 
 fn free_loopback_address() -> Result<String, Box<dyn Error>> {
@@ -426,13 +477,20 @@ fn raw_request_when_ready(address: &str, request: &str) -> Result<String, Box<dy
                     Err(error)
                         if matches!(
                             error.kind(),
-                            std::io::ErrorKind::BrokenPipe | std::io::ErrorKind::ConnectionReset
+                            ErrorKind::BrokenPipe | ErrorKind::ConnectionReset
                         ) => {}
                     Err(error) => return Err(error.into()),
                 }
-                let mut response = String::new();
-                stream.read_to_string(&mut response)?;
-                return Ok(response);
+                match read_response_allowing_reset(&mut stream) {
+                    Ok(response) => return Ok(response),
+                    Err(error)
+                        if error.kind() == ErrorKind::ConnectionReset
+                            && started.elapsed() < Duration::from_secs(5) =>
+                    {
+                        thread::sleep(Duration::from_millis(25));
+                    }
+                    Err(error) => return Err(error.into()),
+                }
             }
             Err(error) if started.elapsed() < Duration::from_secs(5) => {
                 let _ = error;
@@ -441,6 +499,23 @@ fn raw_request_when_ready(address: &str, request: &str) -> Result<String, Box<dy
             Err(error) => return Err(error.into()),
         }
     }
+}
+
+fn read_response_allowing_reset(stream: &mut TcpStream) -> Result<String, std::io::Error> {
+    let mut response = Vec::new();
+    let mut chunk = [0_u8; 512];
+    loop {
+        match stream.read(&mut chunk) {
+            Ok(0) => break,
+            Ok(count) => response.extend_from_slice(&chunk[..count]),
+            Err(error) if error.kind() == ErrorKind::ConnectionReset && !response.is_empty() => {
+                break;
+            }
+            Err(error) => return Err(error),
+        }
+    }
+
+    Ok(String::from_utf8_lossy(&response).into_owned())
 }
 
 fn response_body(response: &str) -> Result<&str, Box<dyn Error>> {

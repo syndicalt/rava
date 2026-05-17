@@ -213,7 +213,7 @@ Start the local preview verifier:
 
 ```bash
 RAVA_VERIFIER_TOKEN="$(openssl rand -hex 32)" \
-rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN
+rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --rate-limit-per-minute 120
 ```
 
 It exposes `POST /verify/action` for JSON requests containing an action, capability chain, actor public key, issuer public key map, and `now_unix`.
@@ -223,8 +223,9 @@ It also exposes `GET /healthz` with the service name, status, and configured req
 `--revocation-store` loads a local revoked-ID snapshot for signer and capability checks on each request.
 `--audit-log` appends newline-delimited JSON decision metadata without raw action intent, resource, constraints, capability envelopes, or signatures.
 `--auth-token-env` requires `Authorization: Bearer <token>` on every request and reads the token from an environment variable so it is not passed on the command line.
+`--rate-limit-per-minute` applies a local per-process request limit.
 
-The preview service is not a production authorization service. It does not implement key discovery, distributed replay coordination, distributed revocation freshness, caller identity, rate limiting, or managed audit retention/export.
+The preview service is not a production authorization service. It does not implement key discovery, distributed replay coordination, distributed revocation freshness, caller identity, distributed rate limiting, or managed audit retention/export.
 
 ## Examples, Test Vectors, and Schemas
 
