@@ -370,6 +370,8 @@ fn v1_preview_surface_docs_pin_cli_and_json_shapes() -> Result<(), Box<dyn Error
         "--replay-store",
         "--revocation-store",
         "--audit-log",
+        "--auth-token-env",
+        "--rate-limit-per-minute",
         "## HTTP Request Shape",
         "POST /verify/action",
         "actor_public_key_hex",
