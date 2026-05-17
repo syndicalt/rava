@@ -23,7 +23,7 @@ The repository had an interop roadmap, but not a functional roadmap for the core
 
 ### HTTP verifier preview needed stronger warning language
 
-The preview service is useful for local integration, but it does not implement production service responsibilities such as request authentication, replay consumption, distributed revocation freshness, rate limiting, or persistent audit storage. The README now says this directly.
+The preview service is useful for local integration and now has local preview controls for request size, bearer-token ingress, local replay consumption, local revocation snapshots, local audit output, and local per-process rate limiting. These are still not production responsibilities such as caller identity, distributed replay coordination, distributed revocation freshness, distributed rate limiting, or managed audit storage. The README now says this directly.
 
 ### Local Eventloom state is ignored
 

@@ -101,12 +101,15 @@ fn release_audit_tracks_current_release_and_operations_artifacts() -> Result<(),
         "../operations/monitoring-v0.md",
         "documented external requirements",
         "not implemented production systems",
+        "local preview controls",
+        "production responsibilities",
     ] {
         assert!(
             audit.contains(required),
             "release audit missing current artifact: {required}"
         );
     }
+    assert!(!audit.contains("does not implement production service responsibilities such as request authentication, replay consumption, distributed revocation freshness, rate limiting, or persistent audit storage"));
 
     Ok(())
 }
