@@ -66,4 +66,13 @@ The preview surface still does not provide:
 - external security review coverage.
 
 Those requirements are documented in `docs/operations/production-trust-v0.md`.
-Production caller identity is tracked in [../operations/caller-identity-v0.md](../operations/caller-identity-v0.md), and distributed rate limiting is tracked in [../operations/distributed-rate-limits-v0.md](../operations/distributed-rate-limits-v0.md).
+Detailed owners are:
+
+- caller identity: [../operations/caller-identity-v0.md](../operations/caller-identity-v0.md);
+- distributed replay coordination: [../operations/distributed-replay-v0.md](../operations/distributed-replay-v0.md);
+- distributed revocation freshness: [../operations/distributed-revocation-v0.md](../operations/distributed-revocation-v0.md);
+- distributed rate limiting: [../operations/distributed-rate-limits-v0.md](../operations/distributed-rate-limits-v0.md);
+- key custody: [../operations/key-custody-v0.md](../operations/key-custody-v0.md);
+- public-key discovery trust policy: [../operations/key-discovery-v0.md](../operations/key-discovery-v0.md);
+- managed audit retention/export: [../operations/audit-storage-v0.md](../operations/audit-storage-v0.md);
+- external security review coverage: [../security/review-register-v0.md](../security/review-register-v0.md).
