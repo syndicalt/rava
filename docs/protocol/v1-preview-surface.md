@@ -55,6 +55,22 @@ Successful HTTP parsing and verifier execution returns `200 OK` with:
 
 Stable rejection codes and subject meanings are documented in `docs/operators/rejection-codes-v0.md`.
 
+## HTTP Error Shape
+
+Service-boundary failures return JSON with:
+
+- `service`: `rava-verifier-preview-v0`;
+- `error`: stable local error string.
+
+The preview service currently emits these non-verifier HTTP statuses before
+authorization decisions:
+
+- `401 Unauthorized` for missing or mismatched bearer tokens when `--auth-token-env` is configured;
+- `429 Too Many Requests` for local per-process rate-limit exhaustion, with `rate_limit_per_minute`;
+- `413 Payload Too Large` when `Content-Length` exceeds `max_request_bytes`, with `max_request_bytes`;
+- `431 Request Header Fields Too Large` when request headers exceed the local header limit;
+- `404 Not Found` for routes other than `GET /healthz` and `POST /verify/action`.
+
 ## Health Shape
 
 `GET /healthz` returns `200 OK` with service status and local configuration flags:
