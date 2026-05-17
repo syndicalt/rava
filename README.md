@@ -229,6 +229,8 @@ It also exposes `GET /healthz` with the service name, status, and configured req
 `--auth-token-env` requires `Authorization: Bearer <token>` on every request and reads the token from an environment variable so it is not passed on the command line.
 `--rate-limit-per-minute` applies a local per-process request limit.
 
+The pinned preview service request, response, health, audit, and error shapes are documented in [docs/protocol/v1-preview-surface.md](docs/protocol/v1-preview-surface.md).
+
 The preview service is not a production authorization service. It does not implement key discovery, distributed replay coordination, distributed revocation freshness, caller identity, distributed rate limiting, or managed audit retention/export.
 
 ## Examples, Test Vectors, and Schemas

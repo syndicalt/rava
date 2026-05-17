@@ -15,6 +15,7 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
         "docs/roadmap.md",
         "docs/release/v0-draft-checklist.md",
         "docs/release/notes-template-v0.md",
+        "docs/protocol/v1-preview-surface.md",
         "docs/operations/production-trust-v0.md",
         "docs/security/review-register-v0.md",
         "cargo fmt --check",
