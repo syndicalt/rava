@@ -64,7 +64,9 @@ Stable rejection codes and subject meanings are documented in `docs/operators/re
 - `max_request_bytes`;
 - `replay_store_configured`;
 - `revocation_store_configured`;
-- `audit_log_configured`.
+- `audit_log_configured`;
+- `auth_required`;
+- `rate_limit_per_minute`.
 
 This endpoint reports local process configuration only. It does not prove key freshness, revocation freshness, replay coordination, or external reachability.
 

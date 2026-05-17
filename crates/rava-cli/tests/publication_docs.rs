@@ -385,6 +385,8 @@ fn v1_preview_surface_docs_pin_cli_and_json_shapes() -> Result<(), Box<dyn Error
         "action_id",
         "verified_at_unix",
         "## Rejection-Code Subjects",
+        "`auth_required`",
+        "`rate_limit_per_minute`",
         "docs/operators/rejection-codes-v0.md",
         "not a production authorization boundary",
     ] {
