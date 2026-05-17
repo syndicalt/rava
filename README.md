@@ -91,9 +91,11 @@ The current repo audit note is [docs/security/release-audit-v0.md](docs/security
 - `crates/rava-core`: trusted protocol core, canonicalization, signing, verification, replay, revocation, receipts, and attestations.
 - `crates/rava-cli`: CLI, demos, fixture generation, inspection, and local verifier service preview.
 - `docs/protocol/rava-v0.md`: V0 protocol specification.
+- `docs/protocol/compatibility-policy-v0.md`: compatibility and versioning rules for V0 draft artifacts.
 - `docs/protocol/time-semantics-v0.md`: verifier time, expiry, replay, and revocation freshness assumptions.
 - `docs/operators/rejection-codes-v0.md`: operator-facing verifier rejection codes.
 - `docs/security/threat-model-v0.md`: V0 threat model.
+- `docs/security/review-guide-v0.md`: review scope, evidence map, and reviewer questions.
 - `docs/security/release-audit-v0.md`: current publication-readiness audit notes.
 - `docs/roadmap.md`: functional protocol roadmap.
 - `docs/interop/roadmap-v0.md`: wrapper and adapter sequencing.

@@ -132,6 +132,61 @@ fn time_semantics_docs_state_expiry_and_freshness_assumptions() -> Result<(), Bo
 }
 
 #[test]
+fn security_review_guide_maps_review_scope_to_evidence() -> Result<(), Box<dyn Error>> {
+    let guide =
+        std::fs::read_to_string(repository_root().join("docs/security/review-guide-v0.md"))?;
+
+    for required in [
+        "# Rava V0 Security Review Guide",
+        "## Review Scope",
+        "## High-Value Review Questions",
+        "canonicalization",
+        "signature binding",
+        "nonce validation",
+        "replay semantics",
+        "revocation semantics",
+        "## Evidence Map",
+        "crates/rava-core/src/verifier.rs",
+        "docs/security/threat-model-v0.md",
+        "cargo test --workspace",
+        "not production-ready security software",
+    ] {
+        assert!(
+            guide.contains(required),
+            "missing review-guide docs: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
+fn compatibility_policy_defines_v0_change_boundaries() -> Result<(), Box<dyn Error>> {
+    let policy = std::fs::read_to_string(
+        repository_root().join("docs/protocol/compatibility-policy-v0.md"),
+    )?;
+
+    for required in [
+        "# Rava V0 Compatibility Policy",
+        "## Stable During V0 Draft",
+        "## Changes That Require New Test Vectors",
+        "## Changes That Require a New Protocol Version",
+        "wire object versions",
+        "rejection code",
+        "test-vectors/v0",
+        "schemas",
+        "No compatibility change may weaken fail-closed verification.",
+    ] {
+        assert!(
+            policy.contains(required),
+            "missing compatibility policy docs: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn workspace_publish_metadata_uses_real_repository_url() -> Result<(), Box<dyn Error>> {
     let manifest = std::fs::read_to_string(repository_root().join("Cargo.toml"))?;
 

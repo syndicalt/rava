@@ -30,7 +30,7 @@ Candidate work:
 - Add fuzz targets for JSON parsing and signature verification entry points.
 - Keep deterministic fixture regeneration checks current so committed examples cannot drift silently.
 - Keep rejection-code documentation current for operators and wrapper authors.
-- Add independent review of canonicalization, signature binding, nonce validation, replay semantics, and revocation semantics.
+- Use the V0 review guide for independent review of canonicalization, signature binding, nonce validation, replay semantics, and revocation semantics.
 - Keep clock-skew and expiry expectations current for verifier callers.
 
 Hardening work must not introduce alternate cryptographic primitives or verifier shortcuts.
@@ -45,7 +45,7 @@ Candidate work:
 - Add a production-shaped verifier service boundary with request-size limits, authenticated ingress assumptions, configurable replay/revocation backends, health checks, and audit output.
 - Publish versioned crates and artifacts only after release gates and review notes are current.
 - Add migration notes for any wire or CLI change from V0 draft to V1 preview.
-- Define compatibility policy for test vectors and schemas.
+- Keep compatibility policy current for test vectors and schemas.
 
 V1 developer preview still should not claim distributed trust, global identity, managed custody, or external audit coverage unless those workstreams are complete.
 
