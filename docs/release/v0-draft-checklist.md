@@ -34,6 +34,7 @@ Unexpected fixture or test-vector drift must be investigated before tagging.
 
 Before publishing a V0 draft release candidate, update or confirm:
 
+- `SECURITY.md`;
 - `docs/security/release-audit-v0.md`;
 - `docs/security/review-register-v0.md`;
 - `docs/security/threat-model-v0.md`;
