@@ -83,3 +83,4 @@ Before tagging a V0 draft release:
 - document any compatibility-impacting change in release notes.
 
 The full release checklist is [../release/v0-draft-checklist.md](../release/v0-draft-checklist.md).
+Use [../release/notes-template-v0.md](../release/notes-template-v0.md) for draft release notes.

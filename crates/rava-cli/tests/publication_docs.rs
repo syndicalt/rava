@@ -599,6 +599,52 @@ fn draft_release_checklist_guards_publication_without_production_claims(
 }
 
 #[test]
+fn release_notes_template_preserves_draft_status_and_compatibility_tracking(
+) -> Result<(), Box<dyn Error>> {
+    let template =
+        std::fs::read_to_string(repository_root().join("docs/release/notes-template-v0.md"))?;
+    let checklist =
+        std::fs::read_to_string(repository_root().join("docs/release/v0-draft-checklist.md"))?;
+    let compatibility = std::fs::read_to_string(
+        repository_root().join("docs/protocol/compatibility-policy-v0.md"),
+    )?;
+
+    for required in [
+        "# Rava V0 Draft Release Notes Template",
+        "not production-ready security software",
+        "## Status",
+        "No external security review has been completed",
+        "## Verification",
+        "cargo fmt --check",
+        "cargo test --workspace",
+        "cargo package --workspace",
+        "## Compatibility",
+        "protocol version",
+        "test vectors",
+        "schemas",
+        "rejection codes",
+        "## Known Non-Goals and External Requirements",
+        "## Review Register",
+        "docs/security/review-register-v0.md",
+    ] {
+        assert!(
+            template.contains(required),
+            "missing release notes template docs: {required}"
+        );
+    }
+
+    for docs in [checklist, compatibility] {
+        assert!(
+            docs.contains("docs/release/notes-template-v0.md")
+                || docs.contains("../release/notes-template-v0.md"),
+            "release checklist and compatibility policy must link to notes template"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn workspace_publish_metadata_uses_real_repository_url() -> Result<(), Box<dyn Error>> {
     let manifest = std::fs::read_to_string(repository_root().join("Cargo.toml"))?;
     let core_manifest =
