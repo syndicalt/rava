@@ -66,3 +66,4 @@ The preview surface still does not provide:
 - external security review coverage.
 
 Those requirements are documented in `docs/operations/production-trust-v0.md`.
+Production caller identity is tracked in [../operations/caller-identity-v0.md](../operations/caller-identity-v0.md), and distributed rate limiting is tracked in [../operations/distributed-rate-limits-v0.md](../operations/distributed-rate-limits-v0.md).
