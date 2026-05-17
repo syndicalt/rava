@@ -867,6 +867,8 @@ fn workspace_publish_metadata_uses_real_repository_url() -> Result<(), Box<dyn E
     assert!(wasm_manifest.contains(r#"rava-core = { version = "0.1.0", path = "../rava-core" }"#));
     assert!(ts_package.contains(r#""license": "Apache-2.0""#));
     assert!(ts_package.contains(r#""url": "https://github.com/syndicalt/rava.git""#));
+    assert!(ts_package.contains(r#""files""#));
+    assert!(ts_package.contains(r#""dist""#));
     Ok(())
 }
 
