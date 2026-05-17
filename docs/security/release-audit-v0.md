@@ -21,6 +21,8 @@ The repository had strong technical documentation, but the README did not clearl
 
 The repository had an interop roadmap, but not a functional roadmap for the core protocol project. [../roadmap.md](../roadmap.md) now separates current baseline, release readiness, V0 hardening, V1 developer preview, interop, and production operations work.
 
+The functional roadmap now includes evidence maps for release readiness, V0 hardening, V1 developer preview, interop, and production trust work.
+
 ### HTTP verifier preview needed stronger warning language
 
 The preview service is useful for local integration and now has local preview controls for request size, bearer-token ingress, local replay consumption, local revocation snapshots, local audit output, and local per-process rate limiting. These are still not production responsibilities such as caller identity, distributed replay coordination, distributed revocation freshness, distributed rate limiting, or managed audit storage. The README now says this directly.
