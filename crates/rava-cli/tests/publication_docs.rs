@@ -18,6 +18,7 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
         "docs/protocol/v1-preview-surface.md",
         "docs/operations/production-trust-v0.md",
         "docs/security/review-register-v0.md",
+        "SECURITY.md",
         "cargo fmt --check",
         "cargo clippy --workspace --all-targets -- -D warnings",
         "cargo test --workspace",
