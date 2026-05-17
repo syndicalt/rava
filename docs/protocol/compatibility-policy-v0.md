@@ -18,6 +18,8 @@ These surfaces are treated as stable unless a documented V0 draft change updates
 - JSON schemas under `docs/schemas/v0`;
 - deterministic flight-booking fixture regeneration behavior.
 
+The V1 preview developer surface for CLI names, service JSON shapes, audit output, and rejection subjects is pinned in [v1-preview-surface.md](v1-preview-surface.md).
+
 ## Changes That Require New Test Vectors
 
 New or updated V0 test vectors are required when a change affects:

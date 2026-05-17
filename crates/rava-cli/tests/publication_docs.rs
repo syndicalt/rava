@@ -192,6 +192,44 @@ fn compatibility_policy_defines_v0_change_boundaries() -> Result<(), Box<dyn Err
 }
 
 #[test]
+fn v1_preview_surface_docs_pin_cli_and_json_shapes() -> Result<(), Box<dyn Error>> {
+    let docs =
+        std::fs::read_to_string(repository_root().join("docs/protocol/v1-preview-surface.md"))?;
+
+    for required in [
+        "# Rava V1 Preview Surface",
+        "## Stable CLI Commands",
+        "rava verify action",
+        "rava serve verify",
+        "--max-request-bytes",
+        "--replay-store",
+        "--revocation-store",
+        "--audit-log",
+        "## HTTP Request Shape",
+        "POST /verify/action",
+        "actor_public_key_hex",
+        "issuer_public_keys",
+        "## HTTP Response Shape",
+        "accepted",
+        "rejection.code",
+        "rejection.subject",
+        "## Audit Log Shape",
+        "action_id",
+        "verified_at_unix",
+        "## Rejection-Code Subjects",
+        "docs/operators/rejection-codes-v0.md",
+        "not a production authorization boundary",
+    ] {
+        assert!(
+            docs.contains(required),
+            "missing v1-preview surface docs: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn fuzz_targets_cover_parser_canonicalization_and_verifier_entrypoints(
 ) -> Result<(), Box<dyn Error>> {
     let root = repository_root();

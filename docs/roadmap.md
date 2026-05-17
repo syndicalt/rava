@@ -64,6 +64,8 @@ Sequencing:
 
 Detailed wrapper guidance lives in [interop/roadmap-v0.md](interop/roadmap-v0.md).
 
+The current V1 preview surface contract is documented in [protocol/v1-preview-surface.md](protocol/v1-preview-surface.md).
+
 ## Production Trust and Operations
 
 Goal: define the systems around the core verifier that production deployments need.
