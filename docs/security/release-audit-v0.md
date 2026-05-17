@@ -50,6 +50,7 @@ The preview service is useful for local integration and now has local preview co
 - The preview verifier service can apply a local per-process request rate limit when configured.
 - The WASM wrapper compiles against `wasm32-unknown-unknown` and calls the Rust verifier instead of reimplementing verification logic.
 - The TypeScript package builds the WASM wrapper and runs V0 flight-booking vectors through the TypeScript API.
+- The TypeScript wrapper package dry-run is part of the local release gate so generated package contents are visible before publication.
 - Wire schemas are documented as preflight shape checks only, not verifier substitutes.
 - The threat model documents V0 assets, trusted computing base, attacker capabilities, assumptions, and non-goals.
 - External review findings have a dedicated tracking register at [review-register-v0.md](review-register-v0.md).
@@ -77,8 +78,9 @@ cargo package --workspace
 cargo check --manifest-path fuzz/Cargo.toml
 cargo check -p rava-wasm --target wasm32-unknown-unknown
 npm --prefix packages/rava-wasm-js test
+(cd packages/rava-wasm-js && npm pack --dry-run)
 ```
 
-Passing this gate means the local reference implementation and regression suite are coherent. It does not mean the protocol is production-ready.
+Passing this gate means the local reference implementation, regression suite, and package dry-run contents are coherent. It does not mean the protocol is production-ready.
 
 The full V0 draft release checklist is [../release/v0-draft-checklist.md](../release/v0-draft-checklist.md).
