@@ -81,3 +81,5 @@ Before tagging a V0 draft release:
 - confirm `test-vectors/v0` and schemas match the intended wire shape;
 - update `docs/security/release-audit-v0.md`;
 - document any compatibility-impacting change in release notes.
+
+The full release checklist is [../release/v0-draft-checklist.md](../release/v0-draft-checklist.md).
