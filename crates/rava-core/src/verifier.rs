@@ -1163,6 +1163,41 @@ mod tests {
     }
 
     #[test]
+    fn capability_expiry_boundary_rejects_at_exact_expiry_without_skew(
+    ) -> Result<(), Box<dyn Error>> {
+        let scenario = scenario()?;
+        let action = purchase_action(&scenario, 750)?;
+        let issuer_keys = issuer_keys(&scenario);
+        let revocations = InMemoryRevocationRegistry::default();
+
+        let immediately_before_expiry = verify_action(VerifyActionInput {
+            action: &action,
+            capability_chain: &[scenario.root.clone(), scenario.purchase.clone()],
+            actor_public_key_hex: &scenario.booking_agent.public_key_hex,
+            capability_issuer_public_keys: &issuer_keys,
+            revocations: &revocations,
+            now: at(1_699_999_999)?,
+        })?;
+        let at_exact_expiry = verify_action(VerifyActionInput {
+            action: &action,
+            capability_chain: &[scenario.root, scenario.purchase.clone()],
+            actor_public_key_hex: &scenario.booking_agent.public_key_hex,
+            capability_issuer_public_keys: &issuer_keys,
+            revocations: &revocations,
+            now: scenario.purchase.expires_at,
+        })?;
+
+        assert_eq!(immediately_before_expiry, VerificationResult::Accepted);
+        assert_eq!(
+            at_exact_expiry,
+            VerificationResult::Rejected(VerificationError::CapabilityExpired {
+                capability_id: scenario.purchase.id
+            })
+        );
+        Ok(())
+    }
+
+    #[test]
     fn rejects_child_capability_constraint_expansion() -> Result<(), Box<dyn Error>> {
         let scenario = scenario()?;
         let issuer_keys = issuer_keys(&scenario);
