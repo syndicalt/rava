@@ -52,12 +52,14 @@ The preview service is useful for local integration, but it does not implement p
 - The threat model documents V0 assets, trusted computing base, attacker capabilities, assumptions, and non-goals.
 - External review findings have a dedicated tracking register at [review-register-v0.md](review-register-v0.md).
 - Production audit-storage requirements are tracked in [../operations/audit-storage-v0.md](../operations/audit-storage-v0.md).
+- Production key custody, public-key discovery, distributed replay, distributed revocation, caller identity, distributed rate limiting, and monitoring are documented external requirements in [../operations/key-custody-v0.md](../operations/key-custody-v0.md), [../operations/key-discovery-v0.md](../operations/key-discovery-v0.md), [../operations/distributed-replay-v0.md](../operations/distributed-replay-v0.md), [../operations/distributed-revocation-v0.md](../operations/distributed-revocation-v0.md), [../operations/caller-identity-v0.md](../operations/caller-identity-v0.md), [../operations/distributed-rate-limits-v0.md](../operations/distributed-rate-limits-v0.md), and [../operations/monitoring-v0.md](../operations/monitoring-v0.md).
+- Draft release process artifacts exist at [../release/v0-draft-checklist.md](../release/v0-draft-checklist.md) and [../release/notes-template-v0.md](../release/notes-template-v0.md).
 
 ## Remaining Risks
 
 - No external security review has been completed.
 - Fuzz targets are compile-checked, but long-running fuzz campaigns are not part of the default gate.
-- DID/key resolution, distributed replay, distributed revocation freshness, key custody, and audit storage are caller or roadmap responsibilities.
+- DID/key resolution, distributed replay, distributed revocation freshness, key custody, caller identity, distributed rate limiting, monitoring, and audit storage have documented requirements but are not implemented production systems in the V0 core, CLI, preview service, WASM wrapper, or TypeScript package.
 - The preview HTTP verifier still lacks caller identity and distributed replay/revocation/rate-limit backends.
 
 ## Release Gate
