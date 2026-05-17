@@ -107,6 +107,8 @@ Detailed production runbooks live in:
 
 External review findings and remediation are tracked in [security/review-register-v0.md](security/review-register-v0.md).
 
+Production trust evidence lives in `docs/operations/production-trust-v0.md`, `docs/operations/key-custody-v0.md`, `docs/operations/key-discovery-v0.md`, `docs/operations/distributed-replay-v0.md`, `docs/operations/distributed-revocation-v0.md`, `docs/operations/audit-storage-v0.md`, `docs/operations/caller-identity-v0.md`, `docs/operations/distributed-rate-limits-v0.md`, `docs/operations/monitoring-v0.md`, `docs/security/review-register-v0.md`, `docs/security/release-audit-v0.md`, and `crates/rava-cli/tests/publication_docs.rs`.
+
 ## Non-Goals
 
 The core protocol roadmap does not include:

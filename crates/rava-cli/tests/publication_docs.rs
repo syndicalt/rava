@@ -448,8 +448,9 @@ fn v1_preview_migration_notes_cover_preview_surface_changes() -> Result<(), Box<
 
 #[test]
 fn production_trust_docs_define_external_operational_requirements() -> Result<(), Box<dyn Error>> {
-    let docs =
-        std::fs::read_to_string(repository_root().join("docs/operations/production-trust-v0.md"))?;
+    let root = repository_root();
+    let docs = std::fs::read_to_string(root.join("docs/operations/production-trust-v0.md"))?;
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
 
     for required in [
         "# Rava Production Trust and Operations V0",
@@ -473,6 +474,26 @@ fn production_trust_docs_define_external_operational_requirements() -> Result<()
         assert!(
             docs.contains(required),
             "missing production trust docs: {required}"
+        );
+    }
+
+    for required in [
+        "Production trust evidence lives in `docs/operations/production-trust-v0.md`, `docs/operations/key-custody-v0.md`, `docs/operations/key-discovery-v0.md`, `docs/operations/distributed-replay-v0.md`, `docs/operations/distributed-revocation-v0.md`, `docs/operations/audit-storage-v0.md`, `docs/operations/caller-identity-v0.md`, `docs/operations/distributed-rate-limits-v0.md`, `docs/operations/monitoring-v0.md`, `docs/security/review-register-v0.md`, `docs/security/release-audit-v0.md`, and `crates/rava-cli/tests/publication_docs.rs`.",
+        "docs/operations/production-trust-v0.md",
+        "docs/operations/key-custody-v0.md",
+        "docs/operations/key-discovery-v0.md",
+        "docs/operations/distributed-replay-v0.md",
+        "docs/operations/distributed-revocation-v0.md",
+        "docs/operations/audit-storage-v0.md",
+        "docs/operations/caller-identity-v0.md",
+        "docs/operations/distributed-rate-limits-v0.md",
+        "docs/operations/monitoring-v0.md",
+        "docs/security/review-register-v0.md",
+        "docs/security/release-audit-v0.md",
+    ] {
+        assert!(
+            roadmap.contains(required),
+            "roadmap missing production evidence: {required}"
         );
     }
 
