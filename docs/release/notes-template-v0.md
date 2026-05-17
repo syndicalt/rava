@@ -67,6 +67,7 @@ Repeat any important non-goals or external requirements:
 
 ## Review Register
 
+Link to `SECURITY.md`.
 Link to `docs/security/review-register-v0.md`.
 
 Summarize any findings that are new, accepted-risk, remediated, or verified for this release.
