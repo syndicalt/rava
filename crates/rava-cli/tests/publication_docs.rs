@@ -17,6 +17,7 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
         "cargo clippy --workspace --all-targets -- -D warnings",
         "cargo test --workspace",
         "cargo run -p rava -- demo flight-booking",
+        "--deterministic-fixtures",
         "From this repository, prefix CLI commands with `cargo run -p rava --`.",
         "The preview service is not a production authorization service.",
     ] {
@@ -42,6 +43,89 @@ fn functional_roadmap_separates_current_state_from_future_work() -> Result<(), B
         "not implemented guarantees today",
     ] {
         assert!(roadmap.contains(required), "roadmap missing: {required}");
+    }
+
+    Ok(())
+}
+
+#[test]
+fn release_audit_does_not_report_resolved_eventloom_state_as_current() -> Result<(), Box<dyn Error>>
+{
+    let audit =
+        std::fs::read_to_string(repository_root().join("docs/security/release-audit-v0.md"))?;
+
+    assert!(audit.contains("`.eventloom/` is ignored"));
+    assert!(!audit.contains("currently contains `.eventloom/rava-default.jsonl`"));
+    Ok(())
+}
+
+#[test]
+fn operator_rejection_code_docs_cover_stable_verifier_codes() -> Result<(), Box<dyn Error>> {
+    let docs =
+        std::fs::read_to_string(repository_root().join("docs/operators/rejection-codes-v0.md"))?;
+
+    for required in [
+        "# Rava V0 Rejection Codes",
+        "## Operator Contract",
+        "## Stable Codes",
+        "unsupported_action_version",
+        "unsupported_capability_version",
+        "action_nonce_invalid",
+        "capability_nonce_invalid",
+        "action_context_hash_invalid",
+        "action_signature_invalid",
+        "action_id_mismatch",
+        "action_replayed",
+        "capability_chain_empty",
+        "action_capability_not_final",
+        "root_issuer_not_controller",
+        "capability_id_mismatch",
+        "capability_operations_empty",
+        "capability_operations_not_canonical",
+        "capability_signature_invalid",
+        "capability_revoked",
+        "signer_revoked",
+        "capability_expired",
+        "capability_parent_mismatch",
+        "capability_issuer_not_parent_subject",
+        "capability_resource_mismatch",
+        "capability_operation_not_granted",
+        "capability_expiry_outlives_parent",
+        "capability_constraint_removed",
+        "capability_constraint_expanded",
+        "parent_capability_not_delegable",
+        "final_subject_not_actor",
+        "resource_mismatch",
+        "operation_not_allowed",
+        "constraint_exceeded",
+        "missing_issuer_public_key",
+    ] {
+        assert!(
+            docs.contains(required),
+            "missing rejection-code docs: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
+fn time_semantics_docs_state_expiry_and_freshness_assumptions() -> Result<(), Box<dyn Error>> {
+    let docs =
+        std::fs::read_to_string(repository_root().join("docs/protocol/time-semantics-v0.md"))?;
+
+    for required in [
+        "# Rava V0 Time Semantics",
+        "`now_unix`",
+        "A capability is expired when `expires_at <= now`.",
+        "Rava V0 does not apply implicit clock skew.",
+        "Revocation and replay freshness are caller responsibilities.",
+        "Use one verifier time source for all checks in a verification decision.",
+    ] {
+        assert!(
+            docs.contains(required),
+            "missing time-semantics docs: {required}"
+        );
     }
 
     Ok(())

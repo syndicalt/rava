@@ -1,24 +1,24 @@
 {
   "version": "rava-attestation-v0",
-  "id": "att_d232bba5cd1f831880594070fa823864",
-  "nonce": "74524cc4-c5c6-4c7e-8b8b-71171ecbf550",
-  "action_id": "act_e5b47b36c025b7ba36ea44fd12979a9f",
-  "evaluator": "rava:service:567115b3a12b3160fbc9cb2c9fc9b526",
-  "outcome": "rejected",
+  "id": "att_4408f5741dd442cf0ac85f1083708687",
+  "nonce": "55555555-5555-4555-8555-555555555555",
+  "action_id": "act_4895d1ad8dd04025cb89a68c3f530621",
+  "evaluator": "rava:service:6e7a1cdd29b0b78fd13af4c5598feff4",
+  "outcome": "accepted",
   "subject": "travel.booking",
   "occurred_at": [
     2022,
     105,
     5,
     20,
-    0,
+    30,
     0,
     0,
     0,
     0
   ],
-  "evidence_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+  "evidence_hash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
   "proof": {
-    "signature_hex": "0bc53bc12e991296d018da0da46f96436c84d9b4a59859367b87808d7cb569b5f8300692e475dd24243dac65de9b0f668d05144e5ddb2a5124f15db6a9dbb30d"
+    "signature_hex": "69fac21499eb30cbb873347a006f7482bfacc4ba05f0645eaa4b4f8f9e6247989f9107b8a19578650a77017f345bf17200233e951bdaea8649bb0d5411830a09"
   }
 }

@@ -32,6 +32,33 @@ fn v0_test_vectors_are_language_neutral_and_verifiable() -> Result<(), Box<dyn E
     Ok(())
 }
 
+#[test]
+fn flight_booking_examples_and_v0_test_vectors_stay_in_sync() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let examples = root.join("examples/flight-booking");
+    let vectors = root.join("test-vectors/v0/flight-booking");
+
+    for file_name in [
+        "action.json",
+        "attestation.json",
+        "capability-chain.json",
+        "keys.json",
+        "receipt.json",
+        "replay.json",
+        "revocations.json",
+        "tampered-attestation.json",
+        "tampered-receipt.json",
+    ] {
+        assert_eq!(
+            std::fs::read(examples.join(file_name))?,
+            std::fs::read(vectors.join(file_name))?,
+            "{file_name} drifted between examples and test vectors"
+        );
+    }
+
+    Ok(())
+}
+
 fn verify_flight_booking_vector(
     root: &Path,
     vector: &serde_json::Value,

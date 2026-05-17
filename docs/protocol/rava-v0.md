@@ -6,6 +6,8 @@ Wire-shape schemas for V0 JSON objects are documented in `docs/schemas/v0`. Sche
 
 Interop planning for wrappers and adapters is documented in `docs/interop/roadmap-v0.md`. Interop layers must preserve Rust verifier semantics and must not be described as new V0 guarantees until implemented and tested.
 
+Verifier time and expiry semantics are documented in `docs/protocol/time-semantics-v0.md`. Operator-facing rejection codes are documented in `docs/operators/rejection-codes-v0.md`.
+
 ## Identity
 
 A Rava signer is a local Ed25519 keypair plus a protocol-facing signer ID.

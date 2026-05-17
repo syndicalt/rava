@@ -61,4 +61,32 @@ mod tests {
         );
         Ok(())
     }
+
+    #[test]
+    fn canonical_json_is_stable_across_object_insertion_order() -> Result<(), CanonicalError> {
+        let equivalent_values = [
+            json!({
+                "z": 3,
+                "a": { "y": true, "b": [3, 2, 1] },
+                "m": [{ "k": "v", "c": false }]
+            }),
+            json!({
+                "m": [{ "c": false, "k": "v" }],
+                "z": 3,
+                "a": { "b": [3, 2, 1], "y": true }
+            }),
+            json!({
+                "a": { "y": true, "b": [3, 2, 1] },
+                "m": [{ "k": "v", "c": false }],
+                "z": 3
+            }),
+        ];
+        let expected = canonical_json(&equivalent_values[0])?;
+
+        for value in equivalent_values {
+            assert_eq!(canonical_json(&value)?, expected);
+        }
+
+        Ok(())
+    }
 }

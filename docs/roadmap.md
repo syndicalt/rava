@@ -28,10 +28,10 @@ Candidate work:
 
 - Add property tests for canonicalization, attenuation monotonicity, replay consumption, and malformed signed objects.
 - Add fuzz targets for JSON parsing and signature verification entry points.
-- Add deterministic fixture regeneration checks so committed examples cannot drift silently.
-- Expand rejection-code documentation for operators and wrapper authors.
+- Keep deterministic fixture regeneration checks current so committed examples cannot drift silently.
+- Keep rejection-code documentation current for operators and wrapper authors.
 - Add independent review of canonicalization, signature binding, nonce validation, replay semantics, and revocation semantics.
-- Document supported clock-skew and expiry expectations for verifier callers.
+- Keep clock-skew and expiry expectations current for verifier callers.
 
 Hardening work must not introduce alternate cryptographic primitives or verifier shortcuts.
 

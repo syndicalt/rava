@@ -1745,6 +1745,114 @@ mod tests {
         Ok(())
     }
 
+    #[test]
+    fn delegated_amount_constraints_are_monotonic_at_boundary() -> Result<(), Box<dyn Error>> {
+        for amount_usd in [0, 1, 799, 800] {
+            let scenario = scenario()?;
+            let action = purchase_action(&scenario, amount_usd)?;
+            let issuer_keys = issuer_keys(&scenario);
+            let revocations = InMemoryRevocationRegistry::default();
+
+            let result = verify_action(VerifyActionInput {
+                action: &action,
+                capability_chain: &[scenario.root, scenario.purchase],
+                actor_public_key_hex: &scenario.booking_agent.public_key_hex,
+                capability_issuer_public_keys: &issuer_keys,
+                revocations: &revocations,
+                now: at(1_650_000_000)?,
+            })?;
+
+            assert_eq!(
+                result,
+                VerificationResult::Accepted,
+                "amount {amount_usd} should be within delegated bound"
+            );
+        }
+
+        for amount_usd in [801, 1_200, 1_201, 10_000] {
+            let scenario = scenario()?;
+            let action = purchase_action(&scenario, amount_usd)?;
+            let issuer_keys = issuer_keys(&scenario);
+            let revocations = InMemoryRevocationRegistry::default();
+
+            let result = verify_action(VerifyActionInput {
+                action: &action,
+                capability_chain: &[scenario.root, scenario.purchase],
+                actor_public_key_hex: &scenario.booking_agent.public_key_hex,
+                capability_issuer_public_keys: &issuer_keys,
+                revocations: &revocations,
+                now: at(1_650_000_000)?,
+            })?;
+
+            assert_eq!(
+                result,
+                VerificationResult::Rejected(VerificationError::ConstraintExceeded {
+                    constraint: "max_amount_usd".to_owned()
+                }),
+                "amount {amount_usd} should exceed delegated bound"
+            );
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn malformed_signed_action_variants_fail_closed_after_resigning() -> Result<(), Box<dyn Error>>
+    {
+        let cases = [
+            (
+                "unsupported_version",
+                "rava-action-v999",
+                "a3f5b348-f28f-4a99-8cda-9a7e34bc5f01",
+                "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                VerificationResult::Rejected(VerificationError::UnsupportedActionVersion {
+                    version: "rava-action-v999".to_owned(),
+                }),
+            ),
+            (
+                "bad_nonce",
+                "rava-action-v0",
+                "not-a-uuid",
+                "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                VerificationResult::Rejected(VerificationError::ActionNonceInvalid),
+            ),
+            (
+                "bad_context_hash",
+                "rava-action-v0",
+                "a3f5b348-f28f-4a99-8cda-9a7e34bc5f01",
+                "sha256:not-hex",
+                VerificationResult::Rejected(VerificationError::ActionContextHashInvalid),
+            ),
+        ];
+
+        for (label, version, nonce, context_hash, expected) in cases {
+            let scenario = scenario()?;
+            let mut action = purchase_action(&scenario, 750)?;
+            action.version = version.to_owned();
+            action.nonce = nonce.to_owned();
+            action.context_hash = context_hash.to_owned();
+            action.id = expected_action_id(&action)?;
+            action.proof.signature_hex = scenario
+                .booking_agent
+                .sign_json(&action_signing_payload(&action))?;
+            let issuer_keys = issuer_keys(&scenario);
+            let revocations = InMemoryRevocationRegistry::default();
+
+            let result = verify_action(VerifyActionInput {
+                action: &action,
+                capability_chain: &[scenario.root, scenario.purchase],
+                actor_public_key_hex: &scenario.booking_agent.public_key_hex,
+                capability_issuer_public_keys: &issuer_keys,
+                revocations: &revocations,
+                now: at(1_650_000_000)?,
+            })?;
+
+            assert_eq!(result, expected, "{label}");
+        }
+
+        Ok(())
+    }
+
     mod attacker_stories {
         use super::*;
 

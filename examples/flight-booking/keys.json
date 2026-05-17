@@ -1,12 +1,12 @@
 {
-  "actor": "rava:agent:bb6684b823a5e41580b09ebf83a6f922",
-  "actor_public_key_hex": "bb6684b823a5e41580b09ebf83a6f922d4eb1811daa5d414fbf418d4c0a37e1d",
+  "actor": "rava:agent:ed4928c628d1c2c6eae9033890599561",
+  "actor_public_key_hex": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
   "issuer_public_keys": {
-    "rava:agent:5de0ec602d4e9a3ade3e507e44338aa3": "5de0ec602d4e9a3ade3e507e44338aa3e059811522cbdd0cf01f039ec5301f5f",
-    "rava:human:51bfc7b8ddd4d614e868b62bb5c55905": "51bfc7b8ddd4d614e868b62bb5c559059e078ba1f50ef3c8b5eaff431f5dcaa7"
+    "rava:agent:8139770ea87d175f56a35466c34c7ecc": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
+    "rava:human:8a88e3dd7409f195fd52db2d3cba5d72": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c"
   },
-  "verifier": "rava:service:009a7b29707f098b07a5362808433adc",
-  "verifier_public_key_hex": "009a7b29707f098b07a5362808433adcda68a42dbf70731a620636a3d943f5d4",
-  "evaluator": "rava:service:567115b3a12b3160fbc9cb2c9fc9b526",
-  "evaluator_public_key_hex": "567115b3a12b3160fbc9cb2c9fc9b5269b47bd1387fb3a7f96f53410237f0878"
+  "verifier": "rava:service:ca93ac1705187071d67b83c7ff0efe81",
+  "verifier_public_key_hex": "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+  "evaluator": "rava:service:6e7a1cdd29b0b78fd13af4c5598feff4",
+  "evaluator_public_key_hex": "6e7a1cdd29b0b78fd13af4c5598feff4ef2a97166e3ca6f2e4fbfccd80505bf1"
 }

@@ -77,6 +77,9 @@ pub enum DemoCommand {
 pub struct FlightBookingDemoArgs {
     #[arg(long = "write-fixtures")]
     pub write_fixtures: Option<PathBuf>,
+
+    #[arg(long = "deterministic-fixtures")]
+    pub deterministic_fixtures: bool,
 }
 
 #[derive(Debug, Subcommand)]

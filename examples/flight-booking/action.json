@@ -1,9 +1,9 @@
 {
   "version": "rava-action-v0",
-  "id": "act_e5b47b36c025b7ba36ea44fd12979a9f",
-  "nonce": "7ec43d84-fdac-4c43-9470-a8d13b4ee95f",
-  "actor": "rava:agent:bb6684b823a5e41580b09ebf83a6f922",
-  "controller": "rava:human:51bfc7b8ddd4d614e868b62bb5c55905",
+  "id": "act_4895d1ad8dd04025cb89a68c3f530621",
+  "nonce": "33333333-3333-4333-8333-333333333333",
+  "actor": "rava:agent:ed4928c628d1c2c6eae9033890599561",
+  "controller": "rava:human:8a88e3dd7409f195fd52db2d3cba5d72",
   "intent": "book_flight",
   "resource": "travel.booking",
   "operation": "purchase",
@@ -12,9 +12,9 @@
       "integer": 750
     }
   },
-  "capability_id": "cap_e8d8c2d9e388ac12dede5e115cb8c103",
+  "capability_id": "cap_faff91b4425d487f1f25c1599cea0be9",
   "context_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
   "proof": {
-    "signature_hex": "c8ec9eae10718d26b7cb47de2bdcae012f04e28d2766bf16806f509624c52ea6439ca7cecd03643a792083ef7fc73209f893ad137c76f4e8388524bc58f9e50e"
+    "signature_hex": "d6cd2509480055f8b0f0064b53fbabffb5e4fdbe67488a751f7bde632377eb849b44c3a5df7a0148640787bc2e1d470b6b0a5d6e769809e8e3e5673f07c7a903"
   }
 }

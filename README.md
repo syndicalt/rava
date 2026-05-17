@@ -91,6 +91,8 @@ The current repo audit note is [docs/security/release-audit-v0.md](docs/security
 - `crates/rava-core`: trusted protocol core, canonicalization, signing, verification, replay, revocation, receipts, and attestations.
 - `crates/rava-cli`: CLI, demos, fixture generation, inspection, and local verifier service preview.
 - `docs/protocol/rava-v0.md`: V0 protocol specification.
+- `docs/protocol/time-semantics-v0.md`: verifier time, expiry, replay, and revocation freshness assumptions.
+- `docs/operators/rejection-codes-v0.md`: operator-facing verifier rejection codes.
 - `docs/security/threat-model-v0.md`: V0 threat model.
 - `docs/security/release-audit-v0.md`: current publication-readiness audit notes.
 - `docs/roadmap.md`: functional protocol roadmap.
@@ -125,6 +127,13 @@ Generate fresh demo fixtures:
 
 ```bash
 cargo run -p rava -- demo flight-booking --write-fixtures /tmp/rava-fixtures
+```
+
+Regenerate the committed flight-booking corpus deterministically:
+
+```bash
+cargo run -p rava -- demo flight-booking --write-fixtures examples/flight-booking --deterministic-fixtures
+cp examples/flight-booking/*.json test-vectors/v0/flight-booking/
 ```
 
 Run the workspace tests:
