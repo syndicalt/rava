@@ -98,3 +98,4 @@ An external security review is required before Rava is represented as a producti
 - audit and monitoring controls.
 
 Findings and remediation should be tracked in release notes or a dedicated review register.
+The V0 review register is [../security/review-register-v0.md](../security/review-register-v0.md).

@@ -101,3 +101,5 @@ A useful review should classify findings as:
 - V0 non-goal or future production requirement.
 
 Findings that would weaken fail-closed verification should block release until fixed or explicitly moved out of scope with clear non-production language.
+
+Record external findings, remediation, accepted risk, and verification evidence in [review-register-v0.md](review-register-v0.md).

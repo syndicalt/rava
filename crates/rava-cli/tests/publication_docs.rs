@@ -171,6 +171,47 @@ fn security_review_guide_maps_review_scope_to_evidence() -> Result<(), Box<dyn E
 }
 
 #[test]
+fn security_review_register_tracks_external_findings_without_claiming_review(
+) -> Result<(), Box<dyn Error>> {
+    let register =
+        std::fs::read_to_string(repository_root().join("docs/security/review-register-v0.md"))?;
+    let guide =
+        std::fs::read_to_string(repository_root().join("docs/security/review-guide-v0.md"))?;
+    let audit =
+        std::fs::read_to_string(repository_root().join("docs/security/release-audit-v0.md"))?;
+    let production =
+        std::fs::read_to_string(repository_root().join("docs/operations/production-trust-v0.md"))?;
+
+    for required in [
+        "# Rava V0 Security Review Register",
+        "No external security review has been completed yet.",
+        "## Finding States",
+        "reported",
+        "accepted-risk",
+        "remediated",
+        "verified",
+        "## Register",
+        "No external findings are recorded yet.",
+    ] {
+        assert!(
+            register.contains(required),
+            "missing security review register docs: {required}"
+        );
+    }
+
+    for docs in [guide, audit, production] {
+        assert!(
+            docs.contains("docs/security/review-register-v0.md")
+                || docs.contains("review-register-v0.md")
+                || docs.contains("../security/review-register-v0.md"),
+            "security review docs must link to the review register"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn compatibility_policy_defines_v0_change_boundaries() -> Result<(), Box<dyn Error>> {
     let policy = std::fs::read_to_string(
         repository_root().join("docs/protocol/compatibility-policy-v0.md"),
