@@ -70,6 +70,33 @@ fn release_audit_does_not_report_resolved_eventloom_state_as_current() -> Result
 }
 
 #[test]
+fn release_audit_tracks_current_release_and_operations_artifacts() -> Result<(), Box<dyn Error>> {
+    let audit =
+        std::fs::read_to_string(repository_root().join("docs/security/release-audit-v0.md"))?;
+
+    for required in [
+        "../release/v0-draft-checklist.md",
+        "../release/notes-template-v0.md",
+        "../operations/key-custody-v0.md",
+        "../operations/key-discovery-v0.md",
+        "../operations/distributed-replay-v0.md",
+        "../operations/distributed-revocation-v0.md",
+        "../operations/caller-identity-v0.md",
+        "../operations/distributed-rate-limits-v0.md",
+        "../operations/monitoring-v0.md",
+        "documented external requirements",
+        "not implemented production systems",
+    ] {
+        assert!(
+            audit.contains(required),
+            "release audit missing current artifact: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn operator_rejection_code_docs_cover_stable_verifier_codes() -> Result<(), Box<dyn Error>> {
     let docs =
         std::fs::read_to_string(repository_root().join("docs/operators/rejection-codes-v0.md"))?;
