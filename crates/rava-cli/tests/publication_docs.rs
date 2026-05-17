@@ -750,6 +750,7 @@ fn draft_release_checklist_guards_publication_without_production_claims(
         "cargo package --workspace",
         "cargo check --manifest-path fuzz/Cargo.toml",
         "npm --prefix packages/rava-wasm-js test",
+        "npm pack --dry-run",
         "## Review Artifacts",
         "docs/roadmap.md",
         "../roadmap.md",

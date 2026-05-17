@@ -70,6 +70,7 @@ Before publishing Rust crates or wrapper packages:
 - confirm local path dependencies include publishable versions;
 - run `cargo package --workspace` without `--allow-dirty`;
 - confirm the TypeScript package test builds the WASM wrapper and runs V0 vectors;
+- from `packages/rava-wasm-js`, run `npm pack --dry-run` and confirm only intended package files are included;
 - confirm generated build output and local package caches are not committed unless intentionally documented.
 
 ## Post-Tag Verification
