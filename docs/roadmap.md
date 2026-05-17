@@ -44,7 +44,7 @@ Candidate work:
 - Stabilize CLI command names, JSON request and response shapes, and rejection-code subjects.
 - Continue hardening the verifier service boundary beyond current request-size limits, health checks, local file-backed replay/revocation stores, local audit output, optional bearer-token ingress, and local per-process rate limiting: caller identity and distributed replay/revocation/rate-limit backends.
 - Publish versioned crates and artifacts only after release gates and review notes are current.
-- Add migration notes for any wire or CLI change from V0 draft to V1 preview.
+- Keep V1 preview migration notes current for wire, CLI, service, and wrapper changes.
 - Keep compatibility policy current for test vectors and schemas.
 
 V1 developer preview still should not claim distributed trust, global identity, managed custody, or external audit coverage unless those workstreams are complete.
@@ -65,6 +65,7 @@ Sequencing:
 Detailed wrapper guidance lives in [interop/roadmap-v0.md](interop/roadmap-v0.md).
 
 The current V1 preview surface contract is documented in [protocol/v1-preview-surface.md](protocol/v1-preview-surface.md).
+V1 preview migration notes are documented in [protocol/v1-preview-migration.md](protocol/v1-preview-migration.md).
 
 ## Production Trust and Operations
 

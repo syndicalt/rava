@@ -234,6 +234,35 @@ fn v1_preview_surface_docs_pin_cli_and_json_shapes() -> Result<(), Box<dyn Error
 }
 
 #[test]
+fn v1_preview_migration_notes_cover_preview_surface_changes() -> Result<(), Box<dyn Error>> {
+    let docs =
+        std::fs::read_to_string(repository_root().join("docs/protocol/v1-preview-migration.md"))?;
+
+    for required in [
+        "# Rava V1 Preview Migration Notes",
+        "## Compatibility Summary",
+        "No V0 signed wire object version is changed",
+        "rava serve verify",
+        "--auth-token-env",
+        "--rate-limit-per-minute",
+        "--replay-store",
+        "--revocation-store",
+        "--audit-log",
+        "rava-wasm",
+        "rava-wasm-js",
+        "docs/protocol/v1-preview-surface.md",
+        "not production-ready security software",
+    ] {
+        assert!(
+            docs.contains(required),
+            "missing v1-preview migration docs: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn production_trust_docs_define_external_operational_requirements() -> Result<(), Box<dyn Error>> {
     let docs =
         std::fs::read_to_string(repository_root().join("docs/operations/production-trust-v0.md"))?;
