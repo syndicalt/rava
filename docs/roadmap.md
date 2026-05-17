@@ -20,6 +20,8 @@ Acceptance gates:
 - All committed examples and test vectors are exercised by regression tests.
 - Full local gate passes: `cargo fmt --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, and `cargo run -p rava -- demo flight-booking`.
 
+Draft release checklist and release-note guidance live in [release/v0-draft-checklist.md](release/v0-draft-checklist.md) and [release/notes-template-v0.md](release/notes-template-v0.md).
+
 ## V0 Hardening
 
 Goal: strengthen the draft core without adding speculative product surface.
@@ -84,6 +86,18 @@ Candidate work:
 These items are not implemented guarantees today. They are required before Rava can be represented as a production authorization system.
 
 Production trust requirements are defined in [operations/production-trust-v0.md](operations/production-trust-v0.md).
+Detailed production runbooks live in:
+
+- [operations/key-custody-v0.md](operations/key-custody-v0.md);
+- [operations/key-discovery-v0.md](operations/key-discovery-v0.md);
+- [operations/distributed-replay-v0.md](operations/distributed-replay-v0.md);
+- [operations/distributed-revocation-v0.md](operations/distributed-revocation-v0.md);
+- [operations/audit-storage-v0.md](operations/audit-storage-v0.md);
+- [operations/caller-identity-v0.md](operations/caller-identity-v0.md);
+- [operations/distributed-rate-limits-v0.md](operations/distributed-rate-limits-v0.md);
+- [operations/monitoring-v0.md](operations/monitoring-v0.md).
+
+External review findings and remediation are tracked in [security/review-register-v0.md](security/review-register-v0.md).
 
 ## Non-Goals
 
