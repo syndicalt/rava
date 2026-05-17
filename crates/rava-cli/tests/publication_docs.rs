@@ -517,7 +517,8 @@ fn production_trust_docs_define_external_operational_requirements() -> Result<()
     }
 
     for required in [
-        "Production trust evidence lives in `docs/operations/production-trust-v0.md`, `docs/operations/key-custody-v0.md`, `docs/operations/key-discovery-v0.md`, `docs/operations/distributed-replay-v0.md`, `docs/operations/distributed-revocation-v0.md`, `docs/operations/audit-storage-v0.md`, `docs/operations/caller-identity-v0.md`, `docs/operations/distributed-rate-limits-v0.md`, `docs/operations/monitoring-v0.md`, `docs/security/review-register-v0.md`, `docs/security/release-audit-v0.md`, and `crates/rava-cli/tests/publication_docs.rs`.",
+        "Production trust evidence lives in `SECURITY.md`, `docs/operations/production-trust-v0.md`, `docs/operations/key-custody-v0.md`, `docs/operations/key-discovery-v0.md`, `docs/operations/distributed-replay-v0.md`, `docs/operations/distributed-revocation-v0.md`, `docs/operations/audit-storage-v0.md`, `docs/operations/caller-identity-v0.md`, `docs/operations/distributed-rate-limits-v0.md`, `docs/operations/monitoring-v0.md`, `docs/security/review-register-v0.md`, `docs/security/release-audit-v0.md`, and `crates/rava-cli/tests/publication_docs.rs`.",
+        "SECURITY.md",
         "docs/operations/production-trust-v0.md",
         "docs/operations/key-custody-v0.md",
         "docs/operations/key-discovery-v0.md",
@@ -778,6 +779,7 @@ fn draft_release_checklist_guards_publication_without_production_claims(
         "(cd packages/rava-wasm-js && npm pack --dry-run)",
         "## Review Artifacts",
         "docs/roadmap.md",
+        "SECURITY.md",
         "../roadmap.md",
         "docs/security/release-audit-v0.md",
         "docs/security/review-register-v0.md",
