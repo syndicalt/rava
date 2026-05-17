@@ -39,7 +39,7 @@ State whether this release changes:
 - schemas;
 - rejection codes;
 - CLI command names or arguments;
-- preview service request, response, health, or audit shapes;
+- preview service request, response, health, audit, or error shapes;
 - wrapper API behavior.
 
 If any compatibility-impacting change exists, link to the relevant migration note and tests.
