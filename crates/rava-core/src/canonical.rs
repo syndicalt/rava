@@ -89,4 +89,35 @@ mod tests {
 
         Ok(())
     }
+
+    #[test]
+    fn canonical_json_is_stable_after_parse_round_trip_for_permuted_objects(
+    ) -> Result<(), CanonicalError> {
+        let equivalent_values = [
+            json!({
+                "z": 3,
+                "a": { "y": true, "b": [3, 2, 1] },
+                "m": [{ "k": "v", "c": false }]
+            }),
+            json!({
+                "m": [{ "c": false, "k": "v" }],
+                "z": 3,
+                "a": { "b": [3, 2, 1], "y": true }
+            }),
+            json!({
+                "a": { "y": true, "b": [3, 2, 1] },
+                "m": [{ "k": "v", "c": false }],
+                "z": 3
+            }),
+        ];
+
+        for value in equivalent_values {
+            let encoded = canonical_json(&value)?;
+            let reparsed = serde_json::from_str(&encoded)?;
+
+            assert_eq!(canonical_json(&reparsed)?, encoded);
+        }
+
+        Ok(())
+    }
 }

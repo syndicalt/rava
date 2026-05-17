@@ -74,6 +74,57 @@ fn functional_roadmap_separates_current_state_from_future_work() -> Result<(), B
 }
 
 #[test]
+fn hardening_property_regressions_are_visible_in_roadmap() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
+    let canonical = std::fs::read_to_string(root.join("crates/rava-core/src/canonical.rs"))?;
+    let capability = std::fs::read_to_string(root.join("crates/rava-core/src/capability.rs"))?;
+    let verifier = std::fs::read_to_string(root.join("crates/rava-core/src/verifier.rs"))?;
+
+    for required in [
+        "Property-style regression coverage currently guards canonical JSON stability, capability operation canonicalization, attenuation monotonicity, replay consumption, and malformed signed-object rejection.",
+        "crates/rava-core/src/canonical.rs",
+        "crates/rava-core/src/capability.rs",
+        "crates/rava-core/src/verifier.rs",
+    ] {
+        assert!(
+            roadmap.contains(required),
+            "roadmap missing hardening coverage note: {required}"
+        );
+    }
+
+    for (source, required) in [
+        (
+            canonical.as_str(),
+            "canonical_json_is_stable_after_parse_round_trip_for_permuted_objects",
+        ),
+        (
+            capability.as_str(),
+            "mint_and_delegation_canonicalize_operation_sets_for_permuted_inputs",
+        ),
+        (
+            verifier.as_str(),
+            "delegated_amount_constraints_are_monotonic_at_boundary",
+        ),
+        (
+            verifier.as_str(),
+            "malformed_signed_action_variants_fail_closed_after_resigning",
+        ),
+        (
+            verifier.as_str(),
+            "accepted_action_replay_is_rejected_but_rejected_action_is_not_consumed",
+        ),
+    ] {
+        assert!(
+            source.contains(required),
+            "missing hardening regression test: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn release_audit_does_not_report_resolved_eventloom_state_as_current() -> Result<(), Box<dyn Error>>
 {
     let audit =

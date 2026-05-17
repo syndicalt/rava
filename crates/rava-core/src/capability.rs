@@ -615,4 +615,56 @@ mod tests {
         assert!(matches!(result, Err(CapabilityError::OperationsEmpty)));
         Ok(())
     }
+
+    #[test]
+    fn mint_and_delegation_canonicalize_operation_sets_for_permuted_inputs(
+    ) -> Result<(), Box<dyn Error>> {
+        let human = Signer::generate(SignerKind::Human);
+        let agent = Signer::generate(SignerKind::Agent);
+        let subagent = Signer::generate(SignerKind::Agent);
+        let operation_permutations = [
+            vec!["search", "purchase", "refund", "purchase"],
+            vec!["refund", "search", "purchase", "search"],
+            vec!["purchase", "refund", "search", "refund"],
+        ];
+
+        for operations in operation_permutations {
+            let root = mint_capability(
+                &human,
+                CapabilityInput {
+                    subject: agent.id.clone(),
+                    resource: "travel.booking".to_owned(),
+                    operations: operations
+                        .iter()
+                        .map(|operation| operation.to_string())
+                        .collect(),
+                    constraints: max_amount(1_200),
+                    expires_at: expires_at(1_800_000_000)?,
+                    delegable: true,
+                },
+            )?;
+
+            assert_eq!(root.operations, vec!["purchase", "refund", "search"]);
+
+            let delegated = delegate_capability(
+                &agent,
+                &root,
+                DelegationInput {
+                    subject: subagent.id.clone(),
+                    operations: vec![
+                        "search".to_owned(),
+                        "purchase".to_owned(),
+                        "search".to_owned(),
+                    ],
+                    constraints: max_amount(800),
+                    expires_at: expires_at(1_700_000_000)?,
+                    delegable: false,
+                },
+            )?;
+
+            assert_eq!(delegated.operations, vec!["purchase", "search"]);
+        }
+
+        Ok(())
+    }
 }

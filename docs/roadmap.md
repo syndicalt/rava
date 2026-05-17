@@ -37,6 +37,8 @@ Candidate work:
 
 Hardening work must not introduce alternate cryptographic primitives or verifier shortcuts.
 
+Property-style regression coverage currently guards canonical JSON stability, capability operation canonicalization, attenuation monotonicity, replay consumption, and malformed signed-object rejection. The local evidence lives in `crates/rava-core/src/canonical.rs`, `crates/rava-core/src/capability.rs`, and `crates/rava-core/src/verifier.rs`.
+
 ## V1 Developer Preview
 
 Goal: provide a stable developer-facing package while keeping Rust core semantics authoritative.
