@@ -42,6 +42,7 @@ The preview service is useful for local integration, but it does not implement p
 - The V0 compatibility policy defines change boundaries for wire versions, schemas, test vectors, and rejection codes.
 - A cargo-fuzz target covers V0 JSON parsing, canonicalization, action verification, receipt verification, and attestation verification entry points.
 - The preview verifier service has a health endpoint and a configurable request body size limit.
+- The preview verifier service can consume local file-backed replay and revocation stores when configured.
 - Wire schemas are documented as preflight shape checks only, not verifier substitutes.
 - The threat model documents V0 assets, trusted computing base, attacker capabilities, assumptions, and non-goals.
 
@@ -50,7 +51,7 @@ The preview service is useful for local integration, but it does not implement p
 - No external security review has been completed.
 - Fuzz targets are compile-checked, but long-running fuzz campaigns are not part of the default gate.
 - DID/key resolution, distributed replay, distributed revocation freshness, key custody, and audit storage are caller or roadmap responsibilities.
-- The preview HTTP verifier still lacks request authentication, configurable replay/revocation backends, and persistent audit output.
+- The preview HTTP verifier still lacks request authentication, distributed replay/revocation backends, and persistent audit output.
 
 ## Release Gate
 

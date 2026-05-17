@@ -212,14 +212,16 @@ rava inspect capability-chain --capability-chain capability-chain.json
 Start the local preview verifier:
 
 ```bash
-rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576
+rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json
 ```
 
 It exposes `POST /verify/action` for JSON requests containing an action, capability chain, actor public key, issuer public key map, and `now_unix`.
 It also exposes `GET /healthz` with the service name, status, and configured request body limit.
 `--max-request-bytes` rejects oversized request bodies before verifier parsing.
+`--replay-store` records accepted action IDs in a local file and rejects later replays.
+`--revocation-store` loads a local revoked-ID snapshot for signer and capability checks on each request.
 
-The preview service is not a production authorization service. It does not implement key discovery, replay consumption, distributed revocation freshness, request authentication, rate limiting, or persistent audit storage.
+The preview service is not a production authorization service. It does not implement key discovery, distributed replay coordination, distributed revocation freshness, request authentication, rate limiting, or persistent audit storage.
 
 ## Examples, Test Vectors, and Schemas
 
