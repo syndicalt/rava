@@ -755,6 +755,7 @@ fn draft_release_checklist_guards_publication_without_production_claims(
         "../roadmap.md",
         "docs/security/release-audit-v0.md",
         "docs/security/review-register-v0.md",
+        "../protocol/v1-preview-surface.md",
         "No external security review has been completed",
         "## Publication Guardrails",
         "must not claim production readiness",
