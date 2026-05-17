@@ -18,6 +18,8 @@ Production deployments need documented key custody for human, agent, service, ev
 
 Private keys must not be logged, shipped in examples, embedded in wrappers, or exposed to browser code unless the deployment explicitly accepts that custody boundary.
 
+Production key-custody requirements are detailed in [key-custody-v0.md](key-custody-v0.md).
+
 ## Public-Key Discovery
 
 Rava V0 does not discover keys. A production deployment must define public-key discovery as caller policy:
@@ -32,6 +34,8 @@ Rava V0 does not discover keys. A production deployment must define public-key d
 
 If an authentic public key cannot be selected, verification must fail closed.
 
+Production public-key discovery requirements are detailed in [key-discovery-v0.md](key-discovery-v0.md).
+
 ## Distributed Replay
 
 Local file-backed replay is useful for development and single-node previews. Production deployments need distributed replay coordination when the same signed action can reach more than one verifier:
@@ -43,6 +47,8 @@ Local file-backed replay is useful for development and single-node previews. Pro
 - recovery from replay-store outages.
 
 Accepting the same one-time action in two places is an authorization failure.
+
+Production distributed replay requirements are detailed in [distributed-replay-v0.md](distributed-replay-v0.md).
 
 ## Distributed Revocation
 
@@ -56,6 +62,8 @@ Production revocation requires publication, freshness, and outage policy:
 - audit evidence for revocation checks.
 
 If revocation freshness cannot satisfy local policy, verification must fail closed.
+
+Production distributed revocation requirements are detailed in [distributed-revocation-v0.md](distributed-revocation-v0.md).
 
 ## Audit Storage
 
@@ -86,6 +94,8 @@ Production monitoring should cover verifier availability and rejection patterns:
 - dependency outages.
 
 Monitoring must not leak private keys, credentials, or sensitive action payload fields.
+
+Production monitoring requirements are detailed in [monitoring-v0.md](monitoring-v0.md).
 
 ## External Security Review
 

@@ -384,6 +384,89 @@ fn audit_storage_runbook_defines_managed_audit_requirements_without_preview_clai
 }
 
 #[test]
+fn production_operations_runbooks_define_external_systems_without_core_claims(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let production = std::fs::read_to_string(root.join("docs/operations/production-trust-v0.md"))?;
+
+    let runbooks = [
+        (
+            "key-custody-v0.md",
+            [
+                "# Rava Production Key Custody V0",
+                "not implemented by the Rava V0 core",
+                "generation ceremony",
+                "rotation",
+                "emergency rotation",
+                "compromise response",
+                "private keys",
+            ],
+        ),
+        (
+            "key-discovery-v0.md",
+            [
+                "# Rava Production Public-Key Discovery V0",
+                "caller trust-policy layer",
+                "trust roots",
+                "resolver freshness",
+                "cache lifetime",
+                "fail closed",
+                "rollback",
+            ],
+        ),
+        (
+            "distributed-replay-v0.md",
+            [
+                "# Rava Production Distributed Replay V0",
+                "not implemented by the V0 preview service",
+                "atomic action-ID consumption",
+                "durability before acceptance",
+                "partial failure",
+                "cross-region",
+                "fail closed",
+            ],
+        ),
+        (
+            "distributed-revocation-v0.md",
+            [
+                "# Rava Production Distributed Revocation V0",
+                "not implemented by the V0 core",
+                "freshness target",
+                "maximum tolerated staleness",
+                "emergency revocation",
+                "outage behavior",
+                "fail closed",
+            ],
+        ),
+        (
+            "monitoring-v0.md",
+            [
+                "# Rava Production Monitoring V0",
+                "not implemented by the V0 preview service",
+                "accepted and rejected decision rates",
+                "rejection code distribution",
+                "replay attempts",
+                "audit-write failures",
+                "must not leak private keys",
+            ],
+        ),
+    ];
+
+    for (file, required) in runbooks {
+        let docs = std::fs::read_to_string(root.join("docs/operations").join(file))?;
+        for phrase in required {
+            assert!(docs.contains(phrase), "{file} missing: {phrase}");
+        }
+        assert!(
+            production.contains(file),
+            "production trust docs must link to {file}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn fuzz_targets_cover_parser_canonicalization_and_verifier_entrypoints(
 ) -> Result<(), Box<dyn Error>> {
     let root = repository_root();
