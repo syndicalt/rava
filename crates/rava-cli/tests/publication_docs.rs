@@ -870,6 +870,20 @@ fn workspace_publish_metadata_uses_real_repository_url() -> Result<(), Box<dyn E
     Ok(())
 }
 
+#[test]
+fn release_artifact_ignores_exclude_generated_outputs() -> Result<(), Box<dyn Error>> {
+    let gitignore = std::fs::read_to_string(repository_root().join(".gitignore"))?;
+
+    for required in ["target/", "node_modules/", "dist/", "*.tgz"] {
+        assert!(
+            gitignore.contains(required),
+            ".gitignore missing generated artifact ignore: {required}"
+        );
+    }
+
+    Ok(())
+}
+
 fn repository_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
