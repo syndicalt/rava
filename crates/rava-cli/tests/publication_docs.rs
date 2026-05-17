@@ -51,6 +51,17 @@ fn functional_roadmap_separates_current_state_from_future_work() -> Result<(), B
         "## Production Trust and Operations",
         "## Non-Goals",
         "not implemented guarantees today",
+        "release/v0-draft-checklist.md",
+        "release/notes-template-v0.md",
+        "operations/key-custody-v0.md",
+        "operations/key-discovery-v0.md",
+        "operations/distributed-replay-v0.md",
+        "operations/distributed-revocation-v0.md",
+        "operations/audit-storage-v0.md",
+        "operations/caller-identity-v0.md",
+        "operations/distributed-rate-limits-v0.md",
+        "operations/monitoring-v0.md",
+        "security/review-register-v0.md",
     ] {
         assert!(roadmap.contains(required), "roadmap missing: {required}");
     }
