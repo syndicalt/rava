@@ -3,7 +3,9 @@ use std::path::{Path, PathBuf};
 
 #[test]
 fn interop_plan_keeps_wrappers_subordinate_to_rust_verifier() -> Result<(), Box<dyn Error>> {
-    let plan = std::fs::read_to_string(repository_root().join("docs/interop/roadmap-v0.md"))?;
+    let root = repository_root();
+    let plan = std::fs::read_to_string(root.join("docs/interop/roadmap-v0.md"))?;
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
 
     assert!(plan.contains("Rust verifier remains the trusted implementation"));
     assert!(plan.contains("WASM and TypeScript wrappers must not reimplement verification logic"));
@@ -12,6 +14,21 @@ fn interop_plan_keeps_wrappers_subordinate_to_rust_verifier() -> Result<(), Box<
     assert!(plan
         .contains("OAuth exchange is integration glue, not a replacement for Rava capabilities"));
     assert!(plan.contains("No wrapper may weaken fail-closed verifier behavior"));
+    for required in [
+        "Interop evidence lives in `docs/interop/roadmap-v0.md`, `docs/interop/wasm-v0.md`, `docs/interop/typescript-v0.md`, `docs/interop/did-resolution-v0.md`, `docs/interop/mcp-adapter-v0.md`, `docs/interop/oauth-exchange-v0.md`, `crates/rava-cli/tests/interop_plan.rs`, `crates/rava-wasm/src/lib.rs`, `packages/rava-wasm-js/src/index.ts`, and `packages/rava-wasm-js/test/vectors.test.ts`.",
+        "docs/interop/wasm-v0.md",
+        "docs/interop/typescript-v0.md",
+        "docs/interop/did-resolution-v0.md",
+        "docs/interop/mcp-adapter-v0.md",
+        "docs/interop/oauth-exchange-v0.md",
+        "crates/rava-wasm/src/lib.rs",
+        "packages/rava-wasm-js/test/vectors.test.ts",
+    ] {
+        assert!(
+            roadmap.contains(required),
+            "roadmap missing interop evidence: {required}"
+        );
+    }
     Ok(())
 }
 
