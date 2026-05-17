@@ -45,6 +45,7 @@ The preview service is useful for local integration, but it does not implement p
 - The preview verifier service can consume local file-backed replay and revocation stores when configured.
 - The preview verifier service can append local decision-metadata audit logs without raw action payload fields when configured.
 - The WASM wrapper compiles against `wasm32-unknown-unknown` and calls the Rust verifier instead of reimplementing verification logic.
+- The TypeScript package builds the WASM wrapper and runs V0 flight-booking vectors through the TypeScript API.
 - Wire schemas are documented as preflight shape checks only, not verifier substitutes.
 - The threat model documents V0 assets, trusted computing base, attacker capabilities, assumptions, and non-goals.
 
@@ -66,6 +67,7 @@ cargo test --workspace
 cargo run -p rava -- demo flight-booking
 cargo check --manifest-path fuzz/Cargo.toml
 cargo check -p rava-wasm --target wasm32-unknown-unknown
+npm --prefix packages/rava-wasm-js test
 ```
 
 Passing this gate means the local reference implementation and regression suite are coherent. It does not mean the protocol is production-ready.

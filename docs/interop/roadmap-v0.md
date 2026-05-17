@@ -13,6 +13,7 @@ No wrapper may weaken fail-closed verifier behavior. Malformed, unsigned, unveri
 WASM and TypeScript wrappers must not reimplement verification logic. Their job is to expose the Rust verifier to browser, Node, and agent-tooling environments.
 
 The current WASM wrapper is documented in [wasm-v0.md](wasm-v0.md).
+The current TypeScript package is documented in [typescript-v0.md](typescript-v0.md).
 
 Expected wrapper responsibilities:
 
@@ -67,7 +68,7 @@ Future OAuth work should:
 
 1. Keep Rust core and CLI test vectors stable.
 2. Keep WASM bindings around the Rust verifier compiling against `wasm32-unknown-unknown`.
-3. Add TypeScript package that calls WASM and runs the V0 test vectors.
+3. Keep the TypeScript package calling WASM and running the V0 test vectors.
 4. Add DID/key-resolution examples as caller policy, not core trust.
 5. Add MCP adapter proof of concept.
 6. Add OAuth exchange examples only after the verifier wrapper is stable.
