@@ -242,9 +242,10 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 cargo run -p rava -- demo flight-booking
 cargo check -p rava-wasm --target wasm32-unknown-unknown
+npm --prefix packages/rava-wasm-js test
 ```
 
-These gates verify formatting, lint cleanliness, Rust regression tests, the local flight-booking demo, and the WASM verifier wrapper build. They do not replace an external security review.
+These gates verify formatting, lint cleanliness, Rust regression tests, the local flight-booking demo, the WASM verifier wrapper build, and the TypeScript WASM package. They do not replace an external security review.
 
 ## Roadmap
 

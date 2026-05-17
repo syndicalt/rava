@@ -58,6 +58,53 @@ fn wasm_wrapper_is_documented_as_rust_verifier_boundary() -> Result<(), Box<dyn 
     Ok(())
 }
 
+#[test]
+fn typescript_package_calls_wasm_and_runs_vectors() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let manifest = std::fs::read_to_string(root.join("packages/rava-wasm-js/package.json"))?;
+    let wrapper = std::fs::read_to_string(root.join("packages/rava-wasm-js/src/index.ts"))?;
+    let tests = std::fs::read_to_string(root.join("packages/rava-wasm-js/test/vectors.test.ts"))?;
+    let docs = std::fs::read_to_string(root.join("docs/interop/typescript-v0.md"))?;
+
+    for required in [
+        r#""name": "rava-wasm-js""#,
+        "build:wasm",
+        "wasm-bindgen",
+        "node --test dist/test/vectors.test.js",
+    ] {
+        assert!(
+            manifest.contains(required),
+            "missing TS package manifest: {required}"
+        );
+    }
+
+    for required in ["verifyAction", "verify_action_json", "../wasm/rava_wasm.js"] {
+        assert!(wrapper.contains(required), "missing TS wrapper: {required}");
+    }
+
+    for required in [
+        "test-vectors/v0/flight-booking",
+        "verifyAction accepts the V0 flight-booking vector",
+        "action_signature_invalid",
+    ] {
+        assert!(
+            tests.contains(required),
+            "missing TS vector test: {required}"
+        );
+    }
+
+    for required in [
+        "# Rava TypeScript V0 Package",
+        "calls the generated WASM wrapper",
+        "does not reimplement Rava verification",
+        "npm --prefix packages/rava-wasm-js test",
+    ] {
+        assert!(docs.contains(required), "missing TS docs: {required}");
+    }
+
+    Ok(())
+}
+
 fn repository_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }

@@ -1,0 +1,20 @@
+{
+  "name": "rava-wasm-js",
+  "version": "0.1.0",
+  "description": "TypeScript wrapper for the Rava WASM verifier",
+  "license": "Apache-2.0",
+  "type": "commonjs",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build:wasm": "cargo build --manifest-path ../../Cargo.toml -p rava-wasm --target wasm32-unknown-unknown --release && wasm-bindgen ../../target/wasm32-unknown-unknown/release/rava_wasm.wasm --target nodejs --out-dir dist/wasm --out-name rava_wasm",
+    "build:ts": "tsc -p tsconfig.json",
+    "build": "npm run clean && npm run build:wasm && npm run build:ts",
+    "test": "npm run build && node --test dist/test/vectors.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3"
+  }
+}
