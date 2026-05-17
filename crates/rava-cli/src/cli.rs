@@ -120,6 +120,9 @@ pub struct ServeVerifyArgs {
 
     #[arg(long = "audit-log")]
     pub audit_log: Option<PathBuf>,
+
+    #[arg(long = "auth-token-env")]
+    pub auth_token_env: Option<String>,
 }
 
 #[derive(Debug, Subcommand)]
