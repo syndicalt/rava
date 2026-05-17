@@ -1,0 +1,32 @@
+# Security Policy
+
+Rava is a security-sensitive agent authorization protocol. Treat findings about canonicalization, signatures, delegation attenuation, replay, revocation, receipts, attestations, wrappers, and verifier service behavior as security issues.
+
+Rava V0 is a draft reference implementation, not production-ready security software. No external security review has been completed.
+
+## Reporting
+
+Report suspected vulnerabilities through a private GitHub security advisory for `https://github.com/syndicalt/rava` when available. If private advisories are not available to you, open a minimal public issue that asks for a private contact path without disclosing exploit details.
+
+Do not include private keys, credentials, access tokens, or raw sensitive action payloads in reports, issues, pull requests, logs, or screenshots. Use minimized synthetic examples whenever possible.
+
+Useful reports include:
+
+- affected commit, tag, or package version;
+- affected component, such as `rava-core`, `rava`, `rava-wasm`, `rava-wasm-js`, docs, or examples;
+- whether the issue can cause malformed, unsigned, unverifiable, expired, revoked, replayed, or over-scoped input to be accepted;
+- minimal reproduction steps or a minimized fixture;
+- expected fail-closed behavior;
+- actual behavior.
+
+## Review Scope
+
+The V0 external review scope is documented in [docs/security/review-guide-v0.md](docs/security/review-guide-v0.md).
+
+Findings and remediation status are tracked in [docs/security/review-register-v0.md](docs/security/review-register-v0.md).
+
+Production deployment issues involving key custody, public-key discovery, distributed replay, distributed revocation, caller identity, distributed rate limiting, audit storage, or monitoring should also reference [docs/operations/production-trust-v0.md](docs/operations/production-trust-v0.md).
+
+## Supported Status
+
+The current repository is suitable for protocol development, examples, interop work, and review. It is not supported as a production authorization system.

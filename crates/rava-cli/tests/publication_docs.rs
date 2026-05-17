@@ -305,6 +305,7 @@ fn security_review_register_tracks_external_findings_without_claiming_review(
         std::fs::read_to_string(repository_root().join("docs/security/review-register-v0.md"))?;
     let guide =
         std::fs::read_to_string(repository_root().join("docs/security/review-guide-v0.md"))?;
+    let security_policy = std::fs::read_to_string(repository_root().join("SECURITY.md"))?;
     let audit =
         std::fs::read_to_string(repository_root().join("docs/security/release-audit-v0.md"))?;
     let production =
@@ -327,7 +328,21 @@ fn security_review_register_tracks_external_findings_without_claiming_review(
         );
     }
 
-    for docs in [guide, audit, production] {
+    for required in [
+        "# Security Policy",
+        "Rava V0 is a draft reference implementation",
+        "No external security review has been completed",
+        "Do not include private keys, credentials, access tokens, or raw sensitive action payloads",
+        "docs/security/review-register-v0.md",
+        "docs/security/review-guide-v0.md",
+    ] {
+        assert!(
+            security_policy.contains(required),
+            "missing security policy docs: {required}"
+        );
+    }
+
+    for docs in [guide, audit, production, security_policy] {
         assert!(
             docs.contains("docs/security/review-register-v0.md")
                 || docs.contains("review-register-v0.md")
