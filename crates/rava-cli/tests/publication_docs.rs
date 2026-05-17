@@ -339,6 +339,14 @@ fn v1_preview_migration_notes_cover_preview_surface_changes() -> Result<(), Box<
         "rava-wasm-js",
         "docs/protocol/v1-preview-surface.md",
         "not production-ready security software",
+        "../operations/caller-identity-v0.md",
+        "../operations/distributed-replay-v0.md",
+        "../operations/distributed-revocation-v0.md",
+        "../operations/distributed-rate-limits-v0.md",
+        "../operations/key-custody-v0.md",
+        "../operations/key-discovery-v0.md",
+        "../operations/audit-storage-v0.md",
+        "../security/review-register-v0.md",
     ] {
         assert!(
             docs.contains(required),
