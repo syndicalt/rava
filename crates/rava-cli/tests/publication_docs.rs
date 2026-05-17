@@ -737,6 +737,8 @@ fn draft_release_checklist_guards_publication_without_production_claims(
         "cargo check --manifest-path fuzz/Cargo.toml",
         "npm --prefix packages/rava-wasm-js test",
         "## Review Artifacts",
+        "docs/roadmap.md",
+        "../roadmap.md",
         "docs/security/release-audit-v0.md",
         "docs/security/review-register-v0.md",
         "No external security review has been completed",
