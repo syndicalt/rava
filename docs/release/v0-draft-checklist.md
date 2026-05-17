@@ -42,6 +42,7 @@ Before publishing a V0 draft release candidate, update or confirm:
 - [../security/review-register-v0.md](../security/review-register-v0.md);
 - [../security/threat-model-v0.md](../security/threat-model-v0.md);
 - [../protocol/compatibility-policy-v0.md](../protocol/compatibility-policy-v0.md);
+- [../protocol/v1-preview-surface.md](../protocol/v1-preview-surface.md), if the preview surface changed;
 - [../protocol/v1-preview-migration.md](../protocol/v1-preview-migration.md), if the preview surface changed;
 - release notes for compatibility-impacting changes, using [notes-template-v0.md](notes-template-v0.md).
 
