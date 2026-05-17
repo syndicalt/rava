@@ -4,6 +4,8 @@ This document defines production systems that must surround Rava before it is re
 
 Rava V0 verifies signed actions and attenuated capability chains against caller-supplied keys and caller-supplied replay/revocation state. Production deployments must own the surrounding trust, freshness, custody, and monitoring systems.
 
+The preview verifier service is not a production ingress boundary. Caller identity requirements are detailed in [caller-identity-v0.md](caller-identity-v0.md), and distributed rate-limit requirements are detailed in [distributed-rate-limits-v0.md](distributed-rate-limits-v0.md).
+
 ## Key Custody
 
 Production deployments need documented key custody for human, agent, service, evaluator, and verifier keys:

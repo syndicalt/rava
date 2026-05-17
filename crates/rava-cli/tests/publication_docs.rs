@@ -467,6 +467,53 @@ fn production_operations_runbooks_define_external_systems_without_core_claims(
 }
 
 #[test]
+fn service_boundary_runbooks_define_caller_identity_and_distributed_rate_limits(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let production = std::fs::read_to_string(root.join("docs/operations/production-trust-v0.md"))?;
+    let migration = std::fs::read_to_string(root.join("docs/protocol/v1-preview-migration.md"))?;
+
+    let runbooks: [(&str, &[&str]); 2] = [
+        (
+            "caller-identity-v0.md",
+            &[
+                "# Rava Production Caller Identity V0",
+                "not implemented by the V0 preview service",
+                "ingress authentication",
+                "caller-to-policy mapping",
+                "must not be inferred from the action actor",
+                "fail closed",
+            ],
+        ),
+        (
+            "distributed-rate-limits-v0.md",
+            &[
+                "# Rava Production Distributed Rate Limits V0",
+                "not implemented by the V0 preview service",
+                "shared quota state",
+                "caller identity",
+                "cross-node",
+                "fail closed",
+                "accepted and rejected requests",
+            ],
+        ),
+    ];
+
+    for (file, required) in runbooks {
+        let docs = std::fs::read_to_string(root.join("docs/operations").join(file))?;
+        for phrase in required {
+            assert!(docs.contains(phrase), "{file} missing: {phrase}");
+        }
+        assert!(
+            production.contains(file) && migration.contains(file),
+            "production trust and migration docs must link to {file}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn fuzz_targets_cover_parser_canonicalization_and_verifier_entrypoints(
 ) -> Result<(), Box<dyn Error>> {
     let root = repository_root();
