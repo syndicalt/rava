@@ -50,6 +50,7 @@ The preview service is useful for local integration, but it does not implement p
 - The TypeScript package builds the WASM wrapper and runs V0 flight-booking vectors through the TypeScript API.
 - Wire schemas are documented as preflight shape checks only, not verifier substitutes.
 - The threat model documents V0 assets, trusted computing base, attacker capabilities, assumptions, and non-goals.
+- External review findings have a dedicated tracking register at [review-register-v0.md](review-register-v0.md).
 
 ## Remaining Risks
 
