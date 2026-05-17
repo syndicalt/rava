@@ -40,13 +40,14 @@ The preview service is useful for local integration, but it does not implement p
 - Time semantics documentation states the exact expiry rule, no implicit clock skew, and caller responsibility for replay/revocation freshness.
 - The V0 review guide maps review questions to source and documentation artifacts.
 - The V0 compatibility policy defines change boundaries for wire versions, schemas, test vectors, and rejection codes.
+- A cargo-fuzz target covers V0 JSON parsing, canonicalization, action verification, receipt verification, and attestation verification entry points.
 - Wire schemas are documented as preflight shape checks only, not verifier substitutes.
 - The threat model documents V0 assets, trusted computing base, attacker capabilities, assumptions, and non-goals.
 
 ## Remaining Risks
 
 - No external security review has been completed.
-- No fuzzing or generative property-test suite is currently part of the gate.
+- Fuzz targets are compile-checked, but long-running fuzz campaigns are not part of the default gate.
 - DID/key resolution, distributed replay, distributed revocation freshness, key custody, and audit storage are caller or roadmap responsibilities.
 - The preview HTTP verifier is not hardened as a production service boundary.
 
@@ -59,6 +60,7 @@ cargo fmt --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 cargo run -p rava -- demo flight-booking
+cargo check --manifest-path fuzz/Cargo.toml
 ```
 
 Passing this gate means the local reference implementation and regression suite are coherent. It does not mean the protocol is production-ready.

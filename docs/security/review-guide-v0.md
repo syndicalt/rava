@@ -69,6 +69,7 @@ cargo fmt --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 cargo run -p rava -- demo flight-booking
+cargo check --manifest-path fuzz/Cargo.toml
 ```
 
 Optional fixture drift check:
@@ -80,6 +81,14 @@ git diff -- examples test-vectors
 ```
 
 The diff should be empty if the committed corpus is current.
+
+Optional fuzzing entry point:
+
+```bash
+cargo fuzz run v0_wire_entrypoints
+```
+
+The fuzz target exercises JSON parsing, canonicalization, action verification, receipt verification, and attestation verification entry points. Long-running fuzz campaigns should record corpus, duration, and any minimized crash input in review notes.
 
 ## Review Output
 
