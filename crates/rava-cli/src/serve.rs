@@ -13,6 +13,7 @@ use time::OffsetDateTime;
 use crate::cli::ServeVerifyArgs;
 
 const SERVICE_NAME: &str = "rava-verifier-preview-v0";
+const MAX_HEADER_BYTES: usize = 16 * 1024;
 
 #[derive(Debug, Deserialize)]
 struct VerifyActionRequest {
@@ -46,7 +47,7 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                if let Err(error) = handle_connection(&mut stream) {
+                if let Err(error) = handle_connection(&mut stream, args.max_request_bytes) {
                     write_json_response(
                         &mut stream,
                         "500 Internal Server Error",
@@ -64,8 +65,25 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn handle_connection(stream: &mut TcpStream) -> Result<(), Box<dyn Error>> {
-    let request = read_http_request(stream)?;
+fn handle_connection(
+    stream: &mut TcpStream,
+    max_request_bytes: usize,
+) -> Result<(), Box<dyn Error>> {
+    let Some(request) = read_http_request(stream, max_request_bytes)? else {
+        return Ok(());
+    };
+    if request.method == "GET" && request.path == "/healthz" {
+        write_json_response(
+            stream,
+            "200 OK",
+            &serde_json::json!({
+                "service": SERVICE_NAME,
+                "status": "ok",
+                "max_request_bytes": max_request_bytes,
+            }),
+        )?;
+        return Ok(());
+    }
     if request.method != "POST" || request.path != "/verify/action" {
         write_json_response(
             stream,
@@ -115,7 +133,10 @@ struct HttpRequest {
     body: Vec<u8>,
 }
 
-fn read_http_request(stream: &mut TcpStream) -> Result<HttpRequest, Box<dyn Error>> {
+fn read_http_request(
+    stream: &mut TcpStream,
+    max_request_bytes: usize,
+) -> Result<Option<HttpRequest>, Box<dyn Error>> {
     let mut bytes = Vec::new();
     let header_end = loop {
         let mut chunk = [0_u8; 512];
@@ -124,6 +145,17 @@ fn read_http_request(stream: &mut TcpStream) -> Result<HttpRequest, Box<dyn Erro
             return Err("connection closed before headers completed".into());
         }
         bytes.extend_from_slice(&chunk[..count]);
+        if bytes.len() > MAX_HEADER_BYTES {
+            write_json_response(
+                stream,
+                "431 Request Header Fields Too Large",
+                &serde_json::json!({
+                    "service": SERVICE_NAME,
+                    "error": "request headers exceed max header bytes"
+                }),
+            )?;
+            return Ok(None);
+        }
         if let Some(position) = find_header_end(&bytes) {
             break position;
         }
@@ -148,7 +180,21 @@ fn read_http_request(stream: &mut TcpStream) -> Result<HttpRequest, Box<dyn Erro
                 None
             }
         })
-        .ok_or("missing content-length")??;
+        .transpose()?
+        .unwrap_or(0);
+
+    if content_length > max_request_bytes {
+        write_json_response(
+            stream,
+            "413 Payload Too Large",
+            &serde_json::json!({
+                "service": SERVICE_NAME,
+                "error": "request body exceeds max_request_bytes",
+                "max_request_bytes": max_request_bytes,
+            }),
+        )?;
+        return Ok(None);
+    }
 
     let body_start = header_end + 4;
     let mut body = bytes[body_start..].to_vec();
@@ -159,7 +205,7 @@ fn read_http_request(stream: &mut TcpStream) -> Result<HttpRequest, Box<dyn Erro
     }
     body.truncate(content_length);
 
-    Ok(HttpRequest { method, path, body })
+    Ok(Some(HttpRequest { method, path, body }))
 }
 
 fn find_header_end(bytes: &[u8]) -> Option<usize> {

@@ -53,6 +53,76 @@ fn serve_verify_returns_rejection_code_for_denied_action() -> Result<(), Box<dyn
     Ok(())
 }
 
+#[test]
+fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Error>> {
+    let response = run_server_raw_request(
+        &["--max-request-bytes", "4096"],
+        "GET /healthz HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
+    )?;
+
+    assert!(response.starts_with("HTTP/1.1 200 OK"), "{response}");
+    let response_body = response_body(&response)?;
+    let json: serde_json::Value = serde_json::from_str(response_body)?;
+    assert_eq!(
+        json.get("service").and_then(serde_json::Value::as_str),
+        Some("rava-verifier-preview-v0")
+    );
+    assert_eq!(
+        json.get("status").and_then(serde_json::Value::as_str),
+        Some("ok")
+    );
+    assert_eq!(
+        json.get("max_request_bytes")
+            .and_then(serde_json::Value::as_u64),
+        Some(4096)
+    );
+    Ok(())
+}
+
+#[test]
+fn serve_verify_rejects_request_bodies_over_configured_limit() -> Result<(), Box<dyn Error>> {
+    let request = format!(
+        "POST /verify/action HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+        4096
+    );
+
+    let response = run_server_raw_request(&["--max-request-bytes", "128"], &request)?;
+
+    assert!(
+        response.starts_with("HTTP/1.1 413 Payload Too Large"),
+        "{response}"
+    );
+    let response_body = response_body(&response)?;
+    let json: serde_json::Value = serde_json::from_str(response_body)?;
+    assert_eq!(
+        json.get("error").and_then(serde_json::Value::as_str),
+        Some("request body exceeds max_request_bytes")
+    );
+    Ok(())
+}
+
+#[test]
+fn serve_verify_rejects_oversized_request_headers() -> Result<(), Box<dyn Error>> {
+    let request = format!(
+        "GET /healthz HTTP/1.1\r\nHost: localhost\r\nX-Oversized: {}",
+        "a".repeat(16 * 1024)
+    );
+
+    let response = run_server_raw_request(&[], &request)?;
+
+    assert!(
+        response.starts_with("HTTP/1.1 431 Request Header Fields Too Large"),
+        "{response}"
+    );
+    let response_body = response_body(&response)?;
+    let json: serde_json::Value = serde_json::from_str(response_body)?;
+    assert_eq!(
+        json.get("error").and_then(serde_json::Value::as_str),
+        Some("request headers exceed max header bytes")
+    );
+    Ok(())
+}
+
 fn accepted_request_body() -> Result<serde_json::Value, Box<dyn Error>> {
     let vector = repository_root().join("test-vectors/v0/flight-booking");
     let action: serde_json::Value =
@@ -83,12 +153,40 @@ fn accepted_request_body() -> Result<serde_json::Value, Box<dyn Error>> {
 }
 
 fn run_server_request(body: &serde_json::Value) -> Result<String, Box<dyn Error>> {
+    run_server_request_with_args(&[], body)
+}
+
+fn run_server_request_with_args(
+    extra_args: &[&str],
+    body: &serde_json::Value,
+) -> Result<String, Box<dyn Error>> {
     let address = free_loopback_address()?;
+    let mut args = vec!["serve", "verify", "--addr", &address];
+    args.extend_from_slice(extra_args);
     let mut server = Command::new(env!("CARGO_BIN_EXE_rava"))
-        .args(["serve", "verify", "--addr", &address])
+        .args(args)
         .spawn()?;
 
     let response = match post_json_when_ready(&address, "/verify/action", body) {
+        Ok(response) => response,
+        Err(error) => {
+            terminate(&mut server);
+            return Err(error);
+        }
+    };
+    terminate(&mut server);
+    Ok(response)
+}
+
+fn run_server_raw_request(extra_args: &[&str], request: &str) -> Result<String, Box<dyn Error>> {
+    let address = free_loopback_address()?;
+    let mut args = vec!["serve", "verify", "--addr", &address];
+    args.extend_from_slice(extra_args);
+    let mut server = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args(args)
+        .spawn()?;
+
+    let response = match raw_request_when_ready(&address, request) {
         Ok(response) => response,
         Err(error) => {
             terminate(&mut server);
@@ -126,6 +224,33 @@ fn post_json_when_ready(
                     body.len()
                 );
                 stream.write_all(request.as_bytes())?;
+                let mut response = String::new();
+                stream.read_to_string(&mut response)?;
+                return Ok(response);
+            }
+            Err(error) if started.elapsed() < Duration::from_secs(5) => {
+                let _ = error;
+                thread::sleep(Duration::from_millis(25));
+            }
+            Err(error) => return Err(error.into()),
+        }
+    }
+}
+
+fn raw_request_when_ready(address: &str, request: &str) -> Result<String, Box<dyn Error>> {
+    let started = Instant::now();
+    loop {
+        match TcpStream::connect(address) {
+            Ok(mut stream) => {
+                match stream.write_all(request.as_bytes()) {
+                    Ok(()) => {}
+                    Err(error)
+                        if matches!(
+                            error.kind(),
+                            std::io::ErrorKind::BrokenPipe | std::io::ErrorKind::ConnectionReset
+                        ) => {}
+                    Err(error) => return Err(error.into()),
+                }
                 let mut response = String::new();
                 stream.read_to_string(&mut response)?;
                 return Ok(response);
