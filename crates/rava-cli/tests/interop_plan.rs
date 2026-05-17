@@ -105,6 +105,28 @@ fn typescript_package_calls_wasm_and_runs_vectors() -> Result<(), Box<dyn Error>
     Ok(())
 }
 
+#[test]
+fn did_key_resolution_examples_stay_outside_core_trust() -> Result<(), Box<dyn Error>> {
+    let docs =
+        std::fs::read_to_string(repository_root().join("docs/interop/did-resolution-v0.md"))?;
+
+    for required in [
+        "# Rava DID and Key Resolution V0",
+        "caller trust-policy layer",
+        "Rava V0 verifies signatures against public keys supplied by the caller",
+        "resolve before invoking",
+        "fail closed",
+        "resolver_freshness_unix",
+        "actor_public_key_hex",
+        "issuer_public_keys",
+        "not implemented in `rava-core`",
+    ] {
+        assert!(docs.contains(required), "missing DID docs: {required}");
+    }
+
+    Ok(())
+}
+
 fn repository_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }

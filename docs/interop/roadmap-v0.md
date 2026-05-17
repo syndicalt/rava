@@ -14,6 +14,7 @@ WASM and TypeScript wrappers must not reimplement verification logic. Their job 
 
 The current WASM wrapper is documented in [wasm-v0.md](wasm-v0.md).
 The current TypeScript package is documented in [typescript-v0.md](typescript-v0.md).
+DID/key-resolution caller-policy guidance is documented in [did-resolution-v0.md](did-resolution-v0.md).
 
 Expected wrapper responsibilities:
 
@@ -69,7 +70,7 @@ Future OAuth work should:
 1. Keep Rust core and CLI test vectors stable.
 2. Keep WASM bindings around the Rust verifier compiling against `wasm32-unknown-unknown`.
 3. Keep the TypeScript package calling WASM and running the V0 test vectors.
-4. Add DID/key-resolution examples as caller policy, not core trust.
+4. Keep DID/key-resolution examples as caller policy, not core trust.
 5. Add MCP adapter proof of concept.
 6. Add OAuth exchange examples only after the verifier wrapper is stable.
 
