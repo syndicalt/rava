@@ -804,6 +804,7 @@ fn release_notes_template_preserves_draft_status_and_compatibility_tracking(
         "test vectors",
         "schemas",
         "rejection codes",
+        "preview service request, response, health, audit, or error shapes",
         "## Roadmap Status",
         "docs/roadmap.md",
         "evidence maps",
