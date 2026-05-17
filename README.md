@@ -96,8 +96,12 @@ The current repo audit note is [docs/security/release-audit-v0.md](docs/security
 - `docs/operators/rejection-codes-v0.md`: operator-facing verifier rejection codes.
 - `docs/security/threat-model-v0.md`: V0 threat model.
 - `docs/security/review-guide-v0.md`: review scope, evidence map, and reviewer questions.
+- `docs/security/review-register-v0.md`: external review findings and remediation tracking.
 - `docs/security/release-audit-v0.md`: current publication-readiness audit notes.
 - `docs/roadmap.md`: functional protocol roadmap.
+- `docs/release/v0-draft-checklist.md`: draft release gate, artifact, and publication guardrail checklist.
+- `docs/release/notes-template-v0.md`: draft release notes template for verification and compatibility notes.
+- `docs/operations/production-trust-v0.md`: production trust requirements around the V0 verifier.
 - `docs/interop/roadmap-v0.md`: wrapper and adapter sequencing.
 - `docs/schemas/v0`: wire-shape JSON Schemas.
 - `examples/flight-booking`: committed example wire objects.
@@ -256,6 +260,8 @@ The full V0 draft release checklist is [docs/release/v0-draft-checklist.md](docs
 ## Roadmap
 
 The functional roadmap is [docs/roadmap.md](docs/roadmap.md). Interop sequencing for WASM, TypeScript, DID/key resolution, MCP adapters, and OAuth exchange is documented in [docs/interop/roadmap-v0.md](docs/interop/roadmap-v0.md).
+
+Release process guardrails are documented in [docs/release/v0-draft-checklist.md](docs/release/v0-draft-checklist.md) and [docs/release/notes-template-v0.md](docs/release/notes-template-v0.md). Production trust requirements are documented in [docs/operations/production-trust-v0.md](docs/operations/production-trust-v0.md), and external review findings are tracked in [docs/security/review-register-v0.md](docs/security/review-register-v0.md).
 
 ## License Model
 
