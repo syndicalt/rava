@@ -26,6 +26,12 @@ The preview verifier service supports these service-boundary options:
 - `--replay-store`
 - `--revocation-store`
 - `--audit-log`
+- `--auth-token-env`
+- `--rate-limit-per-minute`
+
+`--auth-token-env` and `--rate-limit-per-minute` are local preview controls.
+They do not replace production caller identity, distributed rate limiting, or
+network-edge access control.
 
 ## HTTP Request Shape
 
