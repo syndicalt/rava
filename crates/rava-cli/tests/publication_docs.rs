@@ -172,6 +172,7 @@ fn release_audit_tracks_current_release_and_operations_artifacts() -> Result<(),
         "canonical JSON insertion-order and parse round-trip stability",
         "capability operation canonicalization",
         "exact capability expiry boundary",
+        "The functional roadmap now includes evidence maps for release readiness, V0 hardening, V1 developer preview, interop, and production trust work.",
     ] {
         assert!(
             audit.contains(required),
