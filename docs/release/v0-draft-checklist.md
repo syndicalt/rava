@@ -41,7 +41,9 @@ Before publishing a V0 draft release candidate, update or confirm:
 - [../security/threat-model-v0.md](../security/threat-model-v0.md);
 - [../protocol/compatibility-policy-v0.md](../protocol/compatibility-policy-v0.md);
 - [../protocol/v1-preview-migration.md](../protocol/v1-preview-migration.md), if the preview surface changed;
-- release notes for compatibility-impacting changes.
+- release notes for compatibility-impacting changes, using [notes-template-v0.md](notes-template-v0.md).
+
+The repo-relative template path is `docs/release/notes-template-v0.md`.
 
 If no outside review has happened, release notes and audit docs must preserve the statement: No external security review has been completed.
 
