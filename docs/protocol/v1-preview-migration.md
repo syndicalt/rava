@@ -63,6 +63,7 @@ The preview surface still does not provide:
 - key custody;
 - public-key discovery trust policy;
 - managed audit retention/export;
+- operational monitoring for verifier availability and rejection patterns;
 - external security review coverage.
 
 Those requirements are documented in `docs/operations/production-trust-v0.md`.
@@ -75,4 +76,5 @@ Detailed owners are:
 - key custody: [../operations/key-custody-v0.md](../operations/key-custody-v0.md);
 - public-key discovery trust policy: [../operations/key-discovery-v0.md](../operations/key-discovery-v0.md);
 - managed audit retention/export: [../operations/audit-storage-v0.md](../operations/audit-storage-v0.md);
+- operational monitoring: [../operations/monitoring-v0.md](../operations/monitoring-v0.md);
 - external security review coverage: [../security/review-register-v0.md](../security/review-register-v0.md).

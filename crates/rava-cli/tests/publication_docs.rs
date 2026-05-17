@@ -436,6 +436,7 @@ fn v1_preview_migration_notes_cover_preview_surface_changes() -> Result<(), Box<
         "../operations/key-custody-v0.md",
         "../operations/key-discovery-v0.md",
         "../operations/audit-storage-v0.md",
+        "../operations/monitoring-v0.md",
         "../security/review-register-v0.md",
     ] {
         assert!(
