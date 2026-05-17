@@ -1,6 +1,7 @@
 [package]
 name = "rava-core"
 version = "0.1.0"
+description = "Rust core verifier for the Rava action-native authorization protocol"
 edition.workspace = true
 license.workspace = true
 repository.workspace = true

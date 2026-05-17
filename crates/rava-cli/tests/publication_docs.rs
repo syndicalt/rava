@@ -17,6 +17,7 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
         "cargo clippy --workspace --all-targets -- -D warnings",
         "cargo test --workspace",
         "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
         "cargo check -p rava-wasm --target wasm32-unknown-unknown",
         "npm --prefix packages/rava-wasm-js test",
         "--deterministic-fixtures",
@@ -334,9 +335,35 @@ fn fuzz_targets_cover_parser_canonicalization_and_verifier_entrypoints(
 #[test]
 fn workspace_publish_metadata_uses_real_repository_url() -> Result<(), Box<dyn Error>> {
     let manifest = std::fs::read_to_string(repository_root().join("Cargo.toml"))?;
+    let core_manifest =
+        std::fs::read_to_string(repository_root().join("crates/rava-core/Cargo.toml"))?;
+    let cli_manifest =
+        std::fs::read_to_string(repository_root().join("crates/rava-cli/Cargo.toml"))?;
+    let wasm_manifest =
+        std::fs::read_to_string(repository_root().join("crates/rava-wasm/Cargo.toml"))?;
 
     assert!(manifest.contains(r#"repository = "https://github.com/syndicalt/rava""#));
     assert!(!manifest.contains("https://example.invalid/rava"));
+    for required in [
+        "description = ",
+        r#"repository.workspace = true"#,
+        r#"license.workspace = true"#,
+    ] {
+        assert!(
+            core_manifest.contains(required),
+            "missing rava-core package metadata: {required}"
+        );
+        assert!(
+            cli_manifest.contains(required),
+            "missing rava package metadata: {required}"
+        );
+        assert!(
+            wasm_manifest.contains(required),
+            "missing rava-wasm package metadata: {required}"
+        );
+    }
+    assert!(cli_manifest.contains(r#"rava-core = { version = "0.1.0", path = "../rava-core" }"#));
+    assert!(wasm_manifest.contains(r#"rava-core = { version = "0.1.0", path = "../rava-core" }"#));
     Ok(())
 }
 
