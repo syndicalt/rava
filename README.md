@@ -74,6 +74,8 @@ The V0 threat model is documented in [docs/security/threat-model-v0.md](docs/sec
 
 The current repo audit note is [docs/security/release-audit-v0.md](docs/security/release-audit-v0.md). It is an internal readiness audit, not an external security assessment.
 
+Vulnerability reporting and external review intake are documented in [SECURITY.md](SECURITY.md).
+
 ## Mental Model
 
 - **Identity:** who can sign.
