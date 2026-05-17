@@ -21,6 +21,7 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
         "--max-request-bytes",
         "--replay-store",
         "--revocation-store",
+        "--audit-log",
         "GET /healthz",
         "From this repository, prefix CLI commands with `cargo run -p rava --`.",
         "The preview service is not a production authorization service.",

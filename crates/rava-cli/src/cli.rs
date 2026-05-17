@@ -117,6 +117,9 @@ pub struct ServeVerifyArgs {
 
     #[arg(long = "revocation-store")]
     pub revocation_store: Option<PathBuf>,
+
+    #[arg(long = "audit-log")]
+    pub audit_log: Option<PathBuf>,
 }
 
 #[derive(Debug, Subcommand)]

@@ -181,6 +181,58 @@ fn serve_verify_with_revocation_store_rejects_revoked_capability() -> Result<(),
     Ok(())
 }
 
+#[test]
+fn serve_verify_with_audit_log_appends_decision_metadata_without_raw_payload(
+) -> Result<(), Box<dyn Error>> {
+    let audit_log = temp_file_path("rava-serve-audit");
+    let audit_log_arg = audit_log.to_string_lossy().into_owned();
+    let accepted_body = accepted_request_body()?;
+    let mut rejected_body = accepted_body.clone();
+    rejected_body["action"]["constraints"]["amount_usd"]["integer"] = serde_json::json!(900);
+    let action_id = string_field(&accepted_body["action"], "id")?.to_owned();
+
+    let responses = run_server_requests_with_args(
+        &["--audit-log", &audit_log_arg],
+        &[accepted_body, rejected_body],
+    )?;
+
+    assert_accepted_response(&responses[0])?;
+    assert_rejection_code(&responses[1], "action_signature_invalid")?;
+    let audit_lines = std::fs::read_to_string(&audit_log)?;
+    let entries = audit_lines
+        .lines()
+        .map(serde_json::from_str)
+        .collect::<Result<Vec<serde_json::Value>, _>>()?;
+    assert_eq!(entries.len(), 2);
+    assert_eq!(
+        entries[0]
+            .get("action_id")
+            .and_then(serde_json::Value::as_str),
+        Some(action_id.as_str())
+    );
+    assert_eq!(
+        entries[0]
+            .get("accepted")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    assert_eq!(
+        entries[1]
+            .pointer("/rejection/code")
+            .and_then(serde_json::Value::as_str),
+        Some("action_signature_invalid")
+    );
+    for entry in entries {
+        assert!(entry.get("intent").is_none(), "{entry}");
+        assert!(entry.get("resource").is_none(), "{entry}");
+        assert!(entry.get("constraints").is_none(), "{entry}");
+        assert!(entry.get("proof").is_none(), "{entry}");
+    }
+
+    std::fs::remove_file(audit_log)?;
+    Ok(())
+}
+
 fn accepted_request_body() -> Result<serde_json::Value, Box<dyn Error>> {
     let vector = repository_root().join("test-vectors/v0/flight-booking");
     let action: serde_json::Value =
