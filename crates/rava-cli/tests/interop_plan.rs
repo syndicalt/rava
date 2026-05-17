@@ -115,6 +115,7 @@ fn typescript_package_calls_wasm_and_runs_vectors() -> Result<(), Box<dyn Error>
         "calls the generated WASM wrapper",
         "does not reimplement Rava verification",
         "npm --prefix packages/rava-wasm-js test",
+        "npm pack --dry-run",
     ] {
         assert!(docs.contains(required), "missing TS docs: {required}");
     }
