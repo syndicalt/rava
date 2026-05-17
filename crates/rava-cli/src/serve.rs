@@ -1,7 +1,9 @@
 use std::collections::BTreeMap;
 use std::error::Error;
+use std::fs::OpenOptions;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
+use std::path::Path;
 
 use rava_core::action::ActionEnvelope;
 use rava_core::capability::Capability;
@@ -84,6 +86,7 @@ fn handle_connection(stream: &mut TcpStream, args: &ServeVerifyArgs) -> Result<(
                 "max_request_bytes": args.max_request_bytes,
                 "replay_store_configured": args.replay_store.is_some(),
                 "revocation_store_configured": args.revocation_store.is_some(),
+                "audit_log_configured": args.audit_log.is_some(),
             }),
         )?;
         return Ok(());
@@ -109,6 +112,9 @@ fn handle_connection(stream: &mut TcpStream, args: &ServeVerifyArgs) -> Result<(
         let revocations = InMemoryRevocationRegistry::default();
         verify_action_with_optional_replay(&request, &revocations, args, now)?
     };
+    if let Some(audit_log) = &args.audit_log {
+        append_audit_log(audit_log, &request, &result, now)?;
+    }
     let response = match result {
         VerificationResult::Accepted => VerifyActionResponse {
             service: SERVICE_NAME,
@@ -158,6 +164,53 @@ fn verify_action_with_optional_replay<R: RevocationRegistry>(
     };
 
     Ok(result)
+}
+
+#[derive(Debug, Serialize)]
+struct AuditLogEntry<'a> {
+    service: &'static str,
+    action_id: &'a str,
+    actor_id: &'a str,
+    controller_id: &'a str,
+    capability_id: &'a str,
+    accepted: bool,
+    rejection: Option<AuditLogRejection>,
+    verified_at_unix: i64,
+}
+
+#[derive(Debug, Serialize)]
+struct AuditLogRejection {
+    code: String,
+    subject: Option<String>,
+}
+
+fn append_audit_log(
+    path: &Path,
+    request: &VerifyActionRequest,
+    result: &VerificationResult,
+    now: OffsetDateTime,
+) -> Result<(), Box<dyn Error>> {
+    let rejection = match result {
+        VerificationResult::Accepted => None,
+        VerificationResult::Rejected(error) => Some(AuditLogRejection {
+            code: error.code().to_owned(),
+            subject: error.subject(),
+        }),
+    };
+    let entry = AuditLogEntry {
+        service: SERVICE_NAME,
+        action_id: &request.action.id,
+        actor_id: &request.action.actor,
+        controller_id: &request.action.controller,
+        capability_id: &request.action.capability_id,
+        accepted: result == &VerificationResult::Accepted,
+        rejection,
+        verified_at_unix: now.unix_timestamp(),
+    };
+    let mut file = OpenOptions::new().create(true).append(true).open(path)?;
+    serde_json::to_writer(&mut file, &entry)?;
+    writeln!(file)?;
+    Ok(())
 }
 
 struct HttpRequest {
