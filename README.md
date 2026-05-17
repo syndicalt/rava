@@ -254,9 +254,10 @@ cargo package --workspace
 cargo check --manifest-path fuzz/Cargo.toml
 cargo check -p rava-wasm --target wasm32-unknown-unknown
 npm --prefix packages/rava-wasm-js test
+(cd packages/rava-wasm-js && npm pack --dry-run)
 ```
 
-These gates verify formatting, lint cleanliness, Rust regression tests, the local flight-booking demo, crate packaging, fuzz-target compilation, the WASM verifier wrapper build, and the TypeScript WASM package. They do not replace an external security review.
+These gates verify formatting, lint cleanliness, Rust regression tests, the local flight-booking demo, crate packaging, fuzz-target compilation, the WASM verifier wrapper build, the TypeScript WASM package, and the wrapper package dry-run contents. They do not replace an external security review.
 
 The full V0 draft release checklist is [docs/release/v0-draft-checklist.md](docs/release/v0-draft-checklist.md).
 

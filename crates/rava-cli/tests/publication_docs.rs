@@ -26,6 +26,7 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
         "cargo check --manifest-path fuzz/Cargo.toml",
         "cargo check -p rava-wasm --target wasm32-unknown-unknown",
         "npm --prefix packages/rava-wasm-js test",
+        "npm pack --dry-run",
         "--deterministic-fixtures",
         "--max-request-bytes",
         "--replay-store",
@@ -72,6 +73,7 @@ fn functional_roadmap_separates_current_state_from_future_work() -> Result<(), B
         "cargo check --manifest-path fuzz/Cargo.toml",
         "cargo check -p rava-wasm --target wasm32-unknown-unknown",
         "npm --prefix packages/rava-wasm-js test",
+        "npm pack --dry-run",
     ] {
         assert!(roadmap.contains(required), "roadmap missing: {required}");
     }
