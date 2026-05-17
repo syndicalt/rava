@@ -87,10 +87,17 @@ fn hardening_property_regressions_are_visible_in_roadmap() -> Result<(), Box<dyn
 
     for required in [
         "Property-style regression coverage currently guards canonical JSON stability, capability operation canonicalization, attenuation monotonicity, replay consumption, and malformed signed-object rejection.",
+        "Additional V0 hardening evidence lives in `fuzz/fuzz_targets/v0_wire_entrypoints.rs`, `crates/rava-cli/tests/flight_booking.rs`, `crates/rava-cli/tests/test_vectors.rs`, `crates/rava-cli/tests/publication_docs.rs`, `docs/operators/rejection-codes-v0.md`, `docs/protocol/time-semantics-v0.md`, and `docs/security/review-guide-v0.md`.",
         "Keep property-style regression tests current for canonicalization, attenuation monotonicity, replay consumption, and malformed signed objects.",
         "crates/rava-core/src/canonical.rs",
         "crates/rava-core/src/capability.rs",
         "crates/rava-core/src/verifier.rs",
+        "fuzz/fuzz_targets/v0_wire_entrypoints.rs",
+        "crates/rava-cli/tests/flight_booking.rs",
+        "crates/rava-cli/tests/test_vectors.rs",
+        "docs/operators/rejection-codes-v0.md",
+        "docs/protocol/time-semantics-v0.md",
+        "docs/security/review-guide-v0.md",
     ] {
         assert!(
             roadmap.contains(required),
