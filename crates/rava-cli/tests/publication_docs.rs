@@ -356,8 +356,9 @@ fn compatibility_policy_defines_v0_change_boundaries() -> Result<(), Box<dyn Err
 
 #[test]
 fn v1_preview_surface_docs_pin_cli_and_json_shapes() -> Result<(), Box<dyn Error>> {
-    let docs =
-        std::fs::read_to_string(repository_root().join("docs/protocol/v1-preview-surface.md"))?;
+    let root = repository_root();
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
+    let docs = std::fs::read_to_string(root.join("docs/protocol/v1-preview-surface.md"))?;
 
     for required in [
         "# Rava V1 Preview Surface",
@@ -386,6 +387,22 @@ fn v1_preview_surface_docs_pin_cli_and_json_shapes() -> Result<(), Box<dyn Error
         assert!(
             docs.contains(required),
             "missing v1-preview surface docs: {required}"
+        );
+    }
+
+    for required in [
+        "V1 developer preview evidence lives in `docs/protocol/v1-preview-surface.md`, `docs/protocol/v1-preview-migration.md`, `docs/protocol/compatibility-policy-v0.md`, `docs/release/v0-draft-checklist.md`, `docs/release/notes-template-v0.md`, `crates/rava-cli/tests/publication_docs.rs`, `crates/rava-cli/tests/serve_verify.rs`, `crates/rava-cli/tests/test_vectors.rs`, and `crates/rava-cli/tests/wire_schemas.rs`.",
+        "docs/protocol/v1-preview-surface.md",
+        "docs/protocol/v1-preview-migration.md",
+        "docs/protocol/compatibility-policy-v0.md",
+        "docs/release/v0-draft-checklist.md",
+        "docs/release/notes-template-v0.md",
+        "crates/rava-cli/tests/serve_verify.rs",
+        "crates/rava-cli/tests/wire_schemas.rs",
+    ] {
+        assert!(
+            roadmap.contains(required),
+            "roadmap missing v1-preview evidence: {required}"
         );
     }
 

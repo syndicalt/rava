@@ -55,6 +55,8 @@ Candidate work:
 
 V1 developer preview still should not claim distributed trust, global identity, managed custody, or external audit coverage unless those workstreams are complete.
 
+V1 developer preview evidence lives in `docs/protocol/v1-preview-surface.md`, `docs/protocol/v1-preview-migration.md`, `docs/protocol/compatibility-policy-v0.md`, `docs/release/v0-draft-checklist.md`, `docs/release/notes-template-v0.md`, `crates/rava-cli/tests/publication_docs.rs`, `crates/rava-cli/tests/serve_verify.rs`, `crates/rava-cli/tests/test_vectors.rs`, and `crates/rava-cli/tests/wire_schemas.rs`.
+
 ## Interop
 
 Goal: enable wrappers and adapters around the Rust verifier without reimplementing trusted verification logic.
