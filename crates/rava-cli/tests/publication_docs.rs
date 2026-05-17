@@ -840,6 +840,8 @@ fn workspace_publish_metadata_uses_real_repository_url() -> Result<(), Box<dyn E
         std::fs::read_to_string(repository_root().join("crates/rava-cli/Cargo.toml"))?;
     let wasm_manifest =
         std::fs::read_to_string(repository_root().join("crates/rava-wasm/Cargo.toml"))?;
+    let ts_package =
+        std::fs::read_to_string(repository_root().join("packages/rava-wasm-js/package.json"))?;
 
     assert!(manifest.contains(r#"repository = "https://github.com/syndicalt/rava""#));
     assert!(!manifest.contains("https://example.invalid/rava"));
@@ -863,6 +865,8 @@ fn workspace_publish_metadata_uses_real_repository_url() -> Result<(), Box<dyn E
     }
     assert!(cli_manifest.contains(r#"rava-core = { version = "0.1.0", path = "../rava-core" }"#));
     assert!(wasm_manifest.contains(r#"rava-core = { version = "0.1.0", path = "../rava-core" }"#));
+    assert!(ts_package.contains(r#""license": "Apache-2.0""#));
+    assert!(ts_package.contains(r#""url": "https://github.com/syndicalt/rava.git""#));
     Ok(())
 }
 
