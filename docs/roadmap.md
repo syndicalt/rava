@@ -56,11 +56,11 @@ Goal: enable wrappers and adapters around the Rust verifier without reimplementi
 Sequencing:
 
 - Keep Rust core and CLI test vectors stable.
-- Add WASM bindings around the Rust verifier.
-- Add a TypeScript package that calls WASM and runs the V0 test vectors.
-- Add DID/key-resolution examples as caller policy, not core trust.
-- Add MCP adapter proof of concept.
-- Add OAuth exchange examples only after the verifier wrapper is stable.
+- Keep WASM bindings around the Rust verifier compiling against `wasm32-unknown-unknown`.
+- Keep the TypeScript package calling WASM and running the V0 test vectors.
+- Keep DID/key-resolution examples as caller policy, not core trust.
+- Keep MCP adapter proof-of-concept guidance verification-first.
+- Keep OAuth exchange examples subordinate to verified Rava action context.
 
 Detailed wrapper guidance lives in [interop/roadmap-v0.md](interop/roadmap-v0.md).
 

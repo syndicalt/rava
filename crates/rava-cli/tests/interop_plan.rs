@@ -127,6 +127,49 @@ fn did_key_resolution_examples_stay_outside_core_trust() -> Result<(), Box<dyn E
     Ok(())
 }
 
+#[test]
+fn mcp_adapter_poc_requires_verification_before_tool_execution() -> Result<(), Box<dyn Error>> {
+    let docs = std::fs::read_to_string(repository_root().join("docs/interop/mcp-adapter-v0.md"))?;
+
+    for required in [
+        "# Rava MCP Adapter V0",
+        "proof of concept",
+        "verify before tool execution",
+        "deny by default",
+        "verifyAction",
+        "accepted !== true",
+        "capability_chain",
+        "actor_public_key_hex",
+        "issuer_public_keys",
+        "must not replace capability attenuation with broad tool grants",
+    ] {
+        assert!(docs.contains(required), "missing MCP docs: {required}");
+    }
+
+    Ok(())
+}
+
+#[test]
+fn oauth_exchange_examples_keep_rava_authorization_first() -> Result<(), Box<dyn Error>> {
+    let docs =
+        std::fs::read_to_string(repository_root().join("docs/interop/oauth-exchange-v0.md"))?;
+
+    for required in [
+        "# Rava OAuth Exchange V0",
+        "integration glue",
+        "Rava verification happens before token exchange",
+        "OAuth scopes do not prove delegation-chain attenuation",
+        "verified action context",
+        "token custody",
+        "fail closed",
+        "not an OAuth replacement",
+    ] {
+        assert!(docs.contains(required), "missing OAuth docs: {required}");
+    }
+
+    Ok(())
+}
+
 fn repository_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
