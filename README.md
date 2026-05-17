@@ -251,6 +251,8 @@ npm --prefix packages/rava-wasm-js test
 
 These gates verify formatting, lint cleanliness, Rust regression tests, the local flight-booking demo, crate packaging, the WASM verifier wrapper build, and the TypeScript WASM package. They do not replace an external security review.
 
+The full V0 draft release checklist is [docs/release/v0-draft-checklist.md](docs/release/v0-draft-checklist.md).
+
 ## Roadmap
 
 The functional roadmap is [docs/roadmap.md](docs/roadmap.md). Interop sequencing for WASM, TypeScript, DID/key resolution, MCP adapters, and OAuth exchange is documented in [docs/interop/roadmap-v0.md](docs/interop/roadmap-v0.md).

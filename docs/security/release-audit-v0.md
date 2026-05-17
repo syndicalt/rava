@@ -76,3 +76,5 @@ npm --prefix packages/rava-wasm-js test
 ```
 
 Passing this gate means the local reference implementation and regression suite are coherent. It does not mean the protocol is production-ready.
+
+The full V0 draft release checklist is [../release/v0-draft-checklist.md](../release/v0-draft-checklist.md).

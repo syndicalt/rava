@@ -550,6 +550,55 @@ fn fuzz_targets_cover_parser_canonicalization_and_verifier_entrypoints(
 }
 
 #[test]
+fn draft_release_checklist_guards_publication_without_production_claims(
+) -> Result<(), Box<dyn Error>> {
+    let checklist =
+        std::fs::read_to_string(repository_root().join("docs/release/v0-draft-checklist.md"))?;
+    let readme = std::fs::read_to_string(repository_root().join("README.md"))?;
+    let audit =
+        std::fs::read_to_string(repository_root().join("docs/security/release-audit-v0.md"))?;
+    let compatibility = std::fs::read_to_string(
+        repository_root().join("docs/protocol/compatibility-policy-v0.md"),
+    )?;
+
+    for required in [
+        "# Rava V0 Draft Release Checklist",
+        "not a production readiness checklist",
+        "## Pre-Tag Gate",
+        "cargo fmt --check",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo test --workspace",
+        "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml",
+        "npm --prefix packages/rava-wasm-js test",
+        "## Review Artifacts",
+        "docs/security/release-audit-v0.md",
+        "docs/security/review-register-v0.md",
+        "No external security review has been completed",
+        "## Publication Guardrails",
+        "must not claim production readiness",
+        "## Post-Tag Verification",
+    ] {
+        assert!(
+            checklist.contains(required),
+            "missing draft release checklist docs: {required}"
+        );
+    }
+
+    for docs in [readme, audit, compatibility] {
+        assert!(
+            docs.contains("docs/release/v0-draft-checklist.md")
+                || docs.contains("../release/v0-draft-checklist.md")
+                || docs.contains("../../docs/release/v0-draft-checklist.md"),
+            "release docs must link to the draft release checklist"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn workspace_publish_metadata_uses_real_repository_url() -> Result<(), Box<dyn Error>> {
     let manifest = std::fs::read_to_string(repository_root().join("Cargo.toml"))?;
     let core_manifest =
