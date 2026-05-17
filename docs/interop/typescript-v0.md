@@ -30,4 +30,12 @@ npm --prefix packages/rava-wasm-js test
 
 The test builds the WASM artifact first, then verifies that the TypeScript API accepts the committed V0 flight-booking vector and preserves Rust verifier rejection codes for malformed signed input.
 
+Before publishing or reviewing package contents, run:
+
+```bash
+(cd packages/rava-wasm-js && npm pack --dry-run)
+```
+
+The dry-run should show only the intended generated `dist` files and package metadata.
+
 The package is an interop wrapper only. It does not perform key discovery, replay persistence, distributed revocation freshness, request authentication, or trust-policy decisions.
