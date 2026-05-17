@@ -60,6 +60,7 @@ Repeat any important non-goals or external requirements:
 - no distributed revocation freshness guarantee;
 - no managed audit-storage guarantee;
 - no production caller identity or distributed rate-limit guarantee;
+- no production monitoring guarantee;
 - no external audit coverage unless a completed review is linked.
 
 ## Review Register
