@@ -66,6 +66,10 @@ fn functional_roadmap_separates_current_state_from_future_work() -> Result<(), B
         "operations/distributed-rate-limits-v0.md",
         "operations/monitoring-v0.md",
         "security/review-register-v0.md",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
+        "npm --prefix packages/rava-wasm-js test",
     ] {
         assert!(roadmap.contains(required), "roadmap missing: {required}");
     }
