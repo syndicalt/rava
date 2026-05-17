@@ -82,6 +82,8 @@ Candidate work:
 
 These items are not implemented guarantees today. They are required before Rava can be represented as a production authorization system.
 
+Production trust requirements are defined in [operations/production-trust-v0.md](operations/production-trust-v0.md).
+
 ## Non-Goals
 
 The core protocol roadmap does not include:

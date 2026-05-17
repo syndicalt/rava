@@ -232,6 +232,39 @@ fn v1_preview_surface_docs_pin_cli_and_json_shapes() -> Result<(), Box<dyn Error
 }
 
 #[test]
+fn production_trust_docs_define_external_operational_requirements() -> Result<(), Box<dyn Error>> {
+    let docs =
+        std::fs::read_to_string(repository_root().join("docs/operations/production-trust-v0.md"))?;
+
+    for required in [
+        "# Rava Production Trust and Operations V0",
+        "not implemented guarantees",
+        "## Key Custody",
+        "rotation",
+        "compromise response",
+        "## Public-Key Discovery",
+        "resolver freshness",
+        "## Distributed Replay",
+        "## Distributed Revocation",
+        "## Audit Storage",
+        "retention",
+        "privacy",
+        "export",
+        "## Monitoring",
+        "rejection patterns",
+        "## External Security Review",
+        "required before Rava is represented as a production authorization system",
+    ] {
+        assert!(
+            docs.contains(required),
+            "missing production trust docs: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn fuzz_targets_cover_parser_canonicalization_and_verifier_entrypoints(
 ) -> Result<(), Box<dyn Error>> {
     let root = repository_root();
