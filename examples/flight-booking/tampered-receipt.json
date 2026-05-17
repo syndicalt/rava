@@ -1,14 +1,14 @@
 {
   "version": "rava-verification-receipt-v0",
-  "id": "ver_2eae8582e373f182153929dc9ce3187e",
-  "nonce": "4350fd80-e8d1-48fe-a6fc-c083aa0b47f1",
-  "verifier": "rava:service:009a7b29707f098b07a5362808433adc",
-  "action_id": "act_e5b47b36c025b7ba36ea44fd12979a9f",
-  "actor": "rava:agent:bb6684b823a5e41580b09ebf83a6f922",
-  "capability_id": "cap_e8d8c2d9e388ac12dede5e115cb8c103",
-  "capability_chain_hash": "sha256:1197c60fbc42716584bd0a575f10cfca6150e53874786fc1bb40bc7bd9d0535c",
+  "id": "ver_58a487292b5b06f031bf40d41a2f2148",
+  "nonce": "44444444-4444-4444-8444-444444444444",
+  "verifier": "rava:service:ca93ac1705187071d67b83c7ff0efe81",
+  "action_id": "act_4895d1ad8dd04025cb89a68c3f530621",
+  "actor": "rava:agent:ed4928c628d1c2c6eae9033890599561",
+  "capability_id": "cap_faff91b4425d487f1f25c1599cea0be9",
+  "capability_chain_hash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
   "context_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-  "decision": "rejected",
+  "decision": "accepted",
   "reason": null,
   "verified_at": [
     2022,
@@ -22,6 +22,6 @@
     0
   ],
   "proof": {
-    "signature_hex": "ae332b329bc847366ed6f1d6252857d518a23f1482cffcfbf990ae2d51be8e3fdecdc641b22404eeb4e3b282b47092d4ab53ceff89a8ca81eaf86167f395a106"
+    "signature_hex": "eabaa90940ef25f2b55aae0ecfd5739d016dad60a26daa94acf8f9d4f39215052d6c667eaa7066351cda7f30d677928b4adc243e8db4785a0c4eff3c51a2f902"
   }
 }

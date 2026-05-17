@@ -106,3 +106,59 @@ fn flight_booking_demo_writes_fixtures_that_file_verifier_accepts() -> Result<()
     assert!(receipt_path.exists());
     Ok(())
 }
+
+#[test]
+fn flight_booking_demo_deterministically_regenerates_committed_corpus() -> Result<(), Box<dyn Error>>
+{
+    let directory = temp_directory("deterministic-fixtures")?;
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let corpus = root.join("examples/flight-booking");
+
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "demo",
+            "flight-booking",
+            "--write-fixtures",
+            directory.to_str().ok_or("invalid fixture directory")?,
+            "--deterministic-fixtures",
+        ])
+        .output()?;
+
+    assert!(
+        output.status.success(),
+        "deterministic fixture demo failed with stderr: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    for file_name in [
+        "action.json",
+        "attestation.json",
+        "capability-chain.json",
+        "keys.json",
+        "receipt.json",
+        "replay.json",
+        "revocations.json",
+        "tampered-attestation.json",
+        "tampered-receipt.json",
+    ] {
+        assert_eq!(
+            fs::read(directory.join(file_name))?,
+            fs::read(corpus.join(file_name))?,
+            "{file_name} was not regenerated deterministically"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
+fn deterministic_fixtures_require_output_directory() -> Result<(), Box<dyn Error>> {
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args(["demo", "flight-booking", "--deterministic-fixtures"])
+        .output()?;
+
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr)
+        .contains("--deterministic-fixtures requires --write-fixtures"));
+    Ok(())
+}

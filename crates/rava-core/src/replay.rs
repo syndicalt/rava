@@ -91,8 +91,14 @@ impl ReplayRegistry for FileReplayRegistry {
     }
 
     fn record(&mut self, action_id: String) -> Result<(), ReplayStoreError> {
+        let previous_action_ids = self.action_ids.clone();
         self.action_ids.insert(action_id);
-        self.persist()
+        if let Err(error) = self.persist() {
+            self.action_ids = previous_action_ids;
+            return Err(error);
+        }
+
+        Ok(())
     }
 }
 
@@ -125,6 +131,21 @@ mod tests {
 
         assert!(matches!(result, Err(ReplayStoreError::Json(_))));
         fs::remove_file(path)?;
+        Ok(())
+    }
+
+    #[test]
+    fn file_registry_does_not_consume_action_when_persistence_fails() -> Result<(), Box<dyn Error>>
+    {
+        let path = std::env::temp_dir()
+            .join(format!("rava-replay-missing-{}", Uuid::new_v4()))
+            .join("replay.json");
+        let mut registry = FileReplayRegistry::open(&path)?;
+
+        let result = registry.record("act_not_durable".to_owned());
+
+        assert!(matches!(result, Err(ReplayStoreError::Io(_))));
+        assert!(!registry.has_seen("act_not_durable"));
         Ok(())
     }
 }

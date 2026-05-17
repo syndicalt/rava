@@ -1,10 +1,10 @@
 [
   {
     "version": "rava-capability-v0",
-    "id": "cap_99266832305d7f91dd3f5da6bc6f4c8b",
-    "nonce": "ed58dc4e-6f98-44ff-b103-64a8cc7f8dd2",
-    "issuer": "rava:human:51bfc7b8ddd4d614e868b62bb5c55905",
-    "subject": "rava:agent:5de0ec602d4e9a3ade3e507e44338aa3",
+    "id": "cap_33bc573c11380a2dc6b5eb74c0748f0b",
+    "nonce": "11111111-1111-4111-8111-111111111111",
+    "issuer": "rava:human:8a88e3dd7409f195fd52db2d3cba5d72",
+    "subject": "rava:agent:8139770ea87d175f56a35466c34c7ecc",
     "resource": "travel.booking",
     "operations": [
       "purchase"
@@ -28,15 +28,15 @@
     "delegable": true,
     "parent_id": null,
     "proof": {
-      "signature_hex": "0553e899a17f05cd5f0688c255c396f15444540727e0fce56511a9e63f7b81694c1bbfe0258b21b7c753562c34b536f6f13850bf749d21a0c7ecaadb9708e70e"
+      "signature_hex": "4e37cea5dbc9eb8c02f8dc5b4cfdb2e781340c37b4bf9699a059eea3be1cb3aed4195856450725c9761ad809a3f0a4cebcb94a9c1d5d6df93a7c920a5294d307"
     }
   },
   {
     "version": "rava-capability-v0",
-    "id": "cap_e8d8c2d9e388ac12dede5e115cb8c103",
-    "nonce": "ab3f517d-d4a2-42ce-a58c-064dae1489ca",
-    "issuer": "rava:agent:5de0ec602d4e9a3ade3e507e44338aa3",
-    "subject": "rava:agent:bb6684b823a5e41580b09ebf83a6f922",
+    "id": "cap_faff91b4425d487f1f25c1599cea0be9",
+    "nonce": "22222222-2222-4222-8222-222222222222",
+    "issuer": "rava:agent:8139770ea87d175f56a35466c34c7ecc",
+    "subject": "rava:agent:ed4928c628d1c2c6eae9033890599561",
     "resource": "travel.booking",
     "operations": [
       "purchase"
@@ -58,9 +58,9 @@
       0
     ],
     "delegable": false,
-    "parent_id": "cap_99266832305d7f91dd3f5da6bc6f4c8b",
+    "parent_id": "cap_33bc573c11380a2dc6b5eb74c0748f0b",
     "proof": {
-      "signature_hex": "2b0300e6d05a934bbf4ea7143e7eeab098cfdbf5e9bf07a49a717071a5dc2a40b94a921d654697d71d09b38e3bdd761ca25013d3817f6035761548b1d15ebc04"
+      "signature_hex": "f3fdd11e2a9309b187c880f1c933c15720cc96fefcb785c9d0b2daf10735b5fb051d8be9600d631c82c0488015a18b502179f8d9159243ff85e06c8146a8a80e"
     }
   }
 ]
