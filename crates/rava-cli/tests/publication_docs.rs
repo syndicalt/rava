@@ -797,6 +797,7 @@ fn release_notes_template_preserves_draft_status_and_compatibility_tracking(
         "evidence maps",
         "remaining external blockers",
         "## Known Non-Goals and External Requirements",
+        "no production monitoring guarantee",
         "## Review Register",
         "docs/security/review-register-v0.md",
     ] {
