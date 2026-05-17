@@ -71,6 +71,8 @@ The preview service can append local decision metadata, but production audit sto
 
 Audit systems should avoid storing raw action payloads unless the deployment has an explicit data-handling reason and policy.
 
+Production audit-storage requirements are detailed in [audit-storage-v0.md](audit-storage-v0.md).
+
 ## Monitoring
 
 Production monitoring should cover verifier availability and rejection patterns:
