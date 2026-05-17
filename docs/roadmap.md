@@ -75,6 +75,8 @@ Detailed wrapper guidance lives in [interop/roadmap-v0.md](interop/roadmap-v0.md
 The current V1 preview surface contract is documented in [protocol/v1-preview-surface.md](protocol/v1-preview-surface.md).
 V1 preview migration notes are documented in [protocol/v1-preview-migration.md](protocol/v1-preview-migration.md).
 
+Interop evidence lives in `docs/interop/roadmap-v0.md`, `docs/interop/wasm-v0.md`, `docs/interop/typescript-v0.md`, `docs/interop/did-resolution-v0.md`, `docs/interop/mcp-adapter-v0.md`, `docs/interop/oauth-exchange-v0.md`, `crates/rava-cli/tests/interop_plan.rs`, `crates/rava-wasm/src/lib.rs`, `packages/rava-wasm-js/src/index.ts`, and `packages/rava-wasm-js/test/vectors.test.ts`.
+
 ## Production Trust and Operations
 
 Goal: define the systems around the core verifier that production deployments need.
