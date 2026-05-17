@@ -5,8 +5,13 @@ use std::net::{TcpListener, TcpStream};
 
 use rava_core::action::ActionEnvelope;
 use rava_core::capability::Capability;
-use rava_core::revocation::InMemoryRevocationRegistry;
-use rava_core::verifier::{verify_action, VerificationResult, VerifyActionInput};
+use rava_core::replay::FileReplayRegistry;
+use rava_core::revocation::{
+    FileRevocationRegistry, InMemoryRevocationRegistry, RevocationRegistry,
+};
+use rava_core::verifier::{
+    verify_action, verify_action_once, VerificationResult, VerifyActionInput, VerifyActionOnceInput,
+};
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
@@ -47,7 +52,7 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                if let Err(error) = handle_connection(&mut stream, args.max_request_bytes) {
+                if let Err(error) = handle_connection(&mut stream, &args) {
                     write_json_response(
                         &mut stream,
                         "500 Internal Server Error",
@@ -65,11 +70,8 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn handle_connection(
-    stream: &mut TcpStream,
-    max_request_bytes: usize,
-) -> Result<(), Box<dyn Error>> {
-    let Some(request) = read_http_request(stream, max_request_bytes)? else {
+fn handle_connection(stream: &mut TcpStream, args: &ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
+    let Some(request) = read_http_request(stream, args.max_request_bytes)? else {
         return Ok(());
     };
     if request.method == "GET" && request.path == "/healthz" {
@@ -79,7 +81,9 @@ fn handle_connection(
             &serde_json::json!({
                 "service": SERVICE_NAME,
                 "status": "ok",
-                "max_request_bytes": max_request_bytes,
+                "max_request_bytes": args.max_request_bytes,
+                "replay_store_configured": args.replay_store.is_some(),
+                "revocation_store_configured": args.revocation_store.is_some(),
             }),
         )?;
         return Ok(());
@@ -98,15 +102,13 @@ fn handle_connection(
 
     let request: VerifyActionRequest = serde_json::from_slice(&request.body)?;
     let now = OffsetDateTime::from_unix_timestamp(request.now_unix)?;
-    let revocations = InMemoryRevocationRegistry::default();
-    let result = verify_action(VerifyActionInput {
-        action: &request.action,
-        capability_chain: &request.capability_chain,
-        actor_public_key_hex: &request.actor_public_key_hex,
-        capability_issuer_public_keys: &request.issuer_public_keys,
-        revocations: &revocations,
-        now,
-    })?;
+    let result = if let Some(revocation_store) = &args.revocation_store {
+        let revocations = FileRevocationRegistry::open(revocation_store)?;
+        verify_action_with_optional_replay(&request, &revocations, args, now)?
+    } else {
+        let revocations = InMemoryRevocationRegistry::default();
+        verify_action_with_optional_replay(&request, &revocations, args, now)?
+    };
     let response = match result {
         VerificationResult::Accepted => VerifyActionResponse {
             service: SERVICE_NAME,
@@ -125,6 +127,37 @@ fn handle_connection(
 
     write_json_response(stream, "200 OK", &response)?;
     Ok(())
+}
+
+fn verify_action_with_optional_replay<R: RevocationRegistry>(
+    request: &VerifyActionRequest,
+    revocations: &R,
+    args: &ServeVerifyArgs,
+    now: OffsetDateTime,
+) -> Result<VerificationResult, Box<dyn Error>> {
+    let result = if let Some(replay_store) = &args.replay_store {
+        let mut replay = FileReplayRegistry::open(replay_store)?;
+        verify_action_once(VerifyActionOnceInput {
+            action: &request.action,
+            capability_chain: &request.capability_chain,
+            actor_public_key_hex: &request.actor_public_key_hex,
+            capability_issuer_public_keys: &request.issuer_public_keys,
+            revocations,
+            replay: &mut replay,
+            now,
+        })?
+    } else {
+        verify_action(VerifyActionInput {
+            action: &request.action,
+            capability_chain: &request.capability_chain,
+            actor_public_key_hex: &request.actor_public_key_hex,
+            capability_issuer_public_keys: &request.issuer_public_keys,
+            revocations,
+            now,
+        })?
+    };
+
+    Ok(result)
 }
 
 struct HttpRequest {

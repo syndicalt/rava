@@ -4,8 +4,11 @@ use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::thread;
 use std::time::{Duration, Instant};
+
+static TEMP_FILE_COUNTER: AtomicU64 = AtomicU64::new(0);
 
 #[test]
 fn serve_verify_accepts_valid_action_request_over_http() -> Result<(), Box<dyn Error>> {
@@ -123,6 +126,61 @@ fn serve_verify_rejects_oversized_request_headers() -> Result<(), Box<dyn Error>
     Ok(())
 }
 
+#[test]
+fn serve_verify_with_replay_store_records_accepted_action_and_rejects_replay(
+) -> Result<(), Box<dyn Error>> {
+    let replay_store = temp_file_path("rava-serve-replay");
+    let replay_store_arg = replay_store.to_string_lossy().into_owned();
+    let body = accepted_request_body()?;
+    let action_id = string_field(&body["action"], "id")?.to_owned();
+
+    let responses = run_server_requests_with_args(
+        &["--replay-store", &replay_store_arg],
+        &[body.clone(), body],
+    )?;
+
+    assert_accepted_response(&responses[0])?;
+    assert_rejection_code(&responses[1], "action_replayed")?;
+    let replay_json: serde_json::Value = serde_json::from_slice(&std::fs::read(&replay_store)?)?;
+    assert_eq!(
+        replay_json
+            .get("action_ids")
+            .and_then(serde_json::Value::as_array)
+            .map(|ids| ids.iter().any(|id| id.as_str() == Some(action_id.as_str()))),
+        Some(true)
+    );
+
+    std::fs::remove_file(replay_store)?;
+    Ok(())
+}
+
+#[test]
+fn serve_verify_with_revocation_store_rejects_revoked_capability() -> Result<(), Box<dyn Error>> {
+    let revocation_store = temp_file_path("rava-serve-revocations");
+    let revocation_store_arg = revocation_store.to_string_lossy().into_owned();
+    let body = accepted_request_body()?;
+    let capability_id = body["capability_chain"]
+        .as_array()
+        .and_then(|capabilities| capabilities.last())
+        .and_then(|capability| capability.get("id"))
+        .and_then(serde_json::Value::as_str)
+        .ok_or("missing final capability id")?
+        .to_owned();
+    std::fs::write(
+        &revocation_store,
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "revoked_ids": [capability_id]
+        }))?,
+    )?;
+
+    let response =
+        run_server_request_with_args(&["--revocation-store", &revocation_store_arg], &body)?;
+
+    assert_rejection_code(&response, "capability_revoked")?;
+    std::fs::remove_file(revocation_store)?;
+    Ok(())
+}
+
 fn accepted_request_body() -> Result<serde_json::Value, Box<dyn Error>> {
     let vector = repository_root().join("test-vectors/v0/flight-booking");
     let action: serde_json::Value =
@@ -160,6 +218,17 @@ fn run_server_request_with_args(
     extra_args: &[&str],
     body: &serde_json::Value,
 ) -> Result<String, Box<dyn Error>> {
+    let responses = run_server_requests_with_args(extra_args, std::slice::from_ref(body))?;
+    responses
+        .into_iter()
+        .next()
+        .ok_or_else(|| "missing server response".into())
+}
+
+fn run_server_requests_with_args(
+    extra_args: &[&str],
+    bodies: &[serde_json::Value],
+) -> Result<Vec<String>, Box<dyn Error>> {
     let address = free_loopback_address()?;
     let mut args = vec!["serve", "verify", "--addr", &address];
     args.extend_from_slice(extra_args);
@@ -167,15 +236,18 @@ fn run_server_request_with_args(
         .args(args)
         .spawn()?;
 
-    let response = match post_json_when_ready(&address, "/verify/action", body) {
-        Ok(response) => response,
-        Err(error) => {
-            terminate(&mut server);
-            return Err(error);
+    let mut responses = Vec::new();
+    for body in bodies {
+        match post_json_when_ready(&address, "/verify/action", body) {
+            Ok(response) => responses.push(response),
+            Err(error) => {
+                terminate(&mut server);
+                return Err(error);
+            }
         }
-    };
+    }
     terminate(&mut server);
-    Ok(response)
+    Ok(responses)
 }
 
 fn run_server_raw_request(extra_args: &[&str], request: &str) -> Result<String, Box<dyn Error>> {
@@ -269,6 +341,38 @@ fn response_body(response: &str) -> Result<&str, Box<dyn Error>> {
         .split_once("\r\n\r\n")
         .map(|(_, body)| body)
         .ok_or_else(|| "missing HTTP response body".into())
+}
+
+fn assert_accepted_response(response: &str) -> Result<(), Box<dyn Error>> {
+    assert!(response.starts_with("HTTP/1.1 200 OK"), "{response}");
+    let response_body = response_body(response)?;
+    let json: serde_json::Value = serde_json::from_str(response_body)?;
+    assert_eq!(
+        json.get("accepted").and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    Ok(())
+}
+
+fn assert_rejection_code(response: &str, expected_code: &str) -> Result<(), Box<dyn Error>> {
+    assert!(response.starts_with("HTTP/1.1 200 OK"), "{response}");
+    let response_body = response_body(response)?;
+    let json: serde_json::Value = serde_json::from_str(response_body)?;
+    assert_eq!(
+        json.get("accepted").and_then(serde_json::Value::as_bool),
+        Some(false)
+    );
+    assert_eq!(
+        json.pointer("/rejection/code")
+            .and_then(serde_json::Value::as_str),
+        Some(expected_code)
+    );
+    Ok(())
+}
+
+fn temp_file_path(prefix: &str) -> PathBuf {
+    let counter = TEMP_FILE_COUNTER.fetch_add(1, Ordering::Relaxed);
+    std::env::temp_dir().join(format!("{prefix}-{}-{counter}.json", std::process::id()))
 }
 
 fn terminate(child: &mut Child) {

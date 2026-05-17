@@ -111,6 +111,12 @@ pub struct ServeVerifyArgs {
 
     #[arg(long = "max-request-bytes", default_value_t = 1_048_576)]
     pub max_request_bytes: usize,
+
+    #[arg(long = "replay-store")]
+    pub replay_store: Option<PathBuf>,
+
+    #[arg(long = "revocation-store")]
+    pub revocation_store: Option<PathBuf>,
 }
 
 #[derive(Debug, Subcommand)]
