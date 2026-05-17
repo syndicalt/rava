@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::env;
 use std::error::Error;
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
@@ -76,6 +77,17 @@ fn handle_connection(stream: &mut TcpStream, args: &ServeVerifyArgs) -> Result<(
     let Some(request) = read_http_request(stream, args.max_request_bytes)? else {
         return Ok(());
     };
+    if !request_is_authorized(&request, args)? {
+        write_json_response(
+            stream,
+            "401 Unauthorized",
+            &serde_json::json!({
+                "service": SERVICE_NAME,
+                "error": "authorization required"
+            }),
+        )?;
+        return Ok(());
+    }
     if request.method == "GET" && request.path == "/healthz" {
         write_json_response(
             stream,
@@ -87,6 +99,7 @@ fn handle_connection(stream: &mut TcpStream, args: &ServeVerifyArgs) -> Result<(
                 "replay_store_configured": args.replay_store.is_some(),
                 "revocation_store_configured": args.revocation_store.is_some(),
                 "audit_log_configured": args.audit_log.is_some(),
+                "auth_required": args.auth_token_env.is_some(),
             }),
         )?;
         return Ok(());
@@ -133,6 +146,24 @@ fn handle_connection(stream: &mut TcpStream, args: &ServeVerifyArgs) -> Result<(
 
     write_json_response(stream, "200 OK", &response)?;
     Ok(())
+}
+
+fn request_is_authorized(
+    request: &HttpRequest,
+    args: &ServeVerifyArgs,
+) -> Result<bool, Box<dyn Error>> {
+    let Some(token_env) = &args.auth_token_env else {
+        return Ok(true);
+    };
+    let token = env::var(token_env)?;
+    let expected = format!("Bearer {token}");
+    Ok(request
+        .headers
+        .iter()
+        .rev()
+        .find(|(name, _)| name.eq_ignore_ascii_case("authorization"))
+        .map(|(_, value)| value == &expected)
+        .unwrap_or(false))
 }
 
 fn verify_action_with_optional_replay<R: RevocationRegistry>(
@@ -216,6 +247,7 @@ fn append_audit_log(
 struct HttpRequest {
     method: String,
     path: String,
+    headers: Vec<(String, String)>,
     body: Vec<u8>,
 }
 
@@ -257,11 +289,15 @@ fn read_http_request(
         .ok_or("missing HTTP method")?
         .to_owned();
     let path = request_parts.next().ok_or("missing HTTP path")?.to_owned();
-    let content_length = lines
+    let parsed_headers = lines
         .filter_map(|line| line.split_once(':'))
+        .map(|(name, value)| (name.trim().to_owned(), value.trim().to_owned()))
+        .collect::<Vec<_>>();
+    let content_length = parsed_headers
+        .iter()
         .find_map(|(name, value)| {
             if name.eq_ignore_ascii_case("content-length") {
-                Some(value.trim().parse::<usize>())
+                Some(value.parse::<usize>())
             } else {
                 None
             }
@@ -291,7 +327,12 @@ fn read_http_request(
     }
     body.truncate(content_length);
 
-    Ok(Some(HttpRequest { method, path, body }))
+    Ok(Some(HttpRequest {
+        method,
+        path,
+        headers: parsed_headers,
+        body,
+    }))
 }
 
 fn find_header_end(bytes: &[u8]) -> Option<usize> {

@@ -83,6 +83,50 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
 }
 
 #[test]
+fn serve_verify_with_auth_token_env_rejects_missing_authorization() -> Result<(), Box<dyn Error>> {
+    let response = run_server_raw_request_with_env(
+        &["--auth-token-env", "RAVA_TEST_AUTH_TOKEN"],
+        &[("RAVA_TEST_AUTH_TOKEN", "secret-token")],
+        "GET /healthz HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
+    )?;
+
+    assert!(
+        response.starts_with("HTTP/1.1 401 Unauthorized"),
+        "{response}"
+    );
+    let response_body = response_body(&response)?;
+    let json: serde_json::Value = serde_json::from_str(response_body)?;
+    assert_eq!(
+        json.get("error").and_then(serde_json::Value::as_str),
+        Some("authorization required")
+    );
+    assert!(
+        !response.contains("secret-token"),
+        "auth response must not echo token: {response}"
+    );
+    Ok(())
+}
+
+#[test]
+fn serve_verify_with_auth_token_env_accepts_matching_bearer_token() -> Result<(), Box<dyn Error>> {
+    let response = run_server_raw_request_with_env(
+        &["--auth-token-env", "RAVA_TEST_AUTH_TOKEN"],
+        &[("RAVA_TEST_AUTH_TOKEN", "secret-token")],
+        "GET /healthz HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer secret-token\r\nConnection: close\r\n\r\n",
+    )?;
+
+    assert!(response.starts_with("HTTP/1.1 200 OK"), "{response}");
+    let response_body = response_body(&response)?;
+    let json: serde_json::Value = serde_json::from_str(response_body)?;
+    assert_eq!(
+        json.get("auth_required")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    Ok(())
+}
+
+#[test]
 fn serve_verify_rejects_request_bodies_over_configured_limit() -> Result<(), Box<dyn Error>> {
     let request = format!(
         "POST /verify/action HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
@@ -303,12 +347,23 @@ fn run_server_requests_with_args(
 }
 
 fn run_server_raw_request(extra_args: &[&str], request: &str) -> Result<String, Box<dyn Error>> {
+    run_server_raw_request_with_env(extra_args, &[], request)
+}
+
+fn run_server_raw_request_with_env(
+    extra_args: &[&str],
+    envs: &[(&str, &str)],
+    request: &str,
+) -> Result<String, Box<dyn Error>> {
     let address = free_loopback_address()?;
     let mut args = vec!["serve", "verify", "--addr", &address];
     args.extend_from_slice(extra_args);
-    let mut server = Command::new(env!("CARGO_BIN_EXE_rava"))
-        .args(args)
-        .spawn()?;
+    let mut command = Command::new(env!("CARGO_BIN_EXE_rava"));
+    command.args(args);
+    for (name, value) in envs {
+        command.env(name, value);
+    }
+    let mut server = command.spawn()?;
 
     let response = match raw_request_when_ready(&address, request) {
         Ok(response) => response,
