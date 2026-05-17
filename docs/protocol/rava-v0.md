@@ -173,7 +173,7 @@ V0 verifier callers must provide authentic public keys for action actors and cap
 The Rust CLI includes a local preview service:
 
 ```text
-rava serve verify --addr 127.0.0.1:8787
+rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576
 ```
 
 It exposes `POST /verify/action` as an HTTP wrapper around the V0 Rust verifier. Request JSON must include:
@@ -184,13 +184,16 @@ It exposes `POST /verify/action` as an HTTP wrapper around the V0 Rust verifier.
 - `issuer_public_keys`;
 - `now_unix`.
 
+It also exposes `GET /healthz`, which returns the service name, `ok` status, and configured `max_request_bytes`.
+`--max-request-bytes` limits request bodies before JSON parsing and verification.
+
 The response includes:
 
 - `service`;
 - `accepted`;
 - `rejection`, with stable verifier `code` and optional `subject` when rejected.
 
-The preview service is not a new trust boundary. It does not discover keys, consume replay state, distribute revocations, prove revocation freshness, or make verifier trust-policy decisions.
+The preview service is not a new trust boundary. It does not discover keys, consume replay state, distribute revocations, prove revocation freshness, authenticate inbound requests, rate-limit callers, persist audit output, or make verifier trust-policy decisions.
 
 ## Verification Receipts
 

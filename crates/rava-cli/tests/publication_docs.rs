@@ -18,6 +18,8 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
         "cargo test --workspace",
         "cargo run -p rava -- demo flight-booking",
         "--deterministic-fixtures",
+        "--max-request-bytes",
+        "GET /healthz",
         "From this repository, prefix CLI commands with `cargo run -p rava --`.",
         "The preview service is not a production authorization service.",
     ] {

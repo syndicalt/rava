@@ -108,6 +108,9 @@ pub enum ServeCommand {
 pub struct ServeVerifyArgs {
     #[arg(long, default_value = "127.0.0.1:8787")]
     pub addr: String,
+
+    #[arg(long = "max-request-bytes", default_value_t = 1_048_576)]
+    pub max_request_bytes: usize,
 }
 
 #[derive(Debug, Subcommand)]
