@@ -101,6 +101,19 @@ When `--audit-log` is configured, the service appends one newline-delimited JSON
 
 Audit entries intentionally omit raw action intent, resource, constraints, capability envelopes, and signatures. Operators that need managed audit retention, export, tamper evidence, or privacy controls must provide those systems outside the preview service.
 
+## Production Requirements
+
+The preview surface is not a production authorization boundary. Production deployments must define the surrounding systems outside the V0 core and preview service:
+
+- [key custody](../operations/key-custody-v0.md);
+- [public-key discovery](../operations/key-discovery-v0.md);
+- [distributed replay coordination](../operations/distributed-replay-v0.md);
+- [distributed revocation freshness](../operations/distributed-revocation-v0.md);
+- [managed audit storage](../operations/audit-storage-v0.md);
+- [caller identity](../operations/caller-identity-v0.md);
+- [distributed rate limiting](../operations/distributed-rate-limits-v0.md);
+- [monitoring](../operations/monitoring-v0.md).
+
 ## Rejection-Code Subjects
 
 `rejection.code` and `rejection.subject` follow `docs/operators/rejection-codes-v0.md`. Wrappers should preserve both fields instead of translating them into broad local categories.
