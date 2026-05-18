@@ -104,6 +104,14 @@ Vulnerability reporting and external review intake are documented in [SECURITY.m
 - `docs/release/v0-draft-checklist.md`: draft release gate, artifact, and publication guardrail checklist.
 - `docs/release/notes-template-v0.md`: draft release notes template for verification and compatibility notes.
 - `docs/operations/production-trust-v0.md`: production trust requirements around the V0 verifier.
+- `docs/operations/key-custody-v0.md`: production key custody, rotation, and compromise response requirements.
+- `docs/operations/key-discovery-v0.md`: production public-key discovery and resolver freshness requirements.
+- `docs/operations/distributed-replay-v0.md`: production distributed replay coordination requirements.
+- `docs/operations/distributed-revocation-v0.md`: production revocation publication, freshness, and outage requirements.
+- `docs/operations/audit-storage-v0.md`: production audit retention, privacy, export, and failure-policy requirements.
+- `docs/operations/caller-identity-v0.md`: production caller identity requirements.
+- `docs/operations/distributed-rate-limits-v0.md`: production distributed rate-limit requirements.
+- `docs/operations/monitoring-v0.md`: production monitoring and incident-response requirements.
 - `docs/interop/roadmap-v0.md`: wrapper and adapter sequencing.
 - `docs/schemas/v0`: wire-shape JSON Schemas.
 - `examples/flight-booking`: committed example wire objects.
