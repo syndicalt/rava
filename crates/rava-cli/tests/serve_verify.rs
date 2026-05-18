@@ -423,6 +423,36 @@ fn serve_verify_metrics_reports_missing_public_keys() -> Result<(), Box<dyn Erro
 }
 
 #[test]
+fn serve_verify_metrics_reports_verifier_latency() -> Result<(), Box<dyn Error>> {
+    let body = accepted_request_body()?;
+    let requests = [
+        post_json_request("/verify/action", &body)?,
+        "GET /metrics HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n".to_owned(),
+    ];
+    let request_refs = requests.iter().map(String::as_str).collect::<Vec<_>>();
+
+    let responses = run_server_raw_requests(&["--metrics"], &request_refs)?;
+
+    assert_accepted_response(&responses[0])?;
+    let metrics = response_body(&responses[1])?;
+    assert!(
+        metrics.contains("rava_preview_verifier_latency_ms_count 1"),
+        "{metrics}"
+    );
+    assert!(
+        metrics
+            .lines()
+            .any(|line| line.starts_with("rava_preview_verifier_latency_ms_total ")),
+        "{metrics}"
+    );
+    assert!(
+        !metrics.contains(string_field(&body["action"], "id")?),
+        "{metrics}"
+    );
+    Ok(())
+}
+
+#[test]
 fn serve_verify_metrics_requires_auth_when_configured() -> Result<(), Box<dyn Error>> {
     let responses = run_server_raw_requests_with_env(
         &["--metrics", "--auth-token-env", "RAVA_TEST_AUTH_TOKEN"],
