@@ -31,6 +31,17 @@ Record the exact gate output or CI run used for the release:
 Record whether deterministic fixtures and `test-vectors/v0` were regenerated and whether the diff was expected.
 Record whether the TypeScript package dry-run contained only intended files.
 
+## Fuzz Campaign
+
+State whether a long-running fuzz campaign was run or not run for this release.
+
+If run, record corpus, duration, and any minimized crash input:
+
+- `cargo fuzz run v0_wire_entrypoints`;
+- corpus;
+- duration;
+- any minimized crash input.
+
 ## Compatibility
 
 State whether this release changes:
