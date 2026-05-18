@@ -89,6 +89,45 @@ fn key_generate_overwrites_with_force_without_printing_private_key() -> Result<(
 
 #[cfg(unix)]
 #[test]
+fn key_generate_force_replaces_symlink_instead_of_writing_through_it() -> Result<(), Box<dyn Error>>
+{
+    use std::os::unix::fs::{symlink, PermissionsExt};
+
+    let directory = temp_directory("key-force-symlink")?;
+    fs::create_dir_all(&directory)?;
+    let key_path = directory.join("verifier-key.json");
+    let symlink_target = directory.join("unexpected-target.json");
+    fs::write(&symlink_target, b"sentinel")?;
+    symlink(&symlink_target, &key_path)?;
+
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "key",
+            "generate",
+            "--kind",
+            "service",
+            "--out",
+            key_path.to_str().ok_or("invalid key path")?,
+            "--force",
+        ])
+        .output()?;
+
+    assert!(
+        output.status.success(),
+        "forced key generation failed with stderr: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(fs::read(&symlink_target)?, b"sentinel");
+    assert!(!fs::symlink_metadata(&key_path)?.file_type().is_symlink());
+
+    let key_file: serde_json::Value = serde_json::from_slice(&fs::read(&key_path)?)?;
+    assert!(key_file.get("private_key_hex").is_some());
+    assert_eq!(fs::metadata(&key_path)?.permissions().mode() & 0o777, 0o600);
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
 fn private_key_load_rejects_group_or_world_readable_file() -> Result<(), Box<dyn Error>> {
     use std::os::unix::fs::PermissionsExt;
 

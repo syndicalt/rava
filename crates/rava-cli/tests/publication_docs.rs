@@ -2015,10 +2015,10 @@ fn production_operations_runbooks_define_external_systems_without_core_claims(
     let root = repository_root();
     let production = std::fs::read_to_string(root.join("docs/operations/production-trust-v0.md"))?;
 
-    let runbooks = [
+    let runbooks: [(&str, &[&str]); 5] = [
         (
             "key-custody-v0.md",
-            [
+            &[
                 "# Rava Production Key Custody V0",
                 "not implemented by the Rava V0 core",
                 "generation ceremony",
@@ -2026,11 +2026,15 @@ fn production_operations_runbooks_define_external_systems_without_core_claims(
                 "emergency rotation",
                 "compromise response",
                 "private keys",
+                "## Local CLI Guardrails",
+                "generated key output prints the signer ID and public key, not `private_key_hex`",
+                "forced key generation replaces the destination path instead of writing private key material through an existing symlink",
+                "They do not replace a production custody provider",
             ],
         ),
         (
             "key-discovery-v0.md",
-            [
+            &[
                 "# Rava Production Public-Key Discovery V0",
                 "caller trust-policy layer",
                 "trust roots",
@@ -2042,7 +2046,7 @@ fn production_operations_runbooks_define_external_systems_without_core_claims(
         ),
         (
             "distributed-replay-v0.md",
-            [
+            &[
                 "# Rava Production Distributed Replay V0",
                 "not implemented by the V0 preview service",
                 "atomic action-ID consumption",
@@ -2054,7 +2058,7 @@ fn production_operations_runbooks_define_external_systems_without_core_claims(
         ),
         (
             "distributed-revocation-v0.md",
-            [
+            &[
                 "# Rava Production Distributed Revocation V0",
                 "not implemented by the V0 core",
                 "freshness target",
@@ -2066,7 +2070,7 @@ fn production_operations_runbooks_define_external_systems_without_core_claims(
         ),
         (
             "monitoring-v0.md",
-            [
+            &[
                 "# Rava Production Monitoring V0",
                 "not implemented by the V0 preview service",
                 "accepted and rejected decision rates",
