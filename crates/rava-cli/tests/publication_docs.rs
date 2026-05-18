@@ -7,6 +7,7 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
 
     for required in [
         "Rava V0 is a draft reference implementation, not production-ready security software.",
+        "Rava V0 is complete as a draft reference implementation for review, examples, interop work, and integration design.",
         "## Table of Contents",
         "## Requirements",
         "## Quickstart",
@@ -49,6 +50,9 @@ fn readme_states_publication_posture_and_operator_path() -> Result<(), Box<dyn E
     ] {
         assert!(readme.contains(required), "README missing: {required}");
     }
+    assert!(!readme.contains(
+        "This repository should be treated as a draft protocol package until the roadmap release-readiness items are complete."
+    ));
 
     Ok(())
 }
