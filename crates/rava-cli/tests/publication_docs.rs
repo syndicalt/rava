@@ -451,6 +451,8 @@ fn security_review_guide_maps_review_scope_to_evidence() -> Result<(), Box<dyn E
         "../operations/distributed-rate-limits-v0.md",
         "../operations/monitoring-v0.md",
         "## Evidence Map",
+        "review-plan-v0.md",
+        "fuzz-campaigns/template-v0.md",
         "crates/rava-core/src/verifier.rs",
         "docs/security/threat-model-v0.md",
         "cargo package --workspace",
@@ -464,6 +466,102 @@ fn security_review_guide_maps_review_scope_to_evidence() -> Result<(), Box<dyn E
         assert!(
             guide.contains(required),
             "missing review-guide docs: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
+fn security_review_plan_and_fuzz_template_define_external_review_process(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let plan = std::fs::read_to_string(root.join("docs/security/review-plan-v0.md"))?;
+    let template =
+        std::fs::read_to_string(root.join("docs/security/fuzz-campaigns/template-v0.md"))?;
+    let checklist = std::fs::read_to_string(root.join("docs/release/v0-draft-checklist.md"))?;
+    let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
+
+    for required in [
+        "# Rava V0 External Security Review Plan",
+        "not evidence that Rava has been externally audited",
+        "## Review Target",
+        "Record the exact commit SHA",
+        "## Reviewer Packet",
+        "docs/security/threat-model-v0.md",
+        "docs/protocol/rava-v0.md",
+        "docs/security/v0-draft-completion-audit.md",
+        "docs/security/review-guide-v0.md",
+        "docs/security/review-register-v0.md",
+        "## In Scope",
+        "canonicalization",
+        "signature binding",
+        "delegation attenuation",
+        "replay semantics",
+        "revocation semantics",
+        "receipt and attestation verification",
+        "fail-closed behavior",
+        "## Out of Scope",
+        "production key custody",
+        "distributed replay",
+        "distributed revocation",
+        "managed audit storage",
+        "## Finding Intake",
+        "RAVA-REVIEW-001",
+        "reported",
+        "accepted",
+        "remediated",
+        "verified",
+        "accepted-risk",
+        "out-of-scope",
+        "## Release Rule",
+        "No finding that weakens fail-closed verification may remain unresolved",
+        "## Fuzz Evidence",
+        "docs/security/fuzz-campaigns/template-v0.md",
+    ] {
+        assert!(plan.contains(required), "review plan missing: {required}");
+    }
+
+    for required in [
+        "# Rava V0 Fuzz Campaign Log Template",
+        "not a proof of security",
+        "## Campaign Metadata",
+        "Commit SHA",
+        "Command",
+        "cargo fuzz run v0_wire_entrypoints -- -max_total_time=86400",
+        "Duration",
+        "Host",
+        "Corpus path",
+        "## Coverage Intent",
+        "JSON parsing",
+        "canonicalization",
+        "action verification",
+        "receipt verification",
+        "attestation verification",
+        "## Results",
+        "Crash count",
+        "Minimized crashing inputs",
+        "## Remediation",
+        "Regression tests",
+        "Pull requests",
+        "## Final Rerun",
+    ] {
+        assert!(
+            template.contains(required),
+            "fuzz template missing: {required}"
+        );
+    }
+
+    for required in [
+        "docs/security/review-plan-v0.md",
+        "docs/security/fuzz-campaigns/template-v0.md",
+    ] {
+        assert!(
+            checklist.contains(required)
+                && roadmap.contains(required)
+                && register.contains(required),
+            "checklist, roadmap, and review register must link review process artifact: {required}"
         );
     }
 

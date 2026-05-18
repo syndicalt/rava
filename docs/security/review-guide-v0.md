@@ -57,6 +57,8 @@ Detailed production runbooks live in:
 
 ## Evidence Map
 
+The review execution plan is [review-plan-v0.md](review-plan-v0.md). Optional longer fuzz campaigns should use [fuzz-campaigns/template-v0.md](fuzz-campaigns/template-v0.md).
+
 | Review area | Primary artifact |
 | --- | --- |
 | Threat model | `docs/security/threat-model-v0.md` |

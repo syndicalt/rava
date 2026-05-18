@@ -4,6 +4,8 @@ This register tracks external security review findings and remediation for the R
 
 No external security review has been completed yet. This file is a tracking artifact, not evidence that Rava has been externally audited or certified.
 
+The review execution plan is [review-plan-v0.md](review-plan-v0.md), whose repo-relative path is `docs/security/review-plan-v0.md`. Optional longer fuzz campaigns should be recorded using [fuzz-campaigns/template-v0.md](fuzz-campaigns/template-v0.md), whose repo-relative path is `docs/security/fuzz-campaigns/template-v0.md`.
+
 ## Scope
 
 Findings should reference the review scope in [review-guide-v0.md](review-guide-v0.md), including:
