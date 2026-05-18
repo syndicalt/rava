@@ -45,6 +45,7 @@ The preview service is useful for local integration and now has local preview co
 - A cargo-fuzz target covers V0 JSON parsing, canonicalization, action verification, receipt verification, and attestation verification entry points.
 - A bounded 10-minute cargo-fuzz campaign for `v0_wire_entrypoints` is recorded in [fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md](fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md), whose repo-relative path is `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md`, and completed without crashes.
 - A bounded 1800-second cargo-fuzz campaign for `v0_wire_entrypoints` is recorded in [fuzz-campaigns/2026-05-18-v0-wire-entrypoints-1800s.md](fuzz-campaigns/2026-05-18-v0-wire-entrypoints-1800s.md), whose repo-relative path is `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-1800s.md`, and completed without crashes. It is additional review evidence and does not change the frozen external-review target.
+- A bounded 3600-second cargo-fuzz campaign for `v0_wire_entrypoints` is recorded in [fuzz-campaigns/2026-05-18-v0-wire-entrypoints-3600s.md](fuzz-campaigns/2026-05-18-v0-wire-entrypoints-3600s.md), whose repo-relative path is `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-3600s.md`, and completed without crashes. It is additional review evidence and does not change the frozen external-review target.
 - The preview verifier service has a health endpoint and a configurable request body size limit.
 - The preview verifier service can consume local file-backed replay and revocation stores when configured.
 - The preview verifier service can append local decision-metadata audit logs without raw action payload fields when configured.
@@ -64,7 +65,7 @@ The preview service is useful for local integration and now has local preview co
 ## Remaining Risks
 
 - No external security review has been completed.
-- Fuzz targets are compile-checked, and bounded 10-minute and 1800-second campaigns have been recorded, but recurring or overnight fuzz campaigns are not part of the default gate.
+- Fuzz targets are compile-checked, and bounded 10-minute, 1800-second, and 3600-second campaigns have been recorded, but recurring or overnight fuzz campaigns are not part of the default gate.
 - DID/key resolution, distributed replay, distributed revocation freshness, key custody, caller identity, distributed rate limiting, monitoring, and audit storage have documented requirements but are not implemented production systems in the V0 core, CLI, preview service, WASM wrapper, or TypeScript package.
 - The preview HTTP verifier still lacks caller identity and distributed replay/revocation/rate-limit backends.
 

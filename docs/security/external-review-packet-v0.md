@@ -44,6 +44,7 @@ Send reviewers these repository artifacts from the frozen target:
 - `docs/security/release-audit-v0.md`;
 - `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md`;
 - `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-1800s.md`;
+- `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-3600s.md`;
 - `docs/release/v0-draft-checklist.md`;
 - `docs/operations/production-trust-v0.md`;
 - `crates/rava-core/src`;
@@ -135,4 +136,8 @@ A bounded 1800-second `v0_wire_entrypoints` fuzz campaign is recorded at `docs/s
 
 That campaign ran on commit `becbff9e2326f5304822decf636aadcd0e37bb48` after the first frozen review-candidate target was recorded. It does not change the frozen review target for the first candidate. It ran before the R2 frozen review-candidate target was recorded and should be treated as supplemental review evidence for the R2 handoff.
 
-Like the shorter bounded campaign, it is not a proof of security and not evidence that Rava has been externally reviewed.
+A bounded 3600-second `v0_wire_entrypoints` fuzz campaign is recorded at `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-3600s.md`.
+
+That campaign ran on commit `78857884bd7f6feafcf781cfdde2ce4b89fcb8db` after the R2 frozen review-candidate target was recorded. It does not change the frozen review target and should be treated as supplemental review evidence unless a reviewer explicitly agrees to evaluate the later commit.
+
+Like the shorter bounded campaigns, it is not a proof of security and not evidence that Rava has been externally reviewed.
