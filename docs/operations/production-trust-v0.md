@@ -36,6 +36,44 @@ These decisions convert the production-trust tracker into the default architectu
 | [#124](https://github.com/syndicalt/rava/issues/124) distributed rate limits | Rate limits and abuse controls must be keyed to authenticated caller and tenant identity. Production multi-node deployments require shared quota state. | Caller/tenant quotas, shared quota consistency, retry behavior, accepted/rejected request accounting, and dependency outage behavior. |
 | [#125](https://github.com/syndicalt/rava/issues/125) monitoring | Monitor verifier availability and trust-decision failures without logging private keys, credentials, or sensitive payload fields. | Metrics and alerts for rejection codes, replay attempts, missing keys, stale revocation, caller-auth failures, audit-write failures, latency, saturation, and dependency outages. |
 
+## Local Controlled-Deployment Exercise
+
+This exercise is zero-budget local readiness evidence for Rava's controlled deployment profile. It helps an operator rehearse the V0 guardrails with local files and process-local metrics before selecting production infrastructure.
+
+1. Generate local development keys with `rava key generate`; do not commit or publish private-key files.
+2. Build an explicit `rava-static-trust-bundle-v0` with `fresh_until_unix` greater than the verifier time.
+3. Create a local revocation snapshot with `fresh_until_unix` greater than the verifier time.
+4. Start the preview verifier with every local require flag enabled:
+
+   ```sh
+   rava serve verify \
+     --addr 127.0.0.1:8787 \
+     --max-request-bytes 1048576 \
+     --replay-store replay.json \
+     --require-replay-store \
+     --revocation-store revocations.json \
+     --require-fresh-revocations \
+     --audit-log audit.ndjson \
+     --require-audit-log \
+     --auth-token-env RAVA_VERIFIER_TOKEN \
+     --require-auth-token-env \
+     --caller-id local-operator \
+     --require-caller-id \
+     --rate-limit-per-minute 120 \
+     --require-rate-limit-per-minute \
+     --metrics \
+     --require-metrics
+   ```
+
+5. Verify an action through the explicit static trust bundle with `--require-fresh-trust-bundle`; keep the `Rava key source: static-trust-bundle` line as local key-source evidence.
+6. Confirm `GET /healthz` reports the required guardrails for replay, revocation freshness, audit, ingress authentication, caller ID, rate limit, and metrics.
+7. Exercise a duplicate action ID, a stale revocation snapshot, a missing public key, and an invalid caller configuration; each should fail closed or report the documented local preview rejection.
+8. Export the local audit metadata with `rava audit export --output <path>` and confirm it contains decision metadata rather than raw action payloads, capability envelopes, signatures, private keys, credentials, or tokens.
+9. Capture `GET /metrics` output without raw action payloads, capability envelopes, signatures, private keys, credentials, access tokens, or local store contents.
+10. Record the command lines, tool versions, commit SHA, audit export path, metrics capture path, and observed failure modes in local operator notes.
+
+This is not production key custody, distributed replay, distributed revocation, managed audit storage, production caller identity, distributed rate limiting, managed monitoring, or external security review evidence. It is a local rehearsal that can expose missing guardrails before a deployment commits to managed infrastructure.
+
 ## Key Custody
 
 Production deployments need documented key custody for human, agent, service, evaluator, and verifier keys:
