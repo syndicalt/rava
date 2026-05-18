@@ -170,6 +170,9 @@ pub struct ServeVerifyArgs {
     #[arg(long = "caller-id")]
     pub caller_id: Option<String>,
 
+    #[arg(long = "require-caller-id")]
+    pub require_caller_id: bool,
+
     #[arg(long = "rate-limit-per-minute")]
     pub rate_limit_per_minute: Option<usize>,
 

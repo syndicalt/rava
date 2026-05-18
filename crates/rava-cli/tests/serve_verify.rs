@@ -75,6 +75,9 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
             "--auth-token-env",
             "RAVA_TEST_AUTH_TOKEN",
             "--require-auth-token-env",
+            "--caller-id",
+            "tenant-a",
+            "--require-caller-id",
             "--rate-limit-per-minute",
             "120",
             "--require-rate-limit-per-minute",
@@ -128,6 +131,16 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
     );
     assert_eq!(
         json.get("require_auth_token_env")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    assert_eq!(
+        json.get("caller_id_configured")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    assert_eq!(
+        json.get("require_caller_id")
             .and_then(serde_json::Value::as_bool),
         Some(true)
     );
@@ -238,6 +251,29 @@ fn serve_verify_rejects_invalid_caller_id_label() -> Result<(), Box<dyn Error>> 
     assert!(!output.status.success());
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(stderr.contains("invalid caller-id"), "{stderr}");
+    Ok(())
+}
+
+#[test]
+fn serve_verify_requires_caller_id_requires_caller_id() -> Result<(), Box<dyn Error>> {
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "serve",
+            "verify",
+            "--addr",
+            "127.0.0.1:0",
+            "--auth-token-env",
+            "RAVA_TEST_AUTH_TOKEN",
+            "--require-caller-id",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("require-caller-id requires caller-id"),
+        "{stderr}"
+    );
     Ok(())
 }
 
