@@ -29,9 +29,11 @@ The `rava serve verify` preview service has gained optional service-boundary con
 - `--revocation-store`;
 - `--require-fresh-revocations`;
 - `--audit-log`;
-- `--require-audit-log`.
+- `--require-audit-log`;
+- `--metrics`;
+- `--require-metrics`.
 
-Operators using the preview service should prefer all eleven controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
+Operators using the preview service should prefer all thirteen controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
 
 `rava serve verify --require-replay-store` requires `--replay-store` at startup. This is local preview configuration hygiene so controlled deployments cannot accidentally omit local one-time-use enforcement; it is not distributed replay coordination.
 
@@ -52,6 +54,8 @@ Operators using the preview service should prefer all eleven controls for nontri
 `GET /healthz` now reports local configuration flags for request limits, replay/revocation stores, replay/revocation freshness requirements, audit logging, auth, caller labels, rate limiting, and metrics. Health output is local process state only; it does not prove key freshness, revocation freshness, replay coordination, caller-to-policy mapping, monitoring coverage, or production readiness.
 
 `rava serve verify --metrics` enables `GET /metrics` with process-local Prometheus-style counters. This is metadata-only preview evidence, not managed monitoring, alerting, retention, cross-node aggregation, or incident response.
+
+`rava serve verify --require-metrics` requires `--metrics` at startup. This is local preview monitoring configuration hygiene so controlled deployments cannot accidentally run without process-local metrics; it is not managed monitoring, alerting, retention, cross-node aggregation, or incident response.
 
 `rava serve verify --require-auth-token-env` requires `--auth-token-env` at startup. This is local preview ingress configuration hygiene so controlled deployments cannot accidentally run without the local bearer-token guard; it is not production caller identity, caller-to-policy mapping, or tenant isolation.
 

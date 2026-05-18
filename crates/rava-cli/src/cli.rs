@@ -178,6 +178,9 @@ pub struct ServeVerifyArgs {
 
     #[arg(long)]
     pub metrics: bool,
+
+    #[arg(long = "require-metrics")]
+    pub require_metrics: bool,
 }
 
 #[derive(Debug, Subcommand)]

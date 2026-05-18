@@ -36,12 +36,15 @@ The preview verifier service supports these service-boundary options:
 - `--rate-limit-per-minute`
 - `--require-rate-limit-per-minute`
 - `--metrics`
+- `--require-metrics`
 
 `--auth-token-env`, `--caller-id`, and `--rate-limit-per-minute` are local preview controls. `--caller-id` requires `--auth-token-env`, uses an audit-safe label syntax, and records an explicit deployment label in local audit entries; it is not inferred from the action actor or from request headers. `--rate-limit-per-minute` must be greater than zero when configured. These controls do not replace production caller identity, distributed rate limiting, or network-edge access control.
 
 `rava serve verify --require-auth-token-env` requires `--auth-token-env` at startup. This is local preview ingress configuration hygiene so controlled deployments cannot accidentally run without the local bearer-token guard; it is not production caller identity, caller-to-policy mapping, or tenant isolation.
 
 `rava serve verify --require-rate-limit-per-minute` requires `--rate-limit-per-minute` at startup. This is local preview abuse-control configuration hygiene so controlled deployments cannot accidentally run without the local process limit; it is not shared quota state, cross-node consistency, burst policy, outage policy, or distributed rate limiting.
+
+`rava serve verify --require-metrics` requires `--metrics` at startup. This is local preview monitoring configuration hygiene so controlled deployments cannot accidentally run without process-local metrics; it is not managed monitoring, alerting, retention, cross-node aggregation, or incident response.
 
 `rava serve verify --require-replay-store` requires `--replay-store` at startup. This is local preview configuration hygiene so controlled deployments cannot accidentally omit local one-time-use enforcement; it is not distributed replay coordination.
 
@@ -111,7 +114,8 @@ authorization decisions:
 - `rate_limit_per_minute`;
 - `require_rate_limit_per_minute`;
 - `rate_limit_scope`;
-- `metrics_configured`.
+- `metrics_configured`;
+- `require_metrics`.
 
 This endpoint reports local process configuration only. It does not prove key freshness, revocation freshness, replay coordination, shared quota state, cross-node rate-limit consistency, or external reachability.
 

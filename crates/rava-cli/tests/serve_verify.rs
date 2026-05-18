@@ -78,6 +78,8 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
             "--rate-limit-per-minute",
             "120",
             "--require-rate-limit-per-minute",
+            "--metrics",
+            "--require-metrics",
         ],
         &[("RAVA_TEST_AUTH_TOKEN", "secret-token")],
         "GET /healthz HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer secret-token\r\nConnection: close\r\n\r\n",
@@ -136,6 +138,16 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
     );
     assert_eq!(
         json.get("require_rate_limit_per_minute")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    assert_eq!(
+        json.get("metrics_configured")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    assert_eq!(
+        json.get("require_metrics")
             .and_then(serde_json::Value::as_bool),
         Some(true)
     );
@@ -381,6 +393,27 @@ fn serve_verify_requires_rate_limit_requires_rate_limit() -> Result<(), Box<dyn 
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
         stderr.contains("require-rate-limit-per-minute requires rate-limit-per-minute"),
+        "{stderr}"
+    );
+    Ok(())
+}
+
+#[test]
+fn serve_verify_requires_metrics_requires_metrics() -> Result<(), Box<dyn Error>> {
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "serve",
+            "verify",
+            "--addr",
+            "127.0.0.1:0",
+            "--require-metrics",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("require-metrics requires metrics"),
         "{stderr}"
     );
     Ok(())
