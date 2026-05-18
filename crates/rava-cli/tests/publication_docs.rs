@@ -1781,6 +1781,7 @@ fn v1_preview_surface_docs_pin_cli_and_json_shapes() -> Result<(), Box<dyn Error
     for required in [
         "# Rava V1 Preview Surface",
         "## Stable CLI Commands",
+        "rava key revoke",
         "rava verify action",
         "rava audit export",
         "rava serve verify",
@@ -2063,6 +2064,10 @@ fn production_operations_runbooks_define_external_systems_without_core_claims(
                 "## Local CLI Guardrails",
                 "generated key output prints the signer ID and public key, not `private_key_hex`",
                 "forced key generation replaces the destination path instead of writing private key material through an existing symlink",
+                "## Local Compromise Response Helper",
+                "rava key revoke",
+                "fresh_until_unix",
+                "not a managed custody provider, rotation ceremony, emergency propagation system",
                 "They do not replace a production custody provider",
             ],
         ),

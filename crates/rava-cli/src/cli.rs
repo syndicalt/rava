@@ -100,6 +100,7 @@ pub struct FlightBookingDemoArgs {
 #[derive(Debug, Subcommand)]
 pub enum KeyCommand {
     Generate(GenerateKeyArgs),
+    Revoke(RevokeKeyArgs),
 }
 
 #[derive(Debug, Parser)]
@@ -112,6 +113,15 @@ pub struct GenerateKeyArgs {
 
     #[arg(long)]
     pub force: bool,
+}
+
+#[derive(Debug, Parser)]
+pub struct RevokeKeyArgs {
+    #[arg(long)]
+    pub id: String,
+
+    #[arg(long = "revocation-store")]
+    pub revocation_store: PathBuf,
 }
 
 #[derive(Debug, Subcommand)]
