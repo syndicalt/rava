@@ -86,6 +86,8 @@ Production key custody, DID resolution, distributed replay, distributed revocati
 
 Record every external finding in `docs/security/review-register-v0.md` with an ID such as `RAVA-REVIEW-001`.
 
+Use `docs/security/review-findings/template-v0.md` for each individual finding when more detail is needed than the register table can hold.
+
 Use one of these states:
 
 - `reported`;

@@ -677,6 +677,68 @@ fn external_review_packet_defines_frozen_handoff_manifest() -> Result<(), Box<dy
 }
 
 #[test]
+fn security_review_finding_template_requires_remediation_evidence() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let template_path = "docs/security/review-findings/template-v0.md";
+    let template = std::fs::read_to_string(root.join(template_path))?;
+    let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+
+    for required in [
+        "# Rava V0 Security Review Finding Template",
+        "not evidence that Rava has been externally reviewed",
+        "RAVA-REVIEW-001",
+        "## Target",
+        "Immutable commit SHA or signed tag",
+        "## Classification",
+        "protocol correctness issue",
+        "implementation bug",
+        "documentation ambiguity",
+        "test coverage gap",
+        "V0 non-goal or future production requirement",
+        "## Triage",
+        "reported",
+        "accepted",
+        "remediated",
+        "verified",
+        "accepted-risk",
+        "out-of-scope",
+        "## Impact",
+        "fail-closed verification",
+        "## Remediation Plan",
+        "## Required Regression Evidence",
+        "Regression tests",
+        "Documentation changes",
+        "## Verification Evidence",
+        "cargo fmt --check",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo test --workspace",
+        "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
+        "npm --prefix packages/rava-wasm-js test",
+        "(cd packages/rava-wasm-js && npm pack --dry-run)",
+        "## Register Update",
+        "docs/security/review-register-v0.md",
+    ] {
+        assert!(
+            template.contains(required),
+            "finding template missing: {required}"
+        );
+    }
+
+    for docs in [register, packet] {
+        assert!(
+            docs.contains(template_path),
+            "review tracking docs must link finding template: {template_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn security_review_register_tracks_external_findings_without_claiming_review(
 ) -> Result<(), Box<dyn Error>> {
     let register =
