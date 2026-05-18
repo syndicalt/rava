@@ -47,6 +47,90 @@ fn verify_action_files_accepts_valid_signed_action() -> Result<(), Box<dyn Error
 }
 
 #[test]
+fn verify_action_files_accepts_static_trust_bundle() -> Result<(), Box<dyn Error>> {
+    let scenario = Scenario::new(750)?;
+    let files = scenario.write_files("trust-bundle")?;
+    let trust_bundle_path = files.directory.join("trust-bundle.json");
+    fs::write(
+        &trust_bundle_path,
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "version": "rava-static-trust-bundle-v0",
+            "keys": {
+                scenario.booking_agent.id: scenario.booking_agent.public_key_hex,
+                scenario.human.id: scenario.human.public_key_hex,
+                scenario.personal_agent.id: scenario.personal_agent.public_key_hex,
+            }
+        }))?,
+    )?;
+
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "verify",
+            "action",
+            "--action",
+            files.action_path.to_str().ok_or("invalid action path")?,
+            "--capability-chain",
+            files.chain_path.to_str().ok_or("invalid chain path")?,
+            "--trust-bundle",
+            trust_bundle_path
+                .to_str()
+                .ok_or("invalid trust bundle path")?,
+            "--now-unix",
+            "1650000000",
+        ])
+        .output()?;
+
+    assert!(
+        output.status.success(),
+        "verify failed with stderr: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(String::from_utf8(output.stdout)?.contains("Rava verification accepted: true\n"));
+    Ok(())
+}
+
+#[test]
+fn verify_action_files_rejects_conflicting_static_trust_bundle_key() -> Result<(), Box<dyn Error>> {
+    let scenario = Scenario::new(750)?;
+    let files = scenario.write_files("trust-bundle-conflict")?;
+    let trust_bundle_path = files.directory.join("trust-bundle.json");
+    fs::write(
+        &trust_bundle_path,
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "version": "rava-static-trust-bundle-v0",
+            "keys": {
+                scenario.booking_agent.id: scenario.human.public_key_hex,
+                scenario.human.id: scenario.human.public_key_hex,
+                scenario.personal_agent.id: scenario.personal_agent.public_key_hex,
+            }
+        }))?,
+    )?;
+
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "verify",
+            "action",
+            "--action",
+            files.action_path.to_str().ok_or("invalid action path")?,
+            "--capability-chain",
+            files.chain_path.to_str().ok_or("invalid chain path")?,
+            "--actor-key",
+            &scenario.booking_agent.public_key_hex,
+            "--trust-bundle",
+            trust_bundle_path
+                .to_str()
+                .ok_or("invalid trust bundle path")?,
+            "--now-unix",
+            "1650000000",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    assert!(String::from_utf8(output.stderr)?.contains("rava:"));
+    Ok(())
+}
+
+#[test]
 fn verify_action_files_reports_rejected_signed_action() -> Result<(), Box<dyn Error>> {
     let scenario = Scenario::new(900)?;
     let files = scenario.write_files("over-budget")?;

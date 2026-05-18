@@ -162,10 +162,13 @@ pub struct VerifyActionArgs {
     pub capability_chain: PathBuf,
 
     #[arg(long = "actor-key")]
-    pub actor_key: String,
+    pub actor_key: Option<String>,
 
     #[arg(long = "issuer-key")]
     pub issuer_keys: Vec<String>,
+
+    #[arg(long = "trust-bundle")]
+    pub trust_bundle: Option<PathBuf>,
 
     #[arg(long = "now-unix")]
     pub now_unix: Option<i64>,

@@ -19,6 +19,7 @@ use rava_core::revocation::{
 use rava_core::verifier::{
     verify_action, verify_action_once, VerificationResult, VerifyActionInput, VerifyActionOnceInput,
 };
+use serde::Deserialize;
 use time::OffsetDateTime;
 
 use crate::cli::{VerifyActionArgs, VerifyAttestationArgs, VerifyReceiptArgs};
@@ -28,7 +29,16 @@ pub fn run_verify_action(args: VerifyActionArgs) -> Result<(), Box<dyn Error>> {
     let action: ActionEnvelope = serde_json::from_slice(&fs::read(&args.action)?)?;
     let capability_chain: Vec<Capability> =
         serde_json::from_slice(&fs::read(&args.capability_chain)?)?;
-    let issuer_keys = parse_issuer_keys(&args.issuer_keys)?;
+    let trust_bundle = match &args.trust_bundle {
+        Some(path) => Some(read_static_trust_bundle(path)?),
+        None => None,
+    };
+    let actor_key = select_actor_public_key(
+        &action.actor,
+        args.actor_key.as_deref(),
+        trust_bundle.as_ref(),
+    )?;
+    let issuer_keys = resolve_issuer_keys(&args.issuer_keys, trust_bundle.as_ref())?;
     let now = match args.now_unix {
         Some(seconds) => OffsetDateTime::from_unix_timestamp(seconds)?,
         None => OffsetDateTime::now_utc(),
@@ -39,7 +49,7 @@ pub fn run_verify_action(args: VerifyActionArgs) -> Result<(), Box<dyn Error>> {
         verify_action_with_registries(
             &action,
             &capability_chain,
-            &args.actor_key,
+            &actor_key,
             &issuer_keys,
             &revocations,
             args.replay_store.as_ref(),
@@ -50,7 +60,7 @@ pub fn run_verify_action(args: VerifyActionArgs) -> Result<(), Box<dyn Error>> {
         verify_action_with_registries(
             &action,
             &capability_chain,
-            &args.actor_key,
+            &actor_key,
             &issuer_keys,
             &revocations,
             args.replay_store.as_ref(),
@@ -165,5 +175,79 @@ fn parse_issuer_keys(entries: &[String]) -> Result<BTreeMap<String, String>, Box
         keys.insert(issuer.to_owned(), public_key.to_owned());
     }
 
+    Ok(keys)
+}
+
+#[derive(Debug, Deserialize)]
+struct StaticTrustBundle {
+    version: String,
+    keys: BTreeMap<String, String>,
+}
+
+fn read_static_trust_bundle(path: &PathBuf) -> Result<StaticTrustBundle, Box<dyn Error>> {
+    let bundle: StaticTrustBundle = serde_json::from_slice(&fs::read(path)?)?;
+    if bundle.version != "rava-static-trust-bundle-v0" {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "unsupported trust bundle version",
+        )
+        .into());
+    }
+    for (signer_id, public_key) in &bundle.keys {
+        if signer_id.is_empty() || public_key.is_empty() {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "trust bundle signer IDs and public keys must be non-empty",
+            )
+            .into());
+        }
+    }
+    Ok(bundle)
+}
+
+fn select_actor_public_key(
+    actor: &str,
+    actor_key: Option<&str>,
+    trust_bundle: Option<&StaticTrustBundle>,
+) -> Result<String, Box<dyn Error>> {
+    let bundled_key = trust_bundle.and_then(|bundle| bundle.keys.get(actor));
+    match (actor_key, bundled_key) {
+        (Some(explicit), Some(bundled)) if explicit != bundled => Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "actor-key conflicts with trust-bundle actor key",
+        )
+        .into()),
+        (Some(explicit), _) => Ok(explicit.to_owned()),
+        (None, Some(bundled)) => Ok(bundled.clone()),
+        (None, None) => Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "actor public key requires --actor-key or a trust-bundle entry for the action actor",
+        )
+        .into()),
+    }
+}
+
+fn resolve_issuer_keys(
+    entries: &[String],
+    trust_bundle: Option<&StaticTrustBundle>,
+) -> Result<BTreeMap<String, String>, Box<dyn Error>> {
+    let mut keys = parse_issuer_keys(entries)?;
+    if let Some(bundle) = trust_bundle {
+        for (signer_id, public_key) in &bundle.keys {
+            match keys.get(signer_id) {
+                Some(explicit) if explicit != public_key => {
+                    return Err(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        "issuer-key conflicts with trust-bundle signer key",
+                    )
+                    .into());
+                }
+                Some(_) => {}
+                None => {
+                    keys.insert(signer_id.clone(), public_key.clone());
+                }
+            }
+        }
+    }
     Ok(keys)
 }
