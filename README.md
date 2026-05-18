@@ -74,6 +74,8 @@ The V0 threat model is documented in [docs/security/threat-model-v0.md](docs/sec
 
 The current repo audit note is [docs/security/release-audit-v0.md](docs/security/release-audit-v0.md). It is an internal readiness audit, not an external security assessment.
 
+The V0 draft completion audit is [docs/security/v0-draft-completion-audit.md](docs/security/v0-draft-completion-audit.md). It defines what "complete" means for the draft reference implementation without converting production requirements into implemented guarantees.
+
 Vulnerability reporting and external review intake are documented in [SECURITY.md](SECURITY.md).
 
 ## Mental Model
@@ -100,6 +102,7 @@ Vulnerability reporting and external review intake are documented in [SECURITY.m
 - `docs/security/review-guide-v0.md`: review scope, evidence map, and reviewer questions.
 - `docs/security/review-register-v0.md`: external review findings and remediation tracking.
 - `docs/security/release-audit-v0.md`: current publication-readiness audit notes.
+- `docs/security/v0-draft-completion-audit.md`: completion audit for the V0 draft reference implementation.
 - `docs/roadmap.md`: functional protocol roadmap.
 - `docs/release/v0-draft-checklist.md`: draft release gate, artifact, and publication guardrail checklist.
 - `docs/release/notes-template-v0.md`: draft release notes template for verification and compatibility notes.
