@@ -122,7 +122,7 @@ When `--audit-log` is configured, the service appends one newline-delimited JSON
 
 Audit entries intentionally omit raw action intent, resource, constraints, capability envelopes, and signatures. On Unix, local audit log files are created owner-only, group/world-accessible existing logs are rejected, the final path is opened without following a symlink, and each append is flushed and synced before the verifier response is returned. Operators that need managed audit retention, export, tamper evidence, or privacy controls must provide those systems outside the preview service.
 
-`rava audit export --audit-log <path>` converts local preview audit NDJSON into a JSON array and rejects entries that contain raw payload-style fields such as `action`, `capability_chain`, `intent`, `resource`, `constraints`, or `proof`. This is a local export helper, not managed audit export.
+`rava audit export --audit-log <path>` converts local preview audit NDJSON into a JSON array. Optional `--since-unix` and `--until-unix` bounds are inclusive and filter on `verified_at_unix`; when a time filter is used, entries missing `verified_at_unix` fail closed. The exporter rejects entries that contain raw payload-style fields such as `action`, `capability_chain`, `intent`, `resource`, `constraints`, or `proof`. This is a local export helper, not managed audit export.
 
 ## Production Requirements
 
