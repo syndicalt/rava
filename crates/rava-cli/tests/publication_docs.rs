@@ -91,6 +91,149 @@ fn functional_roadmap_separates_current_state_from_future_work() -> Result<(), B
 }
 
 #[test]
+fn v0_draft_completion_audit_maps_completion_to_evidence() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let audit = std::fs::read_to_string(root.join("docs/security/v0-draft-completion-audit.md"))?;
+    let readme = std::fs::read_to_string(root.join("README.md"))?;
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
+
+    for required in [
+        "# Rava V0 Draft Completion Audit",
+        "100% complete for the V0 draft reference implementation",
+        "not production-ready security software",
+        "No external security review has been completed",
+        "Production systems remain external requirements",
+        "## Completion Definition",
+        "## Prompt-to-Artifact Checklist",
+        "## Verification Gate",
+        "## Remaining Non-Draft Work",
+        "signed actions",
+        "delegated capabilities",
+        "attenuated delegation",
+        "replay",
+        "revocation",
+        "receipts",
+        "attestations",
+        "CLI flows",
+        "preview HTTP verifier",
+        "WASM wrapper",
+        "TypeScript package",
+        "test-vectors/v0",
+        "examples/flight-booking",
+        "docs/security/threat-model-v0.md",
+        "docs/security/release-audit-v0.md",
+        "docs/release/v0-draft-checklist.md",
+        "docs/roadmap.md",
+        "cargo fmt --check",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo test --workspace",
+        "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
+        "npm --prefix packages/rava-wasm-js test",
+        "npm pack --dry-run",
+    ] {
+        assert!(
+            audit.contains(required),
+            "completion audit missing: {required}"
+        );
+    }
+
+    assert!(
+        readme.contains("docs/security/v0-draft-completion-audit.md"),
+        "README must link to the V0 draft completion audit"
+    );
+    assert!(
+        roadmap.contains("security/v0-draft-completion-audit.md"),
+        "roadmap must link to the V0 draft completion audit"
+    );
+    assert!(!audit.contains("Rava is production-ready"));
+
+    Ok(())
+}
+
+#[test]
+fn github_pages_site_explains_lifecycle_and_links_protocol_docs() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let site = std::fs::read_to_string(root.join("site/index.html"))?;
+    let styles = std::fs::read_to_string(root.join("site/styles.css"))?;
+    let script = std::fs::read_to_string(root.join("site/script.js"))?;
+    let workflow = std::fs::read_to_string(root.join(".github/workflows/pages.yml"))?;
+
+    for required in [
+        "<title>Rava",
+        "Action-native authorization for autonomous agents",
+        "Most auth asks who logged in",
+        "Rava asks whether this exact signed action is allowed",
+        "not production-ready security software",
+        "Problem",
+        "Proposed Solution",
+        "Full Lifecycle",
+        "Documentation",
+        "Roadmap",
+        "https://github.com/syndicalt/rava",
+        "docs/protocol/rava-v0.md",
+        "docs/security/threat-model-v0.md",
+        "docs/security/v0-draft-completion-audit.md",
+        "docs/roadmap.md",
+        "docs/operations/production-trust-v0.md",
+        "cargo run -p rava -- demo flight-booking",
+        "rava verify action",
+        "rava verify receipt",
+        "rava attest sign",
+        "cargo fmt --check",
+        "cargo test --workspace",
+        "cargo package --workspace",
+        "signed action",
+        "capability chain",
+        "verification receipt",
+        "post-action attestation",
+    ] {
+        assert!(site.contains(required), "site missing: {required}");
+    }
+
+    for required in [
+        "--ink",
+        "--paper",
+        "font-family",
+        ".lifecycle",
+        ".protocol-card",
+        ".doc-grid",
+        "@media",
+    ] {
+        assert!(styles.contains(required), "site CSS missing: {required}");
+    }
+
+    for required in [
+        "data-copy-command",
+        "navigator.clipboard.writeText",
+        "aria-label",
+    ] {
+        assert!(script.contains(required), "site script missing: {required}");
+    }
+
+    for required in [
+        "Deploy Rava Pages",
+        "github-pages",
+        "actions/configure-pages",
+        "actions/upload-pages-artifact",
+        "actions/deploy-pages",
+        "path: site",
+    ] {
+        assert!(
+            workflow.contains(required),
+            "Pages workflow missing: {required}"
+        );
+    }
+
+    assert!(!site.contains("Rava is production-ready"));
+    assert!(!site.contains("blockchain-backed"));
+
+    Ok(())
+}
+
+#[test]
 fn hardening_property_regressions_are_visible_in_roadmap() -> Result<(), Box<dyn Error>> {
     let root = repository_root();
     let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;

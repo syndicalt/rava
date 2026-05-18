@@ -22,6 +22,8 @@ Acceptance gates:
 
 Draft release checklist and release-note guidance live in [release/v0-draft-checklist.md](release/v0-draft-checklist.md) and [release/notes-template-v0.md](release/notes-template-v0.md).
 
+The V0 draft completion audit lives in [security/v0-draft-completion-audit.md](security/v0-draft-completion-audit.md). It marks the draft reference implementation complete for review and integration experiments, while preserving the explicit non-production posture.
+
 ## V0 Hardening
 
 Goal: strengthen the draft core without adding speculative product surface.

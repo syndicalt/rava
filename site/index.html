@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rava | Action-native authorization for autonomous agents</title>
+    <meta
+      name="description"
+      content="Rava is a draft protocol and Rust reference implementation for action-native authorization in autonomous agent systems."
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Rava home">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span>Rava</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#problem">Problem</a>
+        <a href="#solution">Solution</a>
+        <a href="#lifecycle">Lifecycle</a>
+        <a href="#docs">Docs</a>
+        <a href="#roadmap">Roadmap</a>
+      </nav>
+      <a class="header-link" href="https://github.com/syndicalt/rava">GitHub</a>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Draft protocol. Rust core. No vibes-based auth.</p>
+          <h1>Action-native authorization for autonomous agents</h1>
+          <p class="lede">
+            Most auth asks who logged in. Rava asks whether this exact signed action is allowed
+            right now by this exact signed delegation chain.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://github.com/syndicalt/rava">View repository</a>
+            <a class="button secondary" href="#lifecycle">See the lifecycle</a>
+          </div>
+          <p class="status-note">
+            Rava V0 is not production-ready security software. It is complete as a V0 draft
+            reference implementation for review, examples, interop work, and integration design.
+          </p>
+        </div>
+        <aside class="protocol-card" aria-label="Rava verification model">
+          <div class="card-topline">
+            <span>Verifier decision</span>
+            <strong>fail closed</strong>
+          </div>
+          <div class="decision-stack">
+            <span>signed action</span>
+            <span>capability chain</span>
+            <span>public keys</span>
+            <span>replay snapshot</span>
+            <span>revocation snapshot</span>
+          </div>
+          <div class="decision-output">
+            <span>accepted or rejected</span>
+            <strong>with a signed verification receipt</strong>
+          </div>
+        </aside>
+      </section>
+
+      <section id="problem" class="section split">
+        <div>
+          <p class="eyebrow">Problem</p>
+          <h2>Agent auth gets weird fast.</h2>
+        </div>
+        <div class="section-copy">
+          <p>
+            Human login was built for people sitting in front of screens. Agents act across tools,
+            services, and delegated tasks. A bearer token can answer "who has this token" but it
+            does not naturally explain whether a specific booking, transfer, file write, or API call
+            was actually delegated.
+          </p>
+          <p>
+            Rava treats authorization as an inspectable object: a signed action, a signed capability
+            chain, and verifier state for replay and revocation. Less hand-waving, more evidence.
+          </p>
+        </div>
+      </section>
+
+      <section id="solution" class="section">
+        <p class="eyebrow">Proposed Solution</p>
+        <h2>Make the action carry its authority.</h2>
+        <div class="feature-grid">
+          <article>
+            <h3>Signed actions</h3>
+            <p>Agents sign exact intent, resource, context hash, nonce, and timestamp data.</p>
+          </article>
+          <article>
+            <h3>Delegated capabilities</h3>
+            <p>Controllers delegate bounded authority. Child capabilities cannot broaden parents.</p>
+          </article>
+          <article>
+            <h3>Verifier receipts</h3>
+            <p>Decisions can be signed, checked later, and correlated with post-action attestations.</p>
+          </article>
+          <article>
+            <h3>Explicit assumptions</h3>
+            <p>Key discovery, custody, distributed freshness, and production operations stay visible.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="lifecycle" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Full Lifecycle</p>
+          <h2>From delegation to audit trail.</h2>
+        </div>
+        <div class="lifecycle" aria-label="Full lifecycle usage examples">
+          <article>
+            <span class="step-number">01</span>
+            <h3>Delegate</h3>
+            <p>A controller signs a root capability and narrows it for an agent or subagent.</p>
+          </article>
+          <article>
+            <span class="step-number">02</span>
+            <h3>Act</h3>
+            <p>The agent signs a concrete action against a resource, operation, context hash, and nonce.</p>
+          </article>
+          <article>
+            <span class="step-number">03</span>
+            <h3>Verify</h3>
+            <p>The verifier checks signatures, expiry, actor binding, attenuation, replay, and revocation.</p>
+          </article>
+          <article>
+            <span class="step-number">04</span>
+            <h3>Receipt</h3>
+            <p>The verifier signs an accepted or rejected decision bound to the capability chain hash.</p>
+          </article>
+          <article>
+            <span class="step-number">05</span>
+            <h3>Attest</h3>
+            <p>A downstream evaluator signs post-action evidence about what actually happened.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section examples">
+        <div>
+          <p class="eyebrow">Usage Examples</p>
+          <h2>Concrete commands, not a fog machine.</h2>
+        </div>
+        <div class="command-list">
+          <div class="command-block">
+            <div class="command-label">Run the demo</div>
+            <pre><code>cargo run -p rava -- demo flight-booking</code></pre>
+            <button type="button" data-copy-command="cargo run -p rava -- demo flight-booking">Copy</button>
+          </div>
+          <div class="command-block">
+            <div class="command-label">Verify an action</div>
+            <pre><code>rava verify action --action action.json --capability-chain capability-chain.json --actor-key &lt;actor-public-key-hex&gt; --issuer-key &lt;issuer-id=issuer-public-key-hex&gt;</code></pre>
+            <button type="button" data-copy-command="rava verify action --action action.json --capability-chain capability-chain.json --actor-key &lt;actor-public-key-hex&gt; --issuer-key &lt;issuer-id=issuer-public-key-hex&gt;">Copy</button>
+          </div>
+          <div class="command-block">
+            <div class="command-label">Verify a receipt</div>
+            <pre><code>rava verify receipt --receipt receipt.json --verifier-key &lt;verifier-public-key-hex&gt;</code></pre>
+            <button type="button" data-copy-command="rava verify receipt --receipt receipt.json --verifier-key &lt;verifier-public-key-hex&gt;">Copy</button>
+          </div>
+          <div class="command-block">
+            <div class="command-label">Sign an attestation</div>
+            <pre><code>rava attest sign --key evaluator-key.json --out attestation.json --action-id act_demo --outcome accepted --subject travel.booking --evidence-hash sha256:&lt;64-lowercase-hex&gt;</code></pre>
+            <button type="button" data-copy-command="rava attest sign --key evaluator-key.json --out attestation.json --action-id act_demo --outcome accepted --subject travel.booking --evidence-hash sha256:&lt;64-lowercase-hex&gt;">Copy</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="docs" class="section">
+        <p class="eyebrow">Documentation</p>
+        <h2>Read the source of truth.</h2>
+        <div class="doc-grid">
+          <a href="https://github.com/syndicalt/rava/blob/master/docs/protocol/rava-v0.md">
+            <span>Protocol spec</span>
+            <strong>docs/protocol/rava-v0.md</strong>
+          </a>
+          <a href="https://github.com/syndicalt/rava/blob/master/docs/security/threat-model-v0.md">
+            <span>Threat model</span>
+            <strong>docs/security/threat-model-v0.md</strong>
+          </a>
+          <a href="https://github.com/syndicalt/rava/blob/master/docs/security/v0-draft-completion-audit.md">
+            <span>Completion audit</span>
+            <strong>docs/security/v0-draft-completion-audit.md</strong>
+          </a>
+          <a href="https://github.com/syndicalt/rava/blob/master/docs/operations/production-trust-v0.md">
+            <span>Production requirements</span>
+            <strong>docs/operations/production-trust-v0.md</strong>
+          </a>
+        </div>
+      </section>
+
+      <section class="section examples">
+        <div>
+          <p class="eyebrow">Release Gate</p>
+          <h2>Trust, but run the commands.</h2>
+        </div>
+        <div class="command-list">
+          <div class="command-block">
+            <div class="command-label">Format</div>
+            <pre><code>cargo fmt --check</code></pre>
+            <button type="button" data-copy-command="cargo fmt --check">Copy</button>
+          </div>
+          <div class="command-block">
+            <div class="command-label">Workspace tests</div>
+            <pre><code>cargo test --workspace</code></pre>
+            <button type="button" data-copy-command="cargo test --workspace">Copy</button>
+          </div>
+          <div class="command-block">
+            <div class="command-label">Package dry run</div>
+            <pre><code>cargo package --workspace</code></pre>
+            <button type="button" data-copy-command="cargo package --workspace">Copy</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="roadmap" class="section roadmap">
+        <div>
+          <p class="eyebrow">Roadmap</p>
+          <h2>Draft complete. Production systems still have to earn it.</h2>
+        </div>
+        <ol>
+          <li><strong>V0 draft:</strong> complete reference implementation, examples, docs, and release gate.</li>
+          <li><strong>Review:</strong> external security review, remediation tracking, and optional longer fuzz campaigns.</li>
+          <li><strong>Preview:</strong> stable developer-facing package and service surface, with Rust verifier semantics authoritative.</li>
+          <li><strong>Production:</strong> custody, discovery, distributed freshness, caller identity, rate limits, monitoring, and audit storage.</li>
+        </ol>
+        <a class="button secondary" href="https://github.com/syndicalt/rava/blob/master/docs/roadmap.md">Open docs/roadmap.md</a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Apache-2.0 open core protocol package.</span>
+      <a href="https://github.com/syndicalt/rava">github.com/syndicalt/rava</a>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
