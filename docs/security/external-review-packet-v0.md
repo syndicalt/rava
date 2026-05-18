@@ -6,7 +6,9 @@ This packet is a handoff manifest for an external security review of the Rava V0
 
 Before sending this packet, record the immutable commit SHA or signed tag under review in `docs/security/review-register-v0.md`, release notes draft, and reviewer correspondence.
 
-The current review-candidate notes are `docs/release/v0-review-candidate-2026-05-18.md`.
+The current review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r2.md`.
+
+The historical first review-candidate notes are `docs/release/v0-review-candidate-2026-05-18.md`.
 
 The reviewer cover note is `docs/security/external-review-cover-note-v0.md`.
 
@@ -35,8 +37,10 @@ Send reviewers these repository artifacts from the frozen target:
 - `docs/security/review-register-v0.md`;
 - `docs/security/external-review-kickoff-checklist-v0.md`;
 - `docs/security/external-review-request-v0.md`;
+- `docs/security/external-review-closeout-template-v0.md`;
 - `docs/security/release-audit-v0.md`;
 - `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md`;
+- `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-1800s.md`;
 - `docs/release/v0-draft-checklist.md`;
 - `docs/operations/production-trust-v0.md`;
 - `crates/rava-core/src`;
@@ -126,6 +130,6 @@ That campaign is useful negative evidence for one bounded run. It is not a proof
 
 A bounded 1800-second `v0_wire_entrypoints` fuzz campaign is recorded at `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-1800s.md`.
 
-That campaign ran on commit `becbff9e2326f5304822decf636aadcd0e37bb48` after the frozen review-candidate target was recorded. It does not change the frozen review target and should be treated as supplemental review evidence.
+That campaign ran on commit `becbff9e2326f5304822decf636aadcd0e37bb48` after the first frozen review-candidate target was recorded. It does not change the frozen review target for the first candidate. It ran before the R2 frozen review-candidate target was recorded and should be treated as supplemental review evidence for the R2 handoff.
 
 Like the shorter bounded campaign, it is not a proof of security and not evidence that Rava has been externally reviewed.

@@ -771,8 +771,9 @@ fn external_review_cover_note_preserves_scope_and_non_production_boundary(
         "# Rava V0 External Review Cover Note",
         "not production-ready security software",
         "not evidence that Rava has been externally reviewed",
-        "v0-review-candidate-2026-05-18",
-        "0672e61fcf46b472aee4e32d1915a0c975a0bbda",
+        "v0-review-candidate-2026-05-18-r2",
+        "d611c6d1c2fd00d7a3d46a4031bdea65820fe78b",
+        "docs/release/v0-review-candidate-2026-05-18-r2.md",
         "https://github.com/syndicalt/rava/issues/87",
         "docs/security/external-review-packet-v0.md",
         "docs/security/threat-model-v0.md",
@@ -1171,7 +1172,62 @@ fn v0_review_candidate_notes_record_frozen_target_without_release_claims(
     for docs in [packet, checklist] {
         assert!(
             docs.contains(notes_path),
-            "review packet and checklist must link review candidate notes: {notes_path}"
+            "review packet and checklist must link historical review candidate notes: {notes_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
+fn v0_review_candidate_r2_records_current_review_readiness_target() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let notes_path = "docs/release/v0-review-candidate-2026-05-18-r2.md";
+    let notes = std::fs::read_to_string(root.join(notes_path))?;
+    let cover =
+        std::fs::read_to_string(root.join("docs/security/external-review-cover-note-v0.md"))?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+    let checklist = std::fs::read_to_string(root.join("docs/release/v0-draft-checklist.md"))?;
+    let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
+
+    for required in [
+        "# Rava V0 Review Candidate Notes: 2026-05-18 R2",
+        "not a production release",
+        "not evidence that an external security review has been completed",
+        "v0-review-candidate-2026-05-18-r2",
+        "d611c6d1c2fd00d7a3d46a4031bdea65820fe78b",
+        "External security review: V0 review candidate",
+        "https://github.com/syndicalt/rava/issues/87",
+        "docs/security/external-review-packet-v0.md",
+        "docs/security/external-review-kickoff-checklist-v0.md",
+        "docs/security/external-review-request-v0.md",
+        "docs/security/external-review-closeout-template-v0.md",
+        "docs/security/review-findings/template-v0.md",
+        "docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md",
+        "docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-1800s.md",
+        "cargo fmt --check",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo test --workspace",
+        "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml --locked",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
+        "npm --prefix packages/rava-wasm-js test",
+        "(cd packages/rava-wasm-js && npm pack --dry-run)",
+        "master CI run `26017062950`",
+        "Pages run `26017062966`",
+        "No external security review has been completed",
+    ] {
+        assert!(
+            notes.contains(required),
+            "R2 review candidate notes missing: {required}"
+        );
+    }
+
+    for docs in [cover, packet, checklist, register] {
+        assert!(
+            docs.contains(notes_path),
+            "external review docs must link R2 review candidate notes: {notes_path}"
         );
     }
 
