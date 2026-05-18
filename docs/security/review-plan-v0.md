@@ -12,6 +12,8 @@ The target should be a clean commit on `master` with the full local gate passing
 
 The concrete handoff manifest is `docs/security/external-review-packet-v0.md`.
 
+Use `docs/security/external-review-cover-note-v0.md` as the reviewer-facing cover note for the frozen target, scope, non-production boundary, and expected verification commands.
+
 Send reviewers these repository artifacts:
 
 - `README.md`;

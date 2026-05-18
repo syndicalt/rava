@@ -759,6 +759,65 @@ fn external_review_packet_links_post_candidate_fuzz_evidence_without_moving_targ
 }
 
 #[test]
+fn external_review_cover_note_preserves_scope_and_non_production_boundary(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let cover_path = "docs/security/external-review-cover-note-v0.md";
+    let cover = std::fs::read_to_string(root.join(cover_path))?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+    let plan = std::fs::read_to_string(root.join("docs/security/review-plan-v0.md"))?;
+
+    for required in [
+        "# Rava V0 External Review Cover Note",
+        "not production-ready security software",
+        "not evidence that Rava has been externally reviewed",
+        "v0-review-candidate-2026-05-18",
+        "0672e61fcf46b472aee4e32d1915a0c975a0bbda",
+        "https://github.com/syndicalt/rava/issues/87",
+        "docs/security/external-review-packet-v0.md",
+        "docs/security/threat-model-v0.md",
+        "docs/protocol/rava-v0.md",
+        "docs/security/review-guide-v0.md",
+        "docs/security/review-register-v0.md",
+        ".github/ISSUE_TEMPLATE/security-review-finding.yml",
+        "canonicalization",
+        "signature binding",
+        "delegation attenuation",
+        "replay semantics",
+        "revocation semantics",
+        "receipt and attestation verification",
+        "fail-closed behavior",
+        "production key custody",
+        "distributed replay",
+        "distributed revocation",
+        "caller identity",
+        "cargo fmt --check",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo test --workspace",
+        "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
+        "npm --prefix packages/rava-wasm-js test",
+        "(cd packages/rava-wasm-js && npm pack --dry-run)",
+    ] {
+        assert!(
+            cover.contains(required),
+            "external review cover note missing: {required}"
+        );
+    }
+
+    for docs in [packet, plan] {
+        assert!(
+            docs.contains(cover_path),
+            "review handoff docs must link cover note: {cover_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn security_review_finding_template_requires_remediation_evidence() -> Result<(), Box<dyn Error>> {
     let root = repository_root();
     let template_path = "docs/security/review-findings/template-v0.md";
