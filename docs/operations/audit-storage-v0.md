@@ -10,6 +10,8 @@ When `rava serve verify --audit-log <path>` is configured, the preview service a
 
 On Unix, newly created local audit log files are owner-only. Existing audit log files that are readable, writable, or executable by group or others are rejected before a decision entry is written. The preview service also opens the final audit log path without following a symlink and flushes and syncs the appended entry before returning a verifier response.
 
+The preview service also supports `--require-audit-log`, which fails closed at startup unless `--audit-log` is configured. That guardrail helps controlled preview deployments avoid accidentally running without local decision metadata, but it does not add managed durability, retention, export, tamper evidence, access control, deletion policy, or legal-hold support.
+
 These guardrails reduce accidental local disclosure during development and integration testing. They are not managed audit storage, retention, export, tamper evidence, access-control review, deletion policy, or legal-hold support.
 
 ## Local Export Helper

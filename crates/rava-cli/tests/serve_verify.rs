@@ -60,6 +60,8 @@ fn serve_verify_returns_rejection_code_for_denied_action() -> Result<(), Box<dyn
 fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Error>> {
     let replay_store = temp_file_path("rava-serve-health-replay");
     let replay_store_arg = replay_store.to_string_lossy().into_owned();
+    let audit_log = temp_file_path("rava-serve-health-audit");
+    let audit_log_arg = audit_log.to_string_lossy().into_owned();
     let response = run_server_raw_request(
         &[
             "--max-request-bytes",
@@ -67,6 +69,9 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
             "--replay-store",
             &replay_store_arg,
             "--require-replay-store",
+            "--audit-log",
+            &audit_log_arg,
+            "--require-audit-log",
         ],
         "GET /healthz HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
     )?;
@@ -94,6 +99,16 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
     );
     assert_eq!(
         json.get("require_replay_store")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    assert_eq!(
+        json.get("audit_log_configured")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    assert_eq!(
+        json.get("require_audit_log")
             .and_then(serde_json::Value::as_bool),
         Some(true)
     );
@@ -276,6 +291,27 @@ fn serve_verify_requires_replay_store_requires_replay_store() -> Result<(), Box<
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
         stderr.contains("require-replay-store requires replay-store"),
+        "{stderr}"
+    );
+    Ok(())
+}
+
+#[test]
+fn serve_verify_requires_audit_log_requires_audit_log() -> Result<(), Box<dyn Error>> {
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "serve",
+            "verify",
+            "--addr",
+            "127.0.0.1:0",
+            "--require-audit-log",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("require-audit-log requires audit-log"),
         "{stderr}"
     );
     Ok(())

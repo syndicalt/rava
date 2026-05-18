@@ -179,7 +179,7 @@ The CLI can load a local `rava-static-trust-bundle-v0` file with signer-ID to pu
 The Rust CLI includes a local preview service:
 
 ```text
-RAVA_VERIFIER_TOKEN=<secret> rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --require-replay-store --revocation-store revocations.json --require-fresh-revocations --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --rate-limit-per-minute 120
+RAVA_VERIFIER_TOKEN=<secret> rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --require-replay-store --revocation-store revocations.json --require-fresh-revocations --audit-log audit.ndjson --require-audit-log --auth-token-env RAVA_VERIFIER_TOKEN --rate-limit-per-minute 120
 ```
 
 It exposes `POST /verify/action` as an HTTP wrapper around the V0 Rust verifier. Request JSON must include:
@@ -196,6 +196,7 @@ It also exposes `GET /healthz`, which returns the service name, `ok` status, and
 `--require-replay-store` fails closed at startup unless `--replay-store` is configured. This is local preview configuration hygiene, not distributed replay coordination.
 `--revocation-store` loads a local revoked-ID snapshot for signer and capability checks on each request.
 `--audit-log` appends newline-delimited JSON decision metadata without raw action intent, resource, constraints, capability envelopes, or signatures.
+`--require-audit-log` fails closed at startup unless `--audit-log` is configured. This is local preview configuration hygiene, not managed audit storage, retention, or export.
 `--auth-token-env` requires `Authorization: Bearer <token>` on every request and reads the token from an environment variable so it is not exposed in command arguments.
 `--rate-limit-per-minute` applies a local per-process request limit.
 

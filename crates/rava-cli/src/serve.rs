@@ -56,6 +56,9 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     if args.require_fresh_revocations && args.revocation_store.is_none() {
         return Err("require-fresh-revocations requires revocation-store".into());
     }
+    if args.require_audit_log && args.audit_log.is_none() {
+        return Err("require-audit-log requires audit-log".into());
+    }
     if let Some(caller_id) = &args.caller_id {
         validate_caller_id(caller_id)?;
     }
@@ -166,6 +169,7 @@ fn handle_connection(
                 "revocation_store_configured": args.revocation_store.is_some(),
                 "require_fresh_revocations": args.require_fresh_revocations,
                 "audit_log_configured": args.audit_log.is_some(),
+                "require_audit_log": args.require_audit_log,
                 "auth_required": args.auth_token_env.is_some(),
                 "caller_id_configured": args.caller_id.is_some(),
                 "rate_limit_per_minute": args.rate_limit_per_minute,
