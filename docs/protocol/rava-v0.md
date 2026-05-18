@@ -179,7 +179,7 @@ The CLI can load a local `rava-static-trust-bundle-v0` file with signer-ID to pu
 The Rust CLI includes a local preview service:
 
 ```text
-RAVA_VERIFIER_TOKEN=<secret> rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --rate-limit-per-minute 120
+RAVA_VERIFIER_TOKEN=<secret> rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --require-fresh-revocations --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --rate-limit-per-minute 120
 ```
 
 It exposes `POST /verify/action` as an HTTP wrapper around the V0 Rust verifier. Request JSON must include:
@@ -238,7 +238,7 @@ V0 includes in-memory and local file-backed revocation registries. Revocation is
 
 The file-backed registry stores revoked IDs in deterministic JSON and rejects invalid JSON rather than silently ignoring corrupt state. Local revocation updates are serialized with a lock file and reload existing file state while holding that lock, so stale local handles do not overwrite earlier revoked IDs. Lock acquisition, read, write, or rename failure is a revocation-store error and fails closed.
 
-Local file-backed revocation snapshots may include `fresh_until_unix`. `rava verify action --require-fresh-revocations` requires that field to be present and greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution.
+Local file-backed revocation snapshots may include `fresh_until_unix`. `rava verify action --require-fresh-revocations` and `rava serve verify --require-fresh-revocations` require that field to be present and greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution.
 
 Future versions should define network distribution, freshness, and consistency rules for shared revocation state.
 

@@ -25,7 +25,7 @@ Allowing verification to continue with stale or missing revocation state is an a
 
 ## Local Snapshot Freshness
 
-Local revocation snapshots may include `fresh_until_unix`. When `rava verify action --require-fresh-revocations` is used with `--revocation-store`, verification fails closed before verifier execution unless `fresh_until_unix` is present and greater than verifier `now_unix`.
+Local revocation snapshots may include `fresh_until_unix`. When `rava verify action --require-fresh-revocations` or `rava serve verify --require-fresh-revocations` is used with `--revocation-store`, verification fails closed before verifier execution unless `fresh_until_unix` is present and greater than verifier `now_unix`.
 
 This is a local snapshot guardrail for controlled deployments. It does not provide revocation publication, network distribution, cache invalidation, emergency propagation, cross-node freshness, or outage handling.
 
