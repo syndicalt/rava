@@ -29,6 +29,8 @@ External review kickoff should use [docs/security/external-review-kickoff-checkl
 
 Reviewer outreach status should be tracked in [docs/security/external-review-outreach-v0.md](docs/security/external-review-outreach-v0.md) so contact state, scope alignment, report constraints, and next actions are recorded without implying review completion.
 
+Reviewer selection should use [docs/security/external-review-selection-v0.md](docs/security/external-review-selection-v0.md) so required expertise, conflicts, report constraints, and non-claim boundaries are recorded before scheduling work.
+
 Reviewer engagement requests should use [docs/security/external-review-request-v0.md](docs/security/external-review-request-v0.md) so quotes, availability checks, and statements of work preserve the V0 scope and non-production boundary.
 
 External reviewers can open structured remediation issues with [.github/ISSUE_TEMPLATE/security-review-finding.yml](.github/ISSUE_TEMPLATE/security-review-finding.yml). That issue form is a tracking aid, not evidence that Rava has been externally reviewed.

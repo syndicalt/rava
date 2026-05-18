@@ -1076,6 +1076,66 @@ fn external_review_outreach_tracker_records_reviewer_contact_without_audit_claim
 }
 
 #[test]
+fn external_review_selection_rubric_records_reviewer_fit_without_endorsement_claims(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let selection_path = "docs/security/external-review-selection-v0.md";
+    let selection = std::fs::read_to_string(root.join(selection_path))?;
+    let plan = std::fs::read_to_string(root.join("docs/security/review-plan-v0.md"))?;
+    let request =
+        std::fs::read_to_string(root.join("docs/security/external-review-request-v0.md"))?;
+    let outreach =
+        std::fs::read_to_string(root.join("docs/security/external-review-outreach-v0.md"))?;
+    let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
+    let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
+
+    for required in [
+        "# Rava V0 External Review Selection Rubric",
+        "not evidence that Rava has been externally reviewed",
+        "## Required Fit",
+        "Rust security review",
+        "canonicalization of signed payloads",
+        "signature binding",
+        "Ed25519 verification usage",
+        "delegation attenuation",
+        "replay semantics",
+        "revocation semantics",
+        "fail-closed parser and verifier behavior",
+        "security documentation review",
+        "## Disqualifying Gaps",
+        "cannot review the frozen target",
+        "cannot produce written findings",
+        "requires production-ready or audited language",
+        "## Conflict and Constraint Recording",
+        "conflicts of interest",
+        "report disclosure constraints",
+        "attribution constraints",
+        "## Candidate Evaluation Table",
+        "Reviewer or firm",
+        "Fit",
+        "Constraints",
+        "Decision",
+        "## Non-Claim Boundary",
+        "No production-ready or externally audited claim",
+    ] {
+        assert!(
+            selection.contains(required),
+            "external review selection rubric missing: {required}"
+        );
+    }
+
+    for docs in [plan, request, outreach, register, security_policy, roadmap] {
+        assert!(
+            docs.contains(selection_path),
+            "review docs must link external review selection rubric: {selection_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn external_review_closeout_template_requires_findings_and_residual_risk_evidence(
 ) -> Result<(), Box<dyn Error>> {
     let root = repository_root();
@@ -1614,7 +1674,7 @@ fn production_trust_docs_define_external_operational_requirements() -> Result<()
     }
 
     for required in [
-        "Production trust evidence lives in `SECURITY.md`, `docs/operations/production-trust-v0.md`, `docs/operations/key-custody-v0.md`, `docs/operations/key-discovery-v0.md`, `docs/operations/distributed-replay-v0.md`, `docs/operations/distributed-revocation-v0.md`, `docs/operations/audit-storage-v0.md`, `docs/operations/caller-identity-v0.md`, `docs/operations/distributed-rate-limits-v0.md`, `docs/operations/monitoring-v0.md`, `docs/security/review-register-v0.md`, `docs/security/release-audit-v0.md`, and `crates/rava-cli/tests/publication_docs.rs`.",
+        "Production trust evidence lives in `SECURITY.md`, `docs/operations/production-trust-v0.md`, `docs/operations/key-custody-v0.md`, `docs/operations/key-discovery-v0.md`, `docs/operations/distributed-replay-v0.md`, `docs/operations/distributed-revocation-v0.md`, `docs/operations/audit-storage-v0.md`, `docs/operations/caller-identity-v0.md`, `docs/operations/distributed-rate-limits-v0.md`, `docs/operations/monitoring-v0.md`, `docs/security/review-register-v0.md`, `docs/security/external-review-selection-v0.md`, `docs/security/release-audit-v0.md`, and `crates/rava-cli/tests/publication_docs.rs`.",
         "SECURITY.md",
         "docs/operations/production-trust-v0.md",
         "docs/operations/key-custody-v0.md",
@@ -1626,6 +1686,7 @@ fn production_trust_docs_define_external_operational_requirements() -> Result<()
         "docs/operations/distributed-rate-limits-v0.md",
         "docs/operations/monitoring-v0.md",
         "docs/security/review-register-v0.md",
+        "docs/security/external-review-selection-v0.md",
         "docs/security/release-audit-v0.md",
     ] {
         assert!(
