@@ -13,6 +13,10 @@ pub struct Cli {
 #[derive(Debug, Subcommand)]
 pub enum Command {
     Version,
+    Audit {
+        #[command(subcommand)]
+        command: AuditCommand,
+    },
     Attest {
         #[command(subcommand)]
         command: AttestCommand,
@@ -37,6 +41,17 @@ pub enum Command {
         #[command(subcommand)]
         command: VerifyCommand,
     },
+}
+
+#[derive(Debug, Subcommand)]
+pub enum AuditCommand {
+    Export(ExportAuditArgs),
+}
+
+#[derive(Debug, Parser)]
+pub struct ExportAuditArgs {
+    #[arg(long = "audit-log")]
+    pub audit_log: PathBuf,
 }
 
 #[derive(Debug, Subcommand)]

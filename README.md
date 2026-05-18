@@ -272,6 +272,14 @@ The pinned preview service request, response, health, audit, and error shapes ar
 
 The preview service is not a production authorization service. It does not implement key discovery, distributed replay coordination, distributed revocation freshness, caller identity, distributed rate limiting, managed audit retention/export, or managed monitoring and alerting.
 
+Export local preview audit metadata:
+
+```bash
+rava audit export --audit-log audit.ndjson
+```
+
+`rava audit export` converts local newline-delimited audit metadata into a JSON array and fails closed if an entry contains raw payload-style fields such as action intent, resource, constraints, proofs, actions, or capability chains. It is a local development export helper, not managed retention, access control, tamper evidence, legal hold, or production audit export.
+
 ## Examples, Test Vectors, and Schemas
 
 Committed wire examples live in `examples/flight-booking`. They include a signed action, capability chain, receipt, attestation, public keys, empty replay/revocation stores, and tampered receipt/attestation examples for verifier checks. They intentionally do not include private key material.

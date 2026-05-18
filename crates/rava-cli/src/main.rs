@@ -4,6 +4,7 @@ use clap::Parser;
 use time::OffsetDateTime;
 
 mod attest;
+mod audit;
 mod cli;
 mod demo;
 mod inspect;
@@ -13,9 +14,10 @@ mod serve;
 mod verify;
 
 use attest::run_attest_sign;
+use audit::run_audit_export;
 use cli::{
-    AttestCommand, Cli, Command, DemoCommand, InspectCommand, KeyCommand, ServeCommand,
-    VerifyCommand,
+    AttestCommand, AuditCommand, Cli, Command, DemoCommand, InspectCommand, KeyCommand,
+    ServeCommand, VerifyCommand,
 };
 use demo::run_flight_booking_demo;
 use inspect::{run_inspect_action, run_inspect_capability_chain};
@@ -31,6 +33,9 @@ fn main() -> ExitCode {
             println!("{}", rava_core::version());
             Ok(())
         }
+        Command::Audit {
+            command: AuditCommand::Export(args),
+        } => run_audit_export(args),
         Command::Attest {
             command: AttestCommand::Sign(args),
         } => run_attest_sign(args),
