@@ -65,7 +65,7 @@ Use this table when evaluating candidates. Do not add a candidate row unless out
 
 | Reviewer or firm | Fit | Constraints | Decision |
 | --- | --- | --- | --- |
-| _none_ | No reviewer has been selected yet. | _none_ | _none_ |
+| OpenSSF security-reviews public issue | Community channel can provide public written review guidance or redirect to an appropriate OpenSSF venue. The channel matches the zero-budget OSS/security-community boundary but is not a committed reviewer. | Public issue; do not post undisclosed vulnerabilities; no production-ready or audited language. | Selected for first zero-budget outreach attempt on 2026-05-18. Contact evidence: https://github.com/ossf/security-reviews/issues/102 |
 
 ## Non-Claim Boundary
 
