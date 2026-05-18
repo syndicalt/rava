@@ -23,6 +23,7 @@ The `rava serve verify` preview service has gained optional service-boundary con
 - `--auth-token-env`;
 - `--require-auth-token-env`;
 - `--rate-limit-per-minute`;
+- `--require-rate-limit-per-minute`;
 - `--replay-store`;
 - `--require-replay-store`;
 - `--revocation-store`;
@@ -30,7 +31,7 @@ The `rava serve verify` preview service has gained optional service-boundary con
 - `--audit-log`;
 - `--require-audit-log`.
 
-Operators using the preview service should prefer all ten controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
+Operators using the preview service should prefer all eleven controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
 
 `rava serve verify --require-replay-store` requires `--replay-store` at startup. This is local preview configuration hygiene so controlled deployments cannot accidentally omit local one-time-use enforcement; it is not distributed replay coordination.
 
@@ -57,6 +58,8 @@ Operators using the preview service should prefer all ten controls for nontrivia
 `rava serve verify --caller-id <label>` records an explicit deployment caller label in audit entries and requires `--auth-token-env`. Labels use an audit-safe ASCII syntax and invalid labels fail closed at startup. This is local audit correlation evidence, not tenant isolation or production caller identity.
 
 When `--rate-limit-per-minute` is configured, the value must be greater than zero and health and 429 responses report `rate_limit_scope`. The value is `caller` when the local preview limit is tied to an explicit `--caller-id` label and `process` otherwise. This is not shared quota state or distributed rate limiting.
+
+`rava serve verify --require-rate-limit-per-minute` requires `--rate-limit-per-minute` at startup. This is local preview abuse-control configuration hygiene so controlled deployments cannot accidentally run without the local process limit; it is not shared quota state, cross-node consistency, burst policy, outage policy, or distributed rate limiting.
 
 ## Audit Output
 

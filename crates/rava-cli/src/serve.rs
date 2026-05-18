@@ -65,6 +65,9 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     if let Some(caller_id) = &args.caller_id {
         validate_caller_id(caller_id)?;
     }
+    if args.require_rate_limit_per_minute && args.rate_limit_per_minute.is_none() {
+        return Err("require-rate-limit-per-minute requires rate-limit-per-minute".into());
+    }
     if args.rate_limit_per_minute == Some(0) {
         return Err("rate-limit-per-minute must be greater than zero".into());
     }
@@ -177,6 +180,7 @@ fn handle_connection(
                 "require_auth_token_env": args.require_auth_token_env,
                 "caller_id_configured": args.caller_id.is_some(),
                 "rate_limit_per_minute": args.rate_limit_per_minute,
+                "require_rate_limit_per_minute": args.require_rate_limit_per_minute,
                 "rate_limit_scope": rate_limit_scope(args),
                 "metrics_configured": args.metrics,
             }),

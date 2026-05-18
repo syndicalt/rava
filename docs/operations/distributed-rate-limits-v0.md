@@ -8,6 +8,8 @@ The preview service can enforce a local per-process request limit. That is usefu
 
 When `rava serve verify --rate-limit-per-minute <N>` is configured, the preview service enforces a local in-memory request limit for the running process. The configured limit must be greater than zero; invalid zero limits fail closed at startup. If `--caller-id <label>` is also configured, health and 429 responses report `rate_limit_scope` as `caller`; otherwise they report `process`.
 
+The preview service also supports `--require-rate-limit-per-minute`, which fails closed at startup unless `--rate-limit-per-minute` is configured. That guardrail helps controlled preview deployments avoid accidentally running without the local process limit, but it does not add shared quota state, cross-node consistency, burst policy, outage policy, abuse-response process, or distributed rate limiting.
+
 The caller-scoped preview label depends on `--caller-id`, which requires `--auth-token-env`. It is not inferred from action actors and does not create a shared quota across processes, nodes, tenants, regions, or deployments.
 
 This is local abuse-control evidence for development and controlled single-process deployments. It is not a distributed rate-limit system, burst policy, outage policy, abuse-response process, or cross-node consistency guarantee.
