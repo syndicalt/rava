@@ -20,9 +20,7 @@ Do not change the review target during outreach unless the reviewer explicitly a
 
 Current allowed path is zero-budget OSS/security-community review only.
 
-No real outreach is authorized yet. Before any message is sent, maintainers must confirm the frozen R4 target is still the intended handoff target and that the selected public or private channel is acceptable for a public draft project.
-
-Maintainer decision on 2026-05-18: keep outreach parked until a specific channel or contact is selected. This parked state is not reviewer contact, scope acceptance, review evidence, or production readiness evidence.
+Maintainer decision on 2026-05-18: authorize public zero-budget OSS/security-community outreach to the OpenSSF security-reviews project.
 
 Do not set any reviewer, firm, advisor, OSS program, or community channel to `contacted` until a message is actually sent.
 
@@ -45,7 +43,7 @@ Only `complete` with findings, remediation decisions, and verification evidence 
 
 | Reviewer or firm | State | Contact date | Scope alignment | Report constraints | Next action |
 | --- | --- | --- | --- | --- | --- |
-| _none_ | candidate | _none_ | No reviewer outreach has been recorded yet. | _none_ | _none_ |
+| OpenSSF security-reviews public issue | contacted | 2026-05-18 | Public zero-budget community review/guidance request sent with frozen R4 target and review-packet links. Contact evidence: https://github.com/ossf/security-reviews/issues/102 | Do not post undisclosed vulnerabilities in the public OpenSSF issue. No audit, approval, or production-readiness claim. | Wait for OpenSSF maintainer or community response; intake any response before moving to `scoping`. |
 
 ## Intake Rules
 
