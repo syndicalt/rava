@@ -61,6 +61,8 @@ Use `docs/security/review-findings/template-v0.md` when a finding needs more det
 
 Accepted findings should include a remediation pull request or accepted-risk rationale. Do not mark findings `verified` until concrete evidence is recorded.
 
+After the review and remediation pass are complete, use `docs/security/external-review-closeout-template-v0.md` to summarize reviewed target, scope, findings, remediation evidence, residual risk, fuzz evidence, and release claim boundaries.
+
 ## Out of Scope
 
 These are production requirements, not implemented V0 guarantees:
