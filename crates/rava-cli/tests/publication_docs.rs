@@ -1010,6 +1010,66 @@ fn external_review_request_scopes_reviewer_engagement_without_audit_claims(
 }
 
 #[test]
+fn external_review_outreach_template_preserves_scope_target_and_non_claim_boundaries(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let template_path = "docs/security/external-review-outreach-template-v0.md";
+    let template = std::fs::read_to_string(root.join(template_path))?;
+    let request =
+        std::fs::read_to_string(root.join("docs/security/external-review-request-v0.md"))?;
+    let outreach =
+        std::fs::read_to_string(root.join("docs/security/external-review-outreach-v0.md"))?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+    let checklist = std::fs::read_to_string(
+        root.join("docs/security/external-review-kickoff-checklist-v0.md"),
+    )?;
+    let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
+
+    for required in [
+        "# Rava V0 External Review Outreach Template",
+        "not evidence that Rava has been externally reviewed",
+        "not production-ready security software",
+        "## Use Rules",
+        "Do not send this template until reviewer fit has been evaluated",
+        "docs/security/external-review-selection-v0.md",
+        "docs/security/external-review-outreach-v0.md",
+        "## Message Template",
+        "v0-review-candidate-2026-05-18-r3",
+        "416d8a9661e75bd66dd60bed72d9485d833f36e2",
+        "https://github.com/syndicalt/rava/issues/87",
+        "docs/security/external-review-packet-v0.md",
+        "docs/security/external-review-request-v0.md",
+        "finding list",
+        "severity",
+        "reproduction or exploit story",
+        "remediation recommendation",
+        "verification note",
+        "production key custody",
+        "distributed replay",
+        "distributed revocation",
+        "caller identity",
+        "No production-ready or externally audited claim",
+        "## After Sending",
+        "contacted",
+        "scoping",
+    ] {
+        assert!(
+            template.contains(required),
+            "external review outreach template missing: {required}"
+        );
+    }
+
+    for docs in [request, outreach, packet, checklist, security_policy] {
+        assert!(
+            docs.contains(template_path),
+            "review docs must link external review outreach template: {template_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn external_review_outreach_tracker_records_reviewer_contact_without_audit_claims(
 ) -> Result<(), Box<dyn Error>> {
     let root = repository_root();

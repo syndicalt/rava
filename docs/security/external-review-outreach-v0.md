@@ -40,6 +40,7 @@ Only `complete` with findings, remediation decisions, and verification evidence 
 ## Intake Rules
 
 - Use `docs/security/external-review-request-v0.md` for outreach so scope, deliverables, non-goals, and non-claim boundaries stay consistent.
+- Use `docs/security/external-review-outreach-template-v0.md` for first-contact wording so the frozen target, requested deliverables, production non-goals, and non-claim boundary stay consistent.
 - Use `docs/security/external-review-selection-v0.md` before scheduling work so reviewer fit, conflicts of interest, report disclosure constraints, and attribution constraints are recorded.
 - Confirm reviewers can evaluate the frozen target in `docs/security/external-review-packet-v0.md`.
 - Record constraints that affect public reporting, disclosure, remediation evidence, or attribution before the review starts.
