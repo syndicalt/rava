@@ -885,6 +885,73 @@ fn external_review_kickoff_checklist_ties_review_remediation_and_fuzz_tracking(
 }
 
 #[test]
+fn external_review_request_scopes_reviewer_engagement_without_audit_claims(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let request_path = "docs/security/external-review-request-v0.md";
+    let request = std::fs::read_to_string(root.join(request_path))?;
+    let plan = std::fs::read_to_string(root.join("docs/security/review-plan-v0.md"))?;
+    let checklist = std::fs::read_to_string(
+        root.join("docs/security/external-review-kickoff-checklist-v0.md"),
+    )?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+    let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
+    let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
+
+    for required in [
+        "# Rava V0 External Review Request",
+        "not evidence that Rava has been externally reviewed",
+        "not production-ready security software",
+        "## Engagement Goal",
+        "## Review Target",
+        "frozen commit SHA or signed tag",
+        "## Required Reviewer Expertise",
+        "canonicalization",
+        "signature binding",
+        "delegation attenuation",
+        "replay semantics",
+        "revocation semantics",
+        "receipt and attestation verification",
+        "Rust security review",
+        "## Requested Deliverables",
+        "finding list",
+        "severity",
+        "reproduction",
+        "affected boundary",
+        "remediation recommendation",
+        "verification note",
+        "## Finding Intake",
+        ".github/ISSUE_TEMPLATE/security-review-finding.yml",
+        "docs/security/review-register-v0.md",
+        "RAVA-REVIEW-001",
+        "## Out of Scope",
+        "production key custody",
+        "distributed replay",
+        "distributed revocation",
+        "managed audit storage",
+        "## Fuzzing Option",
+        "docs/security/fuzz-campaigns/template-v0.md",
+        "## Non-Claim Boundary",
+        "No production-ready or externally audited claim",
+    ] {
+        assert!(
+            request.contains(required),
+            "external review request missing: {required}"
+        );
+    }
+
+    for docs in [plan, checklist, packet, security_policy, register, roadmap] {
+        assert!(
+            docs.contains(request_path),
+            "review docs must link external review request: {request_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn security_review_finding_template_requires_remediation_evidence() -> Result<(), Box<dyn Error>> {
     let root = repository_root();
     let template_path = "docs/security/review-findings/template-v0.md";
