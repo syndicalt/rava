@@ -39,7 +39,7 @@ The preview verifier service supports these service-boundary options:
 
 `rava verify action` also supports `--require-fresh-revocations` with `--revocation-store`. The local snapshot must include `fresh_until_unix` greater than verifier `now_unix`; otherwise verification fails closed before verifier execution. This is local snapshot freshness checking, not distributed revocation freshness.
 
-`rava key revoke --id <signer-id> --revocation-store <path>` records a signer ID in the local revocation snapshot. This is a local compromise-response helper, not managed key custody, rotation, key discovery, or emergency propagation.
+`rava key revoke --id <signer-id> --revocation-store <path>` records a signer ID in the local revocation snapshot. Local file-backed updates are lock-serialized and merge existing revoked IDs before persisting. This is a local compromise-response helper, not managed key custody, rotation, key discovery, distributed revocation, or emergency propagation.
 
 ## HTTP Request Shape
 

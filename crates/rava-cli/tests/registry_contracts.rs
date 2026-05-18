@@ -20,6 +20,10 @@ fn protocol_documents_replay_and_revocation_registry_contracts() -> Result<(), B
     assert!(protocol.contains(
         "Registry lookup failures must fail closed before verification claims acceptance"
     ));
+    assert!(protocol.contains("Local revocation updates are serialized with a lock file"));
+    assert!(protocol.contains(
+        "local file-backed revocation updates must merge existing file state before persisting"
+    ));
     assert!(protocol.contains("Freshness and distribution are caller responsibilities in V0"));
     Ok(())
 }

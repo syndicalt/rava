@@ -29,6 +29,10 @@ Local revocation snapshots may include `fresh_until_unix`. When `rava verify act
 
 This is a local snapshot guardrail for controlled deployments. It does not provide revocation publication, network distribution, cache invalidation, emergency propagation, cross-node freshness, or outage handling.
 
+`rava key revoke --id <signer-id> --revocation-store <path>` updates local file-backed snapshots under a lock file and reloads existing file state before persisting. This prevents stale local handles in the same filesystem boundary from losing earlier revoked IDs. Lock acquisition, read, write, or rename failure is a local revocation-store error and fails closed.
+
+This local update hardening is not a revocation distribution system, emergency propagation channel, cross-node consistency model, outage policy, or managed audit trail.
+
 ## Emergency Revocation
 
 Emergency revocation should define:

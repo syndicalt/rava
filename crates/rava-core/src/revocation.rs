@@ -1,5 +1,6 @@
 use std::collections::BTreeSet;
 use std::fs;
+use std::fs::{File, OpenOptions};
 use std::io;
 use std::path::{Path, PathBuf};
 
@@ -80,6 +81,8 @@ impl FileRevocationRegistry {
     }
 
     pub fn revoke_and_persist(&mut self, id: String) -> Result<(), RevocationStoreError> {
+        let _lock = self.acquire_lock()?;
+        self.reload_from_disk()?;
         self.revoked_ids.insert(id);
         self.persist()
     }
@@ -95,6 +98,44 @@ impl FileRevocationRegistry {
         fs::write(&temporary_path, bytes)?;
         fs::rename(&temporary_path, &self.path)?;
         Ok(())
+    }
+
+    fn lock_path(&self) -> PathBuf {
+        self.path.with_extension("lock")
+    }
+
+    fn acquire_lock(&self) -> Result<FileRevocationRegistryLock, RevocationStoreError> {
+        let path = self.lock_path();
+        let file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)?;
+        Ok(FileRevocationRegistryLock { path, file })
+    }
+
+    fn reload_from_disk(&mut self) -> Result<(), RevocationStoreError> {
+        if !self.path.exists() {
+            self.revoked_ids.clear();
+            self.fresh_until_unix = None;
+            return Ok(());
+        }
+        let bytes = fs::read(&self.path)?;
+        let document: RevocationDocument = serde_json::from_slice(&bytes)?;
+        self.revoked_ids = document.revoked_ids;
+        self.fresh_until_unix = document.fresh_until_unix;
+        Ok(())
+    }
+}
+
+struct FileRevocationRegistryLock {
+    path: PathBuf,
+    file: File,
+}
+
+impl Drop for FileRevocationRegistryLock {
+    fn drop(&mut self) {
+        let _ = self.file.sync_all();
+        let _ = fs::remove_file(&self.path);
     }
 }
 
@@ -132,6 +173,23 @@ mod tests {
         let result = FileRevocationRegistry::open(&path);
 
         assert!(matches!(result, Err(RevocationStoreError::Json(_))));
+        fs::remove_file(path)?;
+        Ok(())
+    }
+
+    #[test]
+    fn file_registry_revoke_merges_existing_file_state_for_stale_handles(
+    ) -> Result<(), Box<dyn Error>> {
+        let path = std::env::temp_dir().join(format!("rava-revocations-{}.json", Uuid::new_v4()));
+        let mut first = FileRevocationRegistry::open(&path)?;
+        let mut stale_second = FileRevocationRegistry::open(&path)?;
+
+        first.revoke_and_persist("cap_first".to_owned())?;
+        stale_second.revoke_and_persist("cap_second".to_owned())?;
+
+        let reloaded = FileRevocationRegistry::open(&path)?;
+        assert!(reloaded.is_revoked("cap_first"));
+        assert!(reloaded.is_revoked("cap_second"));
         fs::remove_file(path)?;
         Ok(())
     }
