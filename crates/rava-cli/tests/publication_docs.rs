@@ -739,6 +739,55 @@ fn security_review_finding_template_requires_remediation_evidence() -> Result<()
 }
 
 #[test]
+fn v0_review_candidate_notes_record_frozen_target_without_release_claims(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let notes_path = "docs/release/v0-review-candidate-2026-05-18.md";
+    let notes = std::fs::read_to_string(root.join(notes_path))?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+    let checklist = std::fs::read_to_string(root.join("docs/release/v0-draft-checklist.md"))?;
+
+    for required in [
+        "# Rava V0 Review Candidate Notes: 2026-05-18",
+        "not a production release",
+        "not evidence that an external security review has been completed",
+        "v0-review-candidate-2026-05-18",
+        "0672e61fcf46b472aee4e32d1915a0c975a0bbda",
+        "External security review: V0 review candidate",
+        "https://github.com/syndicalt/rava/issues/87",
+        "docs/security/external-review-packet-v0.md",
+        "docs/security/review-findings/template-v0.md",
+        "docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md",
+        "cargo fmt --check",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo test --workspace",
+        "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
+        "npm --prefix packages/rava-wasm-js test",
+        "(cd packages/rava-wasm-js && npm pack --dry-run)",
+        "master CI run `26011396149`",
+        "Pages run `26011396147`",
+        "No external security review has been completed",
+    ] {
+        assert!(
+            notes.contains(required),
+            "review candidate notes missing: {required}"
+        );
+    }
+
+    for docs in [packet, checklist] {
+        assert!(
+            docs.contains(notes_path),
+            "review packet and checklist must link review candidate notes: {notes_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn security_review_register_tracks_external_findings_without_claiming_review(
 ) -> Result<(), Box<dyn Error>> {
     let register =
