@@ -50,6 +50,9 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     if args.caller_id.is_some() && args.auth_token_env.is_none() {
         return Err("--caller-id requires --auth-token-env".into());
     }
+    if args.require_replay_store && args.replay_store.is_none() {
+        return Err("require-replay-store requires replay-store".into());
+    }
     if args.require_fresh_revocations && args.revocation_store.is_none() {
         return Err("require-fresh-revocations requires revocation-store".into());
     }
@@ -159,6 +162,7 @@ fn handle_connection(
                 "status": "ok",
                 "max_request_bytes": args.max_request_bytes,
                 "replay_store_configured": args.replay_store.is_some(),
+                "require_replay_store": args.require_replay_store,
                 "revocation_store_configured": args.revocation_store.is_some(),
                 "require_fresh_revocations": args.require_fresh_revocations,
                 "audit_log_configured": args.audit_log.is_some(),

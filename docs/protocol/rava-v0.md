@@ -179,7 +179,7 @@ The CLI can load a local `rava-static-trust-bundle-v0` file with signer-ID to pu
 The Rust CLI includes a local preview service:
 
 ```text
-RAVA_VERIFIER_TOKEN=<secret> rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --require-fresh-revocations --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --rate-limit-per-minute 120
+RAVA_VERIFIER_TOKEN=<secret> rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --require-replay-store --revocation-store revocations.json --require-fresh-revocations --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --rate-limit-per-minute 120
 ```
 
 It exposes `POST /verify/action` as an HTTP wrapper around the V0 Rust verifier. Request JSON must include:
@@ -193,6 +193,7 @@ It exposes `POST /verify/action` as an HTTP wrapper around the V0 Rust verifier.
 It also exposes `GET /healthz`, which returns the service name, `ok` status, and configured local service flags. When `--metrics` is configured, it exposes `GET /metrics` with process-local Prometheus-style counters for non-sensitive preview monitoring.
 `--max-request-bytes` limits request bodies before JSON parsing and verification.
 `--replay-store` records accepted action IDs in a local file and rejects later replays. Local file-backed consumption is lock-serialized for stale handles in the same filesystem boundary; it is not a distributed replay store.
+`--require-replay-store` fails closed at startup unless `--replay-store` is configured. This is local preview configuration hygiene, not distributed replay coordination.
 `--revocation-store` loads a local revoked-ID snapshot for signer and capability checks on each request.
 `--audit-log` appends newline-delimited JSON decision metadata without raw action intent, resource, constraints, capability envelopes, or signatures.
 `--auth-token-env` requires `Authorization: Bearer <token>` on every request and reads the token from an environment variable so it is not exposed in command arguments.

@@ -146,6 +146,9 @@ pub struct ServeVerifyArgs {
     #[arg(long = "replay-store")]
     pub replay_store: Option<PathBuf>,
 
+    #[arg(long = "require-replay-store")]
+    pub require_replay_store: bool,
+
     #[arg(long = "revocation-store")]
     pub revocation_store: Option<PathBuf>,
 

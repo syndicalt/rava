@@ -58,8 +58,16 @@ fn serve_verify_returns_rejection_code_for_denied_action() -> Result<(), Box<dyn
 
 #[test]
 fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Error>> {
+    let replay_store = temp_file_path("rava-serve-health-replay");
+    let replay_store_arg = replay_store.to_string_lossy().into_owned();
     let response = run_server_raw_request(
-        &["--max-request-bytes", "4096"],
+        &[
+            "--max-request-bytes",
+            "4096",
+            "--replay-store",
+            &replay_store_arg,
+            "--require-replay-store",
+        ],
         "GET /healthz HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
     )?;
 
@@ -78,6 +86,16 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
         json.get("max_request_bytes")
             .and_then(serde_json::Value::as_u64),
         Some(4096)
+    );
+    assert_eq!(
+        json.get("replay_store_configured")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    assert_eq!(
+        json.get("require_replay_store")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
     );
     Ok(())
 }
@@ -237,6 +255,27 @@ fn serve_verify_requires_fresh_revocations_requires_revocation_store() -> Result
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
         stderr.contains("require-fresh-revocations requires revocation-store"),
+        "{stderr}"
+    );
+    Ok(())
+}
+
+#[test]
+fn serve_verify_requires_replay_store_requires_replay_store() -> Result<(), Box<dyn Error>> {
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "serve",
+            "verify",
+            "--addr",
+            "127.0.0.1:0",
+            "--require-replay-store",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("require-replay-store requires replay-store"),
         "{stderr}"
     );
     Ok(())
