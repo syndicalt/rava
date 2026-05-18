@@ -339,6 +339,14 @@ fn security_review_register_tracks_external_findings_without_claiming_review(
         "No external findings are recorded yet.",
         "caller identity",
         "distributed rate limiting",
+        "../operations/key-custody-v0.md",
+        "../operations/key-discovery-v0.md",
+        "../operations/distributed-replay-v0.md",
+        "../operations/distributed-revocation-v0.md",
+        "../operations/audit-storage-v0.md",
+        "../operations/caller-identity-v0.md",
+        "../operations/distributed-rate-limits-v0.md",
+        "../operations/monitoring-v0.md",
     ] {
         assert!(
             register.contains(required),

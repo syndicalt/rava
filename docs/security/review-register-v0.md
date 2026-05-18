@@ -16,7 +16,16 @@ Findings should reference the review scope in [review-guide-v0.md](review-guide-
 - wrapper and adapter fail-closed behavior;
 - documentation gaps that could lead to unsafe deployments.
 
-Production deployment findings about key custody, key discovery, distributed replay, distributed revocation, caller identity, distributed rate limiting, audit storage, and monitoring should also reference [../operations/production-trust-v0.md](../operations/production-trust-v0.md).
+Production deployment findings about key custody, key discovery, distributed replay, distributed revocation, caller identity, distributed rate limiting, audit storage, and monitoring should also reference [../operations/production-trust-v0.md](../operations/production-trust-v0.md) and the relevant detailed runbook:
+
+- [key-custody-v0.md](../operations/key-custody-v0.md);
+- [key-discovery-v0.md](../operations/key-discovery-v0.md);
+- [distributed-replay-v0.md](../operations/distributed-replay-v0.md);
+- [distributed-revocation-v0.md](../operations/distributed-revocation-v0.md);
+- [audit-storage-v0.md](../operations/audit-storage-v0.md);
+- [caller-identity-v0.md](../operations/caller-identity-v0.md);
+- [distributed-rate-limits-v0.md](../operations/distributed-rate-limits-v0.md);
+- [monitoring-v0.md](../operations/monitoring-v0.md).
 
 ## Finding States
 
