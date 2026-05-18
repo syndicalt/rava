@@ -323,6 +323,7 @@ struct MetricsState {
     verifier_accepted: u64,
     verifier_rejected: u64,
     verifier_rejections: BTreeMap<String, u64>,
+    replay_attempts: u64,
     audit_write_failures: u64,
 }
 
@@ -352,6 +353,9 @@ impl MetricsState {
                     .verifier_rejections
                     .entry(error.code().to_owned())
                     .or_insert(0) += 1;
+                if error.code() == "action_replayed" {
+                    self.replay_attempts += 1;
+                }
             }
         }
     }
@@ -438,6 +442,12 @@ impl MetricsState {
                 *count,
             );
         }
+        push_metric(
+            &mut output,
+            "rava_preview_replay_attempts_total",
+            &[],
+            self.replay_attempts,
+        );
         push_metric(
             &mut output,
             "rava_preview_audit_write_failures_total",
