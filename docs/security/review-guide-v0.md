@@ -31,6 +31,16 @@ Out of scope for V0 review:
 - model-behavior proofs, reputation, or blockchain anchoring.
 
 Production deployment requirements outside V0 review scope are documented in [../operations/production-trust-v0.md](../operations/production-trust-v0.md).
+Detailed production runbooks live in:
+
+- [key-custody-v0.md](../operations/key-custody-v0.md);
+- [key-discovery-v0.md](../operations/key-discovery-v0.md);
+- [distributed-replay-v0.md](../operations/distributed-replay-v0.md);
+- [distributed-revocation-v0.md](../operations/distributed-revocation-v0.md);
+- [audit-storage-v0.md](../operations/audit-storage-v0.md);
+- [caller-identity-v0.md](../operations/caller-identity-v0.md);
+- [distributed-rate-limits-v0.md](../operations/distributed-rate-limits-v0.md);
+- [monitoring-v0.md](../operations/monitoring-v0.md).
 
 ## High-Value Review Questions
 
