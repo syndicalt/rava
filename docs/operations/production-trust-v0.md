@@ -25,6 +25,8 @@ This profile fits Rava's V0 audience: Rust and security-conscious protocol evalu
 
 These decisions convert the production-trust tracker into the default architecture target for V0 operations work. They do not mean the systems are implemented today.
 
+The V0 architecture decisions in this table were maintainer-approved on 2026-05-18. Maintainer approval records the architecture direction only; it does not satisfy the required production evidence for #118 through #125.
+
 | Tracker | Decision | Required Evidence |
 | --- | --- | --- |
 | [#118](https://github.com/syndicalt/rava/issues/118) key custody | Rava core verifies signatures but does not custody private keys. Production deployments must use managed or OS-backed key storage with rotation, recovery, and compromise response. Development keys are non-production only. | Documented custody boundary, operator access review, rotation and emergency rotation procedure, backup/recovery test, and compromise-response path. |
