@@ -6,6 +6,9 @@ Rava V0 is not production-ready security software. Sending this message, receivi
 
 ## Use Rules
 
+- Do not send outreach until a maintainer explicitly authorizes real contact.
+- Current allowed path is zero-budget OSS/security-community review only.
+- Do not mark anyone `contacted` until a message is actually sent.
 - Do not send this template until reviewer fit has been evaluated with `docs/security/external-review-selection-v0.md`.
 - Record contact state, scope alignment, report constraints, and next action in `docs/security/external-review-outreach-v0.md`.
 - Keep the frozen review target unchanged unless the reviewer explicitly agrees to evaluate a new commit or tag and the full local gate is rerun.

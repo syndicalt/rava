@@ -21,6 +21,21 @@ Select reviewers or firms with practical experience in the boundaries Rava actua
 
 The reviewer does not need to cover production systems that V0 explicitly treats as caller or deployment responsibilities, but they should be able to identify when those requirements are being confused with implemented protocol guarantees.
 
+## Current Zero-Budget Boundary
+
+Current allowed path is zero-budget OSS/security-community review only.
+
+Paid commercial review, sponsor-funded direct audit, and budgeted advisory work are out of scope unless a maintainer explicitly changes that boundary.
+
+Do not mark a reviewer, firm, advisor, OSS program, or community channel as `contacted` until a message is actually sent.
+
+Before any outreach, maintainers should confirm:
+
+- the frozen target remains the intended handoff target;
+- the channel is acceptable for a public draft project;
+- report disclosure and attribution constraints are acceptable;
+- the contact can produce written findings or actionable scoping feedback without requiring production-ready or audited language.
+
 ## Disqualifying Gaps
 
 Do not treat a reviewer as a fit for the V0 review if they:
