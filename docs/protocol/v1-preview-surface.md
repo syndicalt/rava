@@ -31,11 +31,14 @@ The preview verifier service supports these service-boundary options:
 - `--audit-log`
 - `--require-audit-log`
 - `--auth-token-env`
+- `--require-auth-token-env`
 - `--caller-id`
 - `--rate-limit-per-minute`
 - `--metrics`
 
 `--auth-token-env`, `--caller-id`, and `--rate-limit-per-minute` are local preview controls. `--caller-id` requires `--auth-token-env`, uses an audit-safe label syntax, and records an explicit deployment label in local audit entries; it is not inferred from the action actor or from request headers. `--rate-limit-per-minute` must be greater than zero when configured. These controls do not replace production caller identity, distributed rate limiting, or network-edge access control.
+
+`rava serve verify --require-auth-token-env` requires `--auth-token-env` at startup. This is local preview ingress configuration hygiene so controlled deployments cannot accidentally run without the local bearer-token guard; it is not production caller identity, caller-to-policy mapping, or tenant isolation.
 
 `rava serve verify --require-replay-store` requires `--replay-store` at startup. This is local preview configuration hygiene so controlled deployments cannot accidentally omit local one-time-use enforcement; it is not distributed replay coordination.
 
@@ -100,6 +103,7 @@ authorization decisions:
 - `audit_log_configured`;
 - `require_audit_log`;
 - `auth_required`;
+- `require_auth_token_env`;
 - `caller_id_configured`;
 - `rate_limit_per_minute`;
 - `rate_limit_scope`;

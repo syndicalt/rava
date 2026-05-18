@@ -257,7 +257,7 @@ Start the local preview verifier:
 
 ```bash
 RAVA_VERIFIER_TOKEN="$(openssl rand -hex 32)" \
-rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --require-replay-store --revocation-store revocations.json --require-fresh-revocations --audit-log audit.ndjson --require-audit-log --auth-token-env RAVA_VERIFIER_TOKEN --caller-id local-operator --rate-limit-per-minute 120 --metrics
+rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --require-replay-store --revocation-store revocations.json --require-fresh-revocations --audit-log audit.ndjson --require-audit-log --auth-token-env RAVA_VERIFIER_TOKEN --require-auth-token-env --caller-id local-operator --rate-limit-per-minute 120 --metrics
 ```
 
 It exposes `POST /verify/action` for JSON requests containing an action, capability chain, actor public key, issuer public key map, and `now_unix`.
@@ -270,6 +270,7 @@ It also exposes `GET /healthz` with the service name, status, and configured req
 `--audit-log` appends newline-delimited JSON decision metadata without raw action intent, resource, constraints, capability envelopes, or signatures. On Unix, local audit log files are created owner-only, and group/world-accessible existing logs are rejected.
 `--require-audit-log` fails closed at startup unless `--audit-log` is configured. This is local preview configuration hygiene, not managed audit storage, retention, or export.
 `--auth-token-env` requires `Authorization: Bearer <token>` on every request and reads the token from an environment variable so it is not passed on the command line.
+`--require-auth-token-env` fails closed at startup unless `--auth-token-env` is configured. This is local preview ingress configuration hygiene, not production caller identity or tenant isolation.
 `--caller-id` records an explicit deployment-configured caller label in audit entries and requires `--auth-token-env`. Caller labels must use the audit-safe ASCII syntax accepted by the CLI; they are not inferred from the signed action actor and do not implement production caller-to-policy mapping.
 `--rate-limit-per-minute` applies a positive local request limit. Invalid zero limits fail closed at startup. Health and 429 responses report whether the preview limit is process-scoped or scoped to the explicit `--caller-id` label.
 `--metrics` enables `GET /metrics` with Prometheus-style process-local counters for HTTP statuses, verifier decisions, rejection codes, and audit-write failures without raw action payloads, capability envelopes, signatures, keys, credentials, or tokens.

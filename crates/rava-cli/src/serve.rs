@@ -50,6 +50,9 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     if args.caller_id.is_some() && args.auth_token_env.is_none() {
         return Err("--caller-id requires --auth-token-env".into());
     }
+    if args.require_auth_token_env && args.auth_token_env.is_none() {
+        return Err("require-auth-token-env requires auth-token-env".into());
+    }
     if args.require_replay_store && args.replay_store.is_none() {
         return Err("require-replay-store requires replay-store".into());
     }
@@ -171,6 +174,7 @@ fn handle_connection(
                 "audit_log_configured": args.audit_log.is_some(),
                 "require_audit_log": args.require_audit_log,
                 "auth_required": args.auth_token_env.is_some(),
+                "require_auth_token_env": args.require_auth_token_env,
                 "caller_id_configured": args.caller_id.is_some(),
                 "rate_limit_per_minute": args.rate_limit_per_minute,
                 "rate_limit_scope": rate_limit_scope(args),

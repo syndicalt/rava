@@ -164,6 +164,9 @@ pub struct ServeVerifyArgs {
     #[arg(long = "auth-token-env")]
     pub auth_token_env: Option<String>,
 
+    #[arg(long = "require-auth-token-env")]
+    pub require_auth_token_env: bool,
+
     #[arg(long = "caller-id")]
     pub caller_id: Option<String>,
 
