@@ -10,6 +10,8 @@ The current review-candidate notes are `docs/release/v0-review-candidate-2026-05
 
 The reviewer cover note is `docs/security/external-review-cover-note-v0.md`.
 
+The kickoff runbook is `docs/security/external-review-kickoff-checklist-v0.md`.
+
 Do not change the target during review unless the reviewer explicitly agrees to review the new commit or tag. If the target changes, rerun the full verification baseline and record the new evidence.
 
 The review target should be a clean commit on `master` with no uncommitted files and a passing full local gate.
@@ -29,6 +31,7 @@ Send reviewers these repository artifacts from the frozen target:
 - `docs/security/review-plan-v0.md`;
 - `docs/security/review-guide-v0.md`;
 - `docs/security/review-register-v0.md`;
+- `docs/security/external-review-kickoff-checklist-v0.md`;
 - `docs/security/release-audit-v0.md`;
 - `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md`;
 - `docs/release/v0-draft-checklist.md`;
