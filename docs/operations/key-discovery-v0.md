@@ -30,6 +30,7 @@ Using an unauthenticated fallback key can turn signature verification into a fal
 ```json
 {
   "version": "rava-static-trust-bundle-v0",
+  "fresh_until_unix": 1650003600,
   "keys": {
     "rava:agent:<actor-public-key-prefix>": "<actor-public-key-hex>",
     "rava:human:<issuer-public-key-prefix>": "<issuer-public-key-hex>"
@@ -39,7 +40,9 @@ Using an unauthenticated fallback key can turn signature verification into a fal
 
 When a trust bundle is provided, the CLI can select the actor and issuer public keys by signer ID. Explicit `--actor-key` or `--issuer-key` values must match any corresponding bundle entry; conflicts fail closed as CLI errors instead of silently choosing one source.
 
-Static trust bundles are the selected first production-trust step because they are inspectable and avoid unaudited network resolver behavior. They do not provide dynamic DID, web, registry, resolver freshness, cache invalidation, rotation, rollback, or outage guarantees.
+`rava verify action --require-fresh-trust-bundle` requires the local static trust bundle to include `fresh_until_unix` greater than verifier `now_unix`. Missing or stale trust-bundle freshness fails closed before verifier execution.
+
+Static trust bundles are the selected first production-trust step because they are inspectable and avoid unaudited network resolver behavior. Local `fresh_until_unix` checking gives operators an explicit cache-lifetime guard for static bundles. It does not provide dynamic DID, web, registry, resolver selection, cache invalidation, rotation, rollback, or outage guarantees.
 
 ## Freshness
 

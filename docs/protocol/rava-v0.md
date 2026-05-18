@@ -170,7 +170,7 @@ Any failed check returns a rejected verification result.
 
 V0 verifier callers must provide authentic public keys for action actors and capability issuers. The core checks that signatures match the supplied keys and that signer IDs match those keys, but it does not discover keys, resolve DIDs, or prove that a caller selected the correct key source.
 
-The CLI can load a local `rava-static-trust-bundle-v0` file with signer-ID to public-key mappings for `rava verify action --trust-bundle`. This is explicit caller trust-policy input for controlled deployments. It is not dynamic key discovery and does not provide resolver freshness, cache invalidation, rotation, rollback, or outage guarantees.
+The CLI can load a local `rava-static-trust-bundle-v0` file with signer-ID to public-key mappings for `rava verify action --trust-bundle`. `--require-fresh-trust-bundle` requires that local bundle to include `fresh_until_unix` greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution. This is explicit caller trust-policy input for controlled deployments. It is not dynamic key discovery and does not provide resolver selection, cache invalidation, rotation, rollback, or outage guarantees.
 
 ## Local Verifier Service Preview
 

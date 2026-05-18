@@ -33,16 +33,28 @@ pub fn run_verify_action(args: VerifyActionArgs) -> Result<(), Box<dyn Error>> {
         Some(path) => Some(read_static_trust_bundle(path)?),
         None => None,
     };
+    let now = match args.now_unix {
+        Some(seconds) => OffsetDateTime::from_unix_timestamp(seconds)?,
+        None => OffsetDateTime::now_utc(),
+    };
+    if args.require_fresh_trust_bundle {
+        match trust_bundle.as_ref() {
+            Some(bundle) => require_fresh_trust_bundle(bundle, now.unix_timestamp())?,
+            None => {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "require-fresh-trust-bundle requires trust-bundle",
+                )
+                .into());
+            }
+        }
+    }
     let actor_key = select_actor_public_key(
         &action.actor,
         args.actor_key.as_deref(),
         trust_bundle.as_ref(),
     )?;
     let issuer_keys = resolve_issuer_keys(&args.issuer_keys, trust_bundle.as_ref())?;
-    let now = match args.now_unix {
-        Some(seconds) => OffsetDateTime::from_unix_timestamp(seconds)?,
-        None => OffsetDateTime::now_utc(),
-    };
 
     let result = if let Some(revocation_store) = &args.revocation_store {
         let revocations = FileRevocationRegistry::open(revocation_store)?;
@@ -207,6 +219,7 @@ fn parse_issuer_keys(entries: &[String]) -> Result<BTreeMap<String, String>, Box
 #[derive(Debug, Deserialize)]
 struct StaticTrustBundle {
     version: String,
+    fresh_until_unix: Option<i64>,
     keys: BTreeMap<String, String>,
 }
 
@@ -229,6 +242,22 @@ fn read_static_trust_bundle(path: &PathBuf) -> Result<StaticTrustBundle, Box<dyn
         }
     }
     Ok(bundle)
+}
+
+fn require_fresh_trust_bundle(
+    bundle: &StaticTrustBundle,
+    now_unix: i64,
+) -> Result<(), Box<dyn Error>> {
+    let fresh_until_unix = bundle.fresh_until_unix.ok_or_else(|| {
+        io::Error::new(
+            io::ErrorKind::InvalidData,
+            "trust bundle missing fresh_until_unix",
+        )
+    })?;
+    if fresh_until_unix <= now_unix {
+        return Err(io::Error::new(io::ErrorKind::InvalidData, "trust bundle is stale").into());
+    }
+    Ok(())
 }
 
 fn select_actor_public_key(
