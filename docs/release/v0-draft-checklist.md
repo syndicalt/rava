@@ -67,6 +67,7 @@ Before publishing a V0 draft release candidate, update or confirm:
 - [../protocol/v1-preview-surface.md](../protocol/v1-preview-surface.md), if the preview surface changed;
 - [../protocol/v1-preview-migration.md](../protocol/v1-preview-migration.md), if the preview surface changed;
 - release notes for compatibility-impacting changes, using [notes-template-v0.md](notes-template-v0.md).
+- review-candidate notes, if a frozen external review target exists, such as `docs/release/v0-review-candidate-2026-05-18.md`.
 
 The repo-relative template path is `docs/release/notes-template-v0.md`.
 
