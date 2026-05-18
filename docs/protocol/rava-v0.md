@@ -179,7 +179,7 @@ The CLI can load a local `rava-static-trust-bundle-v0` file with signer-ID to pu
 The Rust CLI includes a local preview service:
 
 ```text
-RAVA_VERIFIER_TOKEN=<secret> rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --require-replay-store --revocation-store revocations.json --require-fresh-revocations --audit-log audit.ndjson --require-audit-log --auth-token-env RAVA_VERIFIER_TOKEN --require-auth-token-env --rate-limit-per-minute 120 --require-rate-limit-per-minute
+RAVA_VERIFIER_TOKEN=<secret> rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --require-replay-store --revocation-store revocations.json --require-fresh-revocations --audit-log audit.ndjson --require-audit-log --auth-token-env RAVA_VERIFIER_TOKEN --require-auth-token-env --rate-limit-per-minute 120 --require-rate-limit-per-minute --metrics --require-metrics
 ```
 
 It exposes `POST /verify/action` as an HTTP wrapper around the V0 Rust verifier. Request JSON must include:
@@ -201,6 +201,8 @@ It also exposes `GET /healthz`, which returns the service name, `ok` status, and
 `--require-auth-token-env` fails closed at startup unless `--auth-token-env` is configured. This is local preview ingress configuration hygiene, not production caller identity or tenant isolation.
 `--rate-limit-per-minute` applies a local per-process request limit.
 `--require-rate-limit-per-minute` fails closed at startup unless `--rate-limit-per-minute` is configured. This is local preview abuse-control configuration hygiene, not distributed rate limiting or shared quota state.
+`--metrics` enables `GET /metrics` with process-local counters for non-sensitive preview monitoring.
+`--require-metrics` fails closed at startup unless `--metrics` is configured. This is local preview monitoring configuration hygiene, not managed monitoring, alerting, retention, or incident response.
 
 The response includes:
 

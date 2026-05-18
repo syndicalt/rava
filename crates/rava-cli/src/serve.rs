@@ -71,6 +71,9 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     if args.rate_limit_per_minute == Some(0) {
         return Err("rate-limit-per-minute must be greater than zero".into());
     }
+    if args.require_metrics && !args.metrics {
+        return Err("require-metrics requires metrics".into());
+    }
     let listener = TcpListener::bind(&args.addr)?;
     let mut rate_limit = args.rate_limit_per_minute.map(RateLimitState::new);
     let mut metrics = MetricsState::default();
@@ -183,6 +186,7 @@ fn handle_connection(
                 "require_rate_limit_per_minute": args.require_rate_limit_per_minute,
                 "rate_limit_scope": rate_limit_scope(args),
                 "metrics_configured": args.metrics,
+                "require_metrics": args.require_metrics,
             }),
         )?;
         return Ok(());

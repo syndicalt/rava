@@ -8,6 +8,8 @@ The preview service can be observed by ordinary process and log tooling, but man
 
 When `rava serve verify --metrics` is configured, the preview service exposes `GET /metrics` with Prometheus-style text counters for local HTTP statuses, verifier accepted/rejected decisions, verifier latency, rejection codes, missing public keys, replay attempts, replay-store failures, revocation-read failures, and audit-write failures. If `--auth-token-env` is configured, the same bearer-token gate protects `GET /metrics`.
 
+The preview service also supports `--require-metrics`, which fails closed at startup unless `--metrics` is configured. That guardrail helps controlled preview deployments avoid accidentally running without process-local metrics, but it does not add managed dashboards, alerting, incident response, long-term retention, cross-node aggregation, service-level objectives, or production monitoring coverage.
+
 Preview metrics are process-local and metadata-only. They do not include private keys, credentials, raw action payloads, access tokens, capability envelopes, signatures, or downstream secrets.
 
 These metrics are useful for development, demos, and self-hosted integration checks. They are not managed dashboards, alerting, incident response, long-term retention, cross-node aggregation, service-level objectives, or production monitoring coverage.
