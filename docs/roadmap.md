@@ -18,7 +18,7 @@ Acceptance gates:
 - Threat model distinguishes implemented guarantees from caller assumptions and non-goals.
 - Release audit notes document remaining risks and what was not audited.
 - All committed examples and test vectors are exercised by regression tests.
-- Full local gate passes: `cargo fmt --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, `cargo run -p rava -- demo flight-booking`, `cargo package --workspace`, `cargo check --manifest-path fuzz/Cargo.toml`, `cargo check -p rava-wasm --target wasm32-unknown-unknown`, `npm --prefix packages/rava-wasm-js test`, and `(cd packages/rava-wasm-js && npm pack --dry-run)`.
+- Full local gate passes: `cargo fmt --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, `cargo run -p rava -- demo flight-booking`, `cargo package --workspace`, `cargo check --manifest-path fuzz/Cargo.toml --locked`, `cargo check -p rava-wasm --target wasm32-unknown-unknown`, `npm --prefix packages/rava-wasm-js test`, and `(cd packages/rava-wasm-js && npm pack --dry-run)`.
 
 Draft release checklist and release-note guidance live in [release/v0-draft-checklist.md](release/v0-draft-checklist.md) and [release/notes-template-v0.md](release/notes-template-v0.md).
 

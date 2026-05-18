@@ -53,7 +53,7 @@ jobs:
         run: cargo package --workspace
 
       - name: Check fuzz target compilation
-        run: cargo check --manifest-path fuzz/Cargo.toml
+        run: cargo check --manifest-path fuzz/Cargo.toml --locked
 
       - name: Check WASM wrapper
         run: cargo check -p rava-wasm --target wasm32-unknown-unknown
