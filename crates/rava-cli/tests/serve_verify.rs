@@ -324,6 +324,39 @@ fn serve_verify_with_metrics_reports_metadata_counters() -> Result<(), Box<dyn E
 }
 
 #[test]
+fn serve_verify_metrics_reports_replay_attempts() -> Result<(), Box<dyn Error>> {
+    let replay_store = temp_file_path("rava-serve-metrics-replay");
+    let replay_store_arg = replay_store.to_string_lossy().into_owned();
+    let body = accepted_request_body()?;
+    let requests = [
+        post_json_request("/verify/action", &body)?,
+        post_json_request("/verify/action", &body)?,
+        "GET /metrics HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n".to_owned(),
+    ];
+    let request_refs = requests.iter().map(String::as_str).collect::<Vec<_>>();
+
+    let responses = run_server_raw_requests(
+        &["--metrics", "--replay-store", &replay_store_arg],
+        &request_refs,
+    )?;
+
+    assert_accepted_response(&responses[0])?;
+    assert_rejection_code(&responses[1], "action_replayed")?;
+    let metrics = response_body(&responses[2])?;
+    assert!(
+        metrics.contains("rava_preview_replay_attempts_total 1"),
+        "{metrics}"
+    );
+    assert!(
+        !metrics.contains(string_field(&body["action"], "id")?),
+        "{metrics}"
+    );
+
+    std::fs::remove_file(replay_store)?;
+    Ok(())
+}
+
+#[test]
 fn serve_verify_metrics_requires_auth_when_configured() -> Result<(), Box<dyn Error>> {
     let responses = run_server_raw_requests_with_env(
         &["--metrics", "--auth-token-env", "RAVA_TEST_AUTH_TOKEN"],
