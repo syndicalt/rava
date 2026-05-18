@@ -734,6 +734,31 @@ fn external_review_packet_defines_frozen_handoff_manifest() -> Result<(), Box<dy
 }
 
 #[test]
+fn external_review_packet_links_post_candidate_fuzz_evidence_without_moving_target(
+) -> Result<(), Box<dyn Error>> {
+    let packet = std::fs::read_to_string(
+        repository_root().join("docs/security/external-review-packet-v0.md"),
+    )?;
+
+    for required in [
+        "## Additional Post-Candidate Evidence",
+        "docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-1800s.md",
+        "becbff9e2326f5304822decf636aadcd0e37bb48",
+        "does not change the frozen review target",
+        "should be treated as supplemental review evidence",
+        "not a proof of security",
+        "not evidence that Rava has been externally reviewed",
+    ] {
+        assert!(
+            packet.contains(required),
+            "external review packet missing post-candidate evidence boundary: {required}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn security_review_finding_template_requires_remediation_evidence() -> Result<(), Box<dyn Error>> {
     let root = repository_root();
     let template_path = "docs/security/review-findings/template-v0.md";
