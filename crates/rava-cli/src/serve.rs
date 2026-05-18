@@ -331,6 +331,7 @@ struct MetricsState {
     verifier_rejected: u64,
     verifier_rejections: BTreeMap<String, u64>,
     replay_attempts: u64,
+    missing_public_keys: u64,
     revocation_read_failures: u64,
     audit_write_failures: u64,
 }
@@ -363,6 +364,9 @@ impl MetricsState {
                     .or_insert(0) += 1;
                 if error.code() == "action_replayed" {
                     self.replay_attempts += 1;
+                }
+                if error.code() == "missing_issuer_public_key" {
+                    self.missing_public_keys += 1;
                 }
             }
         }
@@ -455,6 +459,12 @@ impl MetricsState {
             "rava_preview_replay_attempts_total",
             &[],
             self.replay_attempts,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_missing_public_keys_total",
+            &[],
+            self.missing_public_keys,
         );
         push_metric(
             &mut output,
