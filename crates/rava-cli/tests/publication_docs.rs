@@ -2186,6 +2186,8 @@ fn service_boundary_runbooks_define_caller_identity_and_distributed_rate_limits(
                 "--caller-id",
                 "caller_id",
                 "requires `--auth-token-env`",
+                "1 to 128 ASCII characters",
+                "invalid labels fail closed at startup",
                 "not caller-to-policy mapping, tenant isolation",
                 "must not be inferred from the action actor",
                 "fail closed",

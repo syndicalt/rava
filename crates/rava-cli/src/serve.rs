@@ -50,6 +50,9 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     if args.caller_id.is_some() && args.auth_token_env.is_none() {
         return Err("--caller-id requires --auth-token-env".into());
     }
+    if let Some(caller_id) = &args.caller_id {
+        validate_caller_id(caller_id)?;
+    }
     let listener = TcpListener::bind(&args.addr)?;
     let mut rate_limit = args.rate_limit_per_minute.map(RateLimitState::new);
     let mut metrics = MetricsState::default();
@@ -78,6 +81,20 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
         }
     }
 
+    Ok(())
+}
+
+fn validate_caller_id(caller_id: &str) -> Result<(), Box<dyn Error>> {
+    if caller_id.is_empty() || caller_id.len() > 128 {
+        return Err("invalid caller-id: must be 1..=128 characters".into());
+    }
+    if !caller_id.bytes().all(|byte| {
+        byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':' | b'@')
+    }) {
+        return Err(
+            "invalid caller-id: use ASCII letters, digits, '.', '_', '-', ':', or '@'".into(),
+        );
+    }
     Ok(())
 }
 
