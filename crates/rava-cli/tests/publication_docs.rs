@@ -608,8 +608,65 @@ fn bounded_fuzz_campaign_log_records_v0_wire_entrypoints_evidence() -> Result<()
         "release audit must link bounded fuzz campaign evidence"
     );
     assert!(
-        audit.contains("longer fuzz campaigns remain optional review evidence"),
-        "release audit must preserve the distinction between bounded fuzz evidence and longer campaigns"
+        audit.contains("recurring or overnight fuzz campaigns are not part of the default gate"),
+        "release audit must preserve the distinction between bounded fuzz evidence and ongoing campaigns"
+    );
+
+    Ok(())
+}
+
+#[test]
+fn longer_fuzz_campaign_log_records_v0_wire_entrypoints_evidence() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let campaign_path = "docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-1800s.md";
+    let campaign = std::fs::read_to_string(root.join(campaign_path))?;
+    let audit = std::fs::read_to_string(root.join("docs/security/release-audit-v0.md"))?;
+
+    for required in [
+        "# Rava V0 Fuzz Campaign: v0_wire_entrypoints 2026-05-18 1800s",
+        "not a proof of security, external audit, or production readiness certification",
+        "does not change the frozen external-review target",
+        "becbff9e2326f5304822decf636aadcd0e37bb48",
+        "cargo +nightly fuzz run v0_wire_entrypoints -- -max_total_time=1800",
+        "Duration: 1801 seconds",
+        "Start time: `2026-05-18T03:25:30Z`",
+        "cargo-fuzz version: `0.13.1`",
+        "Corpus path: `fuzz/corpus/v0_wire_entrypoints` (generated locally; not committed)",
+        "Artifact path: `fuzz/artifacts/v0_wire_entrypoints`",
+        "Seed: `2752387297`",
+        "JSON parsing",
+        "canonicalization",
+        "action verification",
+        "receipt verification",
+        "attestation verification",
+        "Total executions: 58,358,035",
+        "Final coverage: `cov: 2657`",
+        "Final feature count: `ft: 10540`",
+        "Final corpus: `2548/1089Kb`",
+        "Input limit: `4096`",
+        "Final exec/s: `32403`",
+        "Final RSS: `736Mb`",
+        "Crash count: 0",
+        "Timeout count: 0",
+        "OOM count: 0",
+        "Minimized crashing inputs: none",
+        "Sanitizer or panic output: none observed",
+        "Final line: `Done 58358035 runs in 1801 second(s)`",
+        "No crash or bug was found",
+    ] {
+        assert!(
+            campaign.contains(required),
+            "longer campaign log missing: {required}"
+        );
+    }
+
+    assert!(
+        audit.contains(campaign_path),
+        "release audit must link longer fuzz campaign evidence"
+    );
+    assert!(
+        audit.contains("not part of the default gate"),
+        "release audit must preserve the distinction between campaign evidence and the default gate"
     );
 
     Ok(())
