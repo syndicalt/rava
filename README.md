@@ -25,9 +25,9 @@ Rava V0 is a draft reference implementation, not production-ready security softw
 
 ## Status
 
-Rava V0 is an early Rust reference implementation of the core protocol. The current implementation focuses on signed actions, delegated capabilities, replay/revocation checks, receipts, attestations, examples, and language-neutral wire artifacts.
+Rava V0 is complete as a draft reference implementation for review, examples, interop work, and integration design. The current implementation focuses on signed actions, delegated capabilities, replay/revocation checks, receipts, attestations, examples, and language-neutral wire artifacts.
 
-This repository should be treated as a draft protocol package until the roadmap release-readiness items are complete.
+This repository should still be treated as a draft protocol package, not a production authorization system.
 
 ## What Rava Implements
 
