@@ -27,6 +27,12 @@ The functional roadmap now includes evidence maps for release readiness, V0 hard
 
 The preview service is useful for local integration and now has local preview controls for request size, bearer-token ingress, local replay consumption, local revocation snapshots, local audit output, and local per-process rate limiting. These are still not production responsibilities such as caller identity, distributed replay coordination, distributed revocation freshness, distributed rate limiting, or managed audit storage. The README now says this directly.
 
+### Production-trust local exercise is rehearsal evidence only
+
+The production-trust runbook includes a local controlled-deployment exercise for Rava's controlled deployment profile. It is zero-budget local readiness evidence for rehearsing local trust bundles, replay, revocation freshness, audit output, caller correlation, rate limits, metrics, and fail-closed negative cases.
+
+This exercise is not production infrastructure or external review evidence. It does not satisfy production key custody, public-key discovery, distributed replay, distributed revocation, managed audit storage, production caller identity, distributed rate limiting, managed monitoring, or external security review requirements.
+
 ### Local Eventloom state is ignored
 
 `.eventloom/` is ignored so local Eventloom state is not shipped as release content. If future tooling writes repository-local memory or event logs, keep those files outside the committed protocol package unless they are intentionally documented fixtures.
