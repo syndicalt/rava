@@ -673,6 +673,60 @@ fn longer_fuzz_campaign_log_records_v0_wire_entrypoints_evidence() -> Result<(),
 }
 
 #[test]
+fn one_hour_fuzz_campaign_log_records_v0_wire_entrypoints_evidence() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let campaign_path = "docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-3600s.md";
+    let campaign = std::fs::read_to_string(root.join(campaign_path))?;
+    let release_audit = std::fs::read_to_string(root.join("docs/security/release-audit-v0.md"))?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+    let gitignore = std::fs::read_to_string(root.join(".gitignore"))?;
+
+    for required in [
+        "# Rava V0 Fuzz Campaign: v0_wire_entrypoints 2026-05-18 3600s",
+        "review evidence only",
+        "not a proof of security",
+        "not evidence that Rava has been externally reviewed",
+        "78857884bd7f6feafcf781cfdde2ce4b89fcb8db",
+        "cargo +nightly fuzz run v0_wire_entrypoints -- -max_total_time=3600",
+        "Duration: 3601 seconds",
+        "Seed: `3747513872`",
+        "Corpus path: `fuzz/corpus/v0_wire_entrypoints` (generated locally; not committed)",
+        "Artifact path: `fuzz/artifacts/v0_wire_entrypoints`",
+        "Total executions: 88,725,878",
+        "Final coverage: `cov: 2794`",
+        "Final feature count: `ft: 11349`",
+        "Final corpus: `2767/950Kb`",
+        "Final exec/s: `24638`",
+        "Final RSS: `683Mb`",
+        "Crash count: 0",
+        "Timeout count: 0",
+        "OOM count: 0",
+        "Done 88725878 runs in 3601 second(s)",
+    ] {
+        assert!(
+            campaign.contains(required),
+            "3600s fuzz campaign missing: {required}"
+        );
+    }
+
+    for docs in [release_audit, packet] {
+        assert!(
+            docs.contains(campaign_path),
+            "release and review docs must link 3600s fuzz campaign: {campaign_path}"
+        );
+    }
+
+    for ignored in ["fuzz/corpus/", "fuzz/artifacts/"] {
+        assert!(
+            gitignore.contains(ignored),
+            ".gitignore must ignore local fuzz output: {ignored}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn external_review_packet_defines_frozen_handoff_manifest() -> Result<(), Box<dyn Error>> {
     let root = repository_root();
     let packet_path = "docs/security/external-review-packet-v0.md";
