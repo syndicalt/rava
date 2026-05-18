@@ -61,7 +61,7 @@ If any compatibility-impacting change exists, link to the relevant migration not
 
 Link to `docs/roadmap.md` and summarize any roadmap evidence maps that changed in this release.
 
-List remaining external blockers, including external security review, publishing or tagging decisions, and production systems that are still documented requirements rather than implemented guarantees.
+List remaining external blockers, including external security review, publishing or tagging decisions, and production systems in `docs/operations/production-trust-v0.md` that are still documented requirements rather than implemented guarantees.
 
 ## Known Non-Goals and External Requirements
 
