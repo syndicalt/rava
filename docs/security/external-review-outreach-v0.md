@@ -16,6 +16,14 @@ Rava V0 is not production-ready security software. Outreach, quotes, availabilit
 
 Do not change the review target during outreach unless the reviewer explicitly agrees to evaluate the new commit or tag and the full verification baseline is rerun.
 
+## Maintainer Authorization Status
+
+Current allowed path is zero-budget OSS/security-community review only.
+
+No real outreach is authorized yet. Before any message is sent, maintainers must confirm the frozen R4 target is still the intended handoff target and that the selected public or private channel is acceptable for a public draft project.
+
+Do not set any reviewer, firm, advisor, OSS program, or community channel to `contacted` until a message is actually sent.
+
 ## Outreach States
 
 Use one of these states for each reviewer or firm:
