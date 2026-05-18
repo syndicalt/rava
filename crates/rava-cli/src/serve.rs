@@ -221,7 +221,11 @@ fn handle_connection(
             }
         };
         if args.require_fresh_revocations {
-            require_fresh_revocation_snapshot(&revocations, request.now_unix)?;
+            if let Err(error) = require_fresh_revocation_snapshot(&revocations, request.now_unix) {
+                metrics.revocation_freshness_failures += 1;
+                metrics.record_http(route, "500");
+                return Err(error);
+            }
         }
         verify_action_with_optional_replay(&request, &revocations, args, now)
     } else {
@@ -394,6 +398,7 @@ struct MetricsState {
     replay_store_failures: u64,
     missing_public_keys: u64,
     revocation_read_failures: u64,
+    revocation_freshness_failures: u64,
     audit_write_failures: u64,
 }
 
@@ -557,6 +562,12 @@ impl MetricsState {
             "rava_preview_revocation_read_failures_total",
             &[],
             self.revocation_read_failures,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_revocation_freshness_failures_total",
+            &[],
+            self.revocation_freshness_failures,
         );
         push_metric(
             &mut output,

@@ -661,6 +661,53 @@ fn serve_verify_metrics_reports_revocation_read_failures() -> Result<(), Box<dyn
 }
 
 #[test]
+fn serve_verify_metrics_reports_revocation_freshness_failures() -> Result<(), Box<dyn Error>> {
+    let revocation_store = temp_file_path("rava-serve-metrics-stale-revocations");
+    let revocation_store_arg = revocation_store.to_string_lossy().into_owned();
+    std::fs::write(
+        &revocation_store,
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "revoked_ids": [],
+            "fresh_until_unix": 1650000000
+        }))?,
+    )?;
+    let body = accepted_request_body()?;
+    let verify_request = post_json_request("/verify/action", &body)?;
+
+    let responses = run_server_raw_requests(
+        &[
+            "--metrics",
+            "--revocation-store",
+            &revocation_store_arg,
+            "--require-fresh-revocations",
+        ],
+        &[
+            verify_request.as_str(),
+            "GET /metrics HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
+        ],
+    )?;
+
+    assert!(
+        responses[0].starts_with("HTTP/1.1 500 Internal Server Error"),
+        "{}",
+        responses[0]
+    );
+    let metrics = response_body(&responses[1])?;
+    assert!(
+        metrics.contains("rava_preview_revocation_freshness_failures_total 1"),
+        "{metrics}"
+    );
+    assert!(
+        !metrics.contains(revocation_store_arg.as_str()),
+        "{metrics}"
+    );
+    assert!(!metrics.contains("fresh_until_unix"), "{metrics}");
+
+    std::fs::remove_file(revocation_store)?;
+    Ok(())
+}
+
+#[test]
 fn serve_verify_metrics_reports_missing_public_keys() -> Result<(), Box<dyn Error>> {
     let mut body = accepted_request_body()?;
     let issuer = body["issuer_public_keys"]

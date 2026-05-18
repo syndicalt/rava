@@ -125,7 +125,9 @@ This endpoint reports local process configuration only. It does not prove key fr
 
 ## Metrics Shape
 
-When `--metrics` is configured, `GET /metrics` returns Prometheus-style text counters for local HTTP statuses, verifier accepted/rejected decisions, verifier rejection codes, and audit-write failures. If `--auth-token-env` is configured, the same bearer-token gate protects `GET /metrics`.
+When `--metrics` is configured, `GET /metrics` returns Prometheus-style text counters for local HTTP statuses, verifier accepted/rejected decisions, verifier rejection codes, verifier latency, replay attempts, replay-store failures, revocation-read failures, revocation freshness failures, missing public keys, and audit-write failures. If `--auth-token-env` is configured, the same bearer-token gate protects `GET /metrics`.
+
+The local revocation freshness counter is `rava_preview_revocation_freshness_failures_total`.
 
 Metric labels are bounded local categories such as route, status, decision, and rejection code. Metrics intentionally omit raw action payloads, capability envelopes, signatures, public or private keys, credentials, access tokens, action IDs, actor IDs, controller IDs, resource names, and constraints.
 
