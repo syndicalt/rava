@@ -22,6 +22,8 @@ The `rava serve verify` preview service has gained optional service-boundary con
 - `--max-request-bytes`;
 - `--auth-token-env`;
 - `--require-auth-token-env`;
+- `--caller-id`;
+- `--require-caller-id`;
 - `--rate-limit-per-minute`;
 - `--require-rate-limit-per-minute`;
 - `--replay-store`;
@@ -33,7 +35,7 @@ The `rava serve verify` preview service has gained optional service-boundary con
 - `--metrics`;
 - `--require-metrics`.
 
-Operators using the preview service should prefer all thirteen controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
+Operators using the preview service should prefer all fifteen controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
 
 `rava serve verify --require-replay-store` requires `--replay-store` at startup. This is local preview configuration hygiene so controlled deployments cannot accidentally omit local one-time-use enforcement; it is not distributed replay coordination.
 
@@ -59,7 +61,7 @@ Operators using the preview service should prefer all thirteen controls for nont
 
 `rava serve verify --require-auth-token-env` requires `--auth-token-env` at startup. This is local preview ingress configuration hygiene so controlled deployments cannot accidentally run without the local bearer-token guard; it is not production caller identity, caller-to-policy mapping, or tenant isolation.
 
-`rava serve verify --caller-id <label>` records an explicit deployment caller label in audit entries and requires `--auth-token-env`. Labels use an audit-safe ASCII syntax and invalid labels fail closed at startup. This is local audit correlation evidence, not tenant isolation or production caller identity.
+`rava serve verify --caller-id <label>` records an explicit deployment caller label in audit entries and requires `--auth-token-env`. Labels use an audit-safe ASCII syntax and invalid labels fail closed at startup. `rava serve verify --require-caller-id` requires `--caller-id` at startup for controlled preview deployments that require local caller audit correlation. This is local audit correlation evidence, not tenant isolation or production caller identity.
 
 When `--rate-limit-per-minute` is configured, the value must be greater than zero and health and 429 responses report `rate_limit_scope`. The value is `caller` when the local preview limit is tied to an explicit `--caller-id` label and `process` otherwise. This is not shared quota state or distributed rate limiting.
 

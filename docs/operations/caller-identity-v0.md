@@ -27,6 +27,8 @@ When `rava serve verify --caller-id <label>` is configured, the preview service 
 
 The preview service also supports `--require-auth-token-env`, which fails closed at startup unless `--auth-token-env` is configured. That guardrail helps controlled preview deployments avoid accidentally running without the local bearer-token ingress check, but it does not add production caller identity, caller-to-policy mapping, tenant isolation, multi-caller identity, or authorization to use trust stores or audit destinations.
 
+The preview service also supports `--require-caller-id`, which requires `--caller-id` and fails closed at startup unless `--caller-id` is configured. That guardrail helps controlled preview deployments avoid accidentally running without local caller audit correlation, but it does not add production caller identity, caller-to-policy mapping, tenant isolation, multi-caller identity, or authorization to use trust stores or audit destinations.
+
 `--caller-id` requires `--auth-token-env`, so the preview service fails closed at startup rather than recording a caller label without the local bearer-token ingress guard. Caller labels must be 1 to 128 ASCII characters using letters, digits, `.`, `_`, `-`, `:`, or `@`; invalid labels fail closed at startup. `GET /healthz` reports whether a caller label is configured.
 
 This is local audit correlation evidence for a controlled deployment. It is not caller-to-policy mapping, tenant isolation, authorization to use trust stores or audit destinations, multi-caller identity, or a production ingress identity system.

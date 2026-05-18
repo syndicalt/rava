@@ -50,6 +50,9 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     if args.caller_id.is_some() && args.auth_token_env.is_none() {
         return Err("--caller-id requires --auth-token-env".into());
     }
+    if args.require_caller_id && args.caller_id.is_none() {
+        return Err("require-caller-id requires caller-id".into());
+    }
     if args.require_auth_token_env && args.auth_token_env.is_none() {
         return Err("require-auth-token-env requires auth-token-env".into());
     }
@@ -182,6 +185,7 @@ fn handle_connection(
                 "auth_required": args.auth_token_env.is_some(),
                 "require_auth_token_env": args.require_auth_token_env,
                 "caller_id_configured": args.caller_id.is_some(),
+                "require_caller_id": args.require_caller_id,
                 "rate_limit_per_minute": args.rate_limit_per_minute,
                 "require_rate_limit_per_minute": args.require_rate_limit_per_minute,
                 "rate_limit_scope": rate_limit_scope(args),
