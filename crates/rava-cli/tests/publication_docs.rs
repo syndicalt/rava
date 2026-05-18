@@ -353,6 +353,14 @@ fn security_review_register_tracks_external_findings_without_claiming_review(
         "Do not include private keys, credentials, access tokens, or raw sensitive action payloads",
         "docs/security/review-register-v0.md",
         "docs/security/review-guide-v0.md",
+        "docs/operations/key-custody-v0.md",
+        "docs/operations/key-discovery-v0.md",
+        "docs/operations/distributed-replay-v0.md",
+        "docs/operations/distributed-revocation-v0.md",
+        "docs/operations/audit-storage-v0.md",
+        "docs/operations/caller-identity-v0.md",
+        "docs/operations/distributed-rate-limits-v0.md",
+        "docs/operations/monitoring-v0.md",
     ] {
         assert!(
             security_policy.contains(required),
