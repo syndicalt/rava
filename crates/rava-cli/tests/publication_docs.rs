@@ -821,6 +821,63 @@ fn security_review_finding_template_requires_remediation_evidence() -> Result<()
 }
 
 #[test]
+fn github_issue_template_routes_security_review_findings_to_remediation_tracking(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let issue_template =
+        std::fs::read_to_string(root.join(".github/ISSUE_TEMPLATE/security-review-finding.yml"))?;
+    let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
+
+    for required in [
+        "name: Rava security review finding",
+        "description: Record an external review finding or remediation item for Rava V0",
+        "labels: [security-review]",
+        "not evidence that Rava has been externally reviewed",
+        "docs/security/review-register-v0.md",
+        "docs/security/review-findings/template-v0.md",
+        "RAVA-REVIEW-",
+        "Immutable review target",
+        "Finding state",
+        "reported",
+        "accepted",
+        "remediated",
+        "verified",
+        "accepted-risk",
+        "out-of-scope",
+        "Affected area",
+        "Impact on fail-closed verification",
+        "Regression evidence",
+        "Verification commands",
+        "cargo fmt --check",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo test --workspace",
+        "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
+        "npm --prefix packages/rava-wasm-js test",
+        "(cd packages/rava-wasm-js && npm pack --dry-run)",
+    ] {
+        assert!(
+            issue_template.contains(required),
+            "security review issue template missing: {required}"
+        );
+    }
+
+    assert!(
+        register.contains("reported")
+            && register.contains("accepted")
+            && register.contains("remediated")
+            && register.contains("verified")
+            && register.contains("accepted-risk")
+            && register.contains("out-of-scope"),
+        "issue template states must stay aligned with the review register"
+    );
+
+    Ok(())
+}
+
+#[test]
 fn v0_review_candidate_notes_record_frozen_target_without_release_claims(
 ) -> Result<(), Box<dyn Error>> {
     let root = repository_root();
