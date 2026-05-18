@@ -1086,6 +1086,10 @@ fn external_review_selection_rubric_records_reviewer_fit_without_endorsement_cla
         std::fs::read_to_string(root.join("docs/security/external-review-request-v0.md"))?;
     let outreach =
         std::fs::read_to_string(root.join("docs/security/external-review-outreach-v0.md"))?;
+    let checklist = std::fs::read_to_string(
+        root.join("docs/security/external-review-kickoff-checklist-v0.md"),
+    )?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
     let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
     let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
     let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
@@ -1125,7 +1129,16 @@ fn external_review_selection_rubric_records_reviewer_fit_without_endorsement_cla
         );
     }
 
-    for docs in [plan, request, outreach, register, security_policy, roadmap] {
+    for docs in [
+        plan,
+        request,
+        outreach,
+        checklist,
+        packet,
+        register,
+        security_policy,
+        roadmap,
+    ] {
         assert!(
             docs.contains(selection_path),
             "review docs must link external review selection rubric: {selection_path}"
