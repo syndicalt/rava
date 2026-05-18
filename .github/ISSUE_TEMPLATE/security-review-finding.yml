@@ -1,0 +1,122 @@
+name: Rava security review finding
+description: Record an external review finding or remediation item for Rava V0
+title: "RAVA-REVIEW-: "
+labels: [security-review]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for external review findings and remediation tracking.
+
+        This issue is not evidence that Rava has been externally reviewed, certified, or approved for production use.
+
+        Keep the canonical register in `docs/security/review-register-v0.md`. Use `docs/security/review-findings/template-v0.md` when a finding needs a detailed write-up.
+
+  - type: input
+    id: finding-id
+    attributes:
+      label: Finding ID
+      description: Use the next `RAVA-REVIEW-` identifier from the review register.
+      placeholder: RAVA-REVIEW-001
+    validations:
+      required: true
+
+  - type: input
+    id: target
+    attributes:
+      label: Immutable review target
+      description: Record the commit SHA or signed tag under review.
+      placeholder: v0-review-candidate-2026-05-18 or a full commit SHA
+    validations:
+      required: true
+
+  - type: dropdown
+    id: state
+    attributes:
+      label: Finding state
+      description: Keep this aligned with `docs/security/review-register-v0.md`.
+      options:
+        - reported
+        - accepted
+        - remediated
+        - verified
+        - accepted-risk
+        - out-of-scope
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - canonicalization
+        - signature binding
+        - delegation attenuation
+        - nonce validation
+        - replay semantics
+        - revocation semantics
+        - receipt verification
+        - attestation verification
+        - verifier service boundary
+        - WASM or TypeScript wrapper
+        - documentation safety
+        - production non-goal or future operational requirement
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact on fail-closed verification
+      description: Describe what an attacker, confused integrator, or faulty operator could do if this finding is real.
+      placeholder: Explain whether this affects fail-closed behavior, canonicalization, signature binding, delegation attenuation, replay, revocation, receipts, attestations, wrappers, or documentation safety.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reviewer evidence
+      description: Include reproduction steps, affected files, related tests, links, or reviewer notes.
+      placeholder: Evidence, reproduction steps, affected files, and related tests.
+    validations:
+      required: true
+
+  - type: textarea
+    id: remediation
+    attributes:
+      label: Remediation plan
+      description: Describe the smallest production-quality remediation without adding speculative protocol surface.
+      placeholder: Code changes, documentation changes, compatibility impact, or accepted-risk rationale.
+    validations:
+      required: true
+
+  - type: textarea
+    id: regression
+    attributes:
+      label: Regression evidence
+      description: Accepted implementation or protocol findings need rejection or fail-closed tests before remediation. Documentation ambiguity should get publication-doc coverage when it affects security posture.
+      placeholder: Name the failing test added before the fix, or explain why this is documentation-only accepted risk.
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification commands
+      description: Record exact commands and results before marking a finding verified.
+      value: |
+        ```bash
+        cargo fmt --check
+        cargo clippy --workspace --all-targets -- -D warnings
+        cargo test --workspace
+        cargo run -p rava -- demo flight-booking
+        cargo package --workspace
+        cargo check --manifest-path fuzz/Cargo.toml
+        cargo check -p rava-wasm --target wasm32-unknown-unknown
+        npm --prefix packages/rava-wasm-js test
+        (cd packages/rava-wasm-js && npm pack --dry-run)
+        ```
+    validations:
+      required: true
