@@ -46,6 +46,7 @@ Before publishing a V0 draft release candidate, update or confirm:
 - `docs/security/release-audit-v0.md`;
 - `docs/security/review-register-v0.md`;
 - `docs/security/threat-model-v0.md`;
+- `docs/operations/production-trust-v0.md`;
 - `docs/roadmap.md`;
 - [../roadmap.md](../roadmap.md);
 - [../security/release-audit-v0.md](../security/release-audit-v0.md);
