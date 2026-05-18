@@ -687,6 +687,7 @@ fn one_hour_fuzz_campaign_log_records_v0_wire_entrypoints_evidence() -> Result<(
         "not a proof of security",
         "not evidence that Rava has been externally reviewed",
         "78857884bd7f6feafcf781cfdde2ce4b89fcb8db",
+        "included as supplemental evidence in the R3 frozen review target",
         "cargo +nightly fuzz run v0_wire_entrypoints -- -max_total_time=3600",
         "Duration: 3601 seconds",
         "Seed: `3747513872`",
@@ -709,12 +710,16 @@ fn one_hour_fuzz_campaign_log_records_v0_wire_entrypoints_evidence() -> Result<(
         );
     }
 
-    for docs in [release_audit, packet] {
+    for docs in [&release_audit, &packet] {
         assert!(
             docs.contains(campaign_path),
             "release and review docs must link 3600s fuzz campaign: {campaign_path}"
         );
     }
+    assert!(
+        release_audit.contains("included as supplemental evidence in the R3 frozen review target"),
+        "release audit must describe the 3600s campaign against the current R3 target"
+    );
 
     for ignored in ["fuzz/corpus/", "fuzz/artifacts/"] {
         assert!(
@@ -928,7 +933,6 @@ fn external_review_kickoff_checklist_ties_review_remediation_and_fuzz_tracking(
             "external review kickoff checklist missing: {required}"
         );
     }
-
     for docs in [plan, register, packet, security_policy, roadmap] {
         assert!(
             docs.contains(checklist_path),
@@ -995,7 +999,6 @@ fn external_review_request_scopes_reviewer_engagement_without_audit_claims(
             "external review request missing: {required}"
         );
     }
-
     for docs in [plan, checklist, packet, security_policy, register, roadmap] {
         assert!(
             docs.contains(request_path),
@@ -1051,12 +1054,17 @@ fn external_review_outreach_tracker_records_reviewer_contact_without_audit_claim
         "docs/security/review-findings/template-v0.md",
         "docs/security/external-review-closeout-template-v0.md",
         "No production-ready or externally audited claim",
+        "Rava is seeking external review for the R3 V0 draft target.",
     ] {
         assert!(
             outreach.contains(required),
             "external review outreach tracker missing: {required}"
         );
     }
+    assert!(
+        !outreach.contains("R2 V0 draft target"),
+        "current outreach examples must not refer to the superseded R2 target"
+    );
 
     for docs in [
         request,
@@ -1122,12 +1130,17 @@ fn external_review_selection_rubric_records_reviewer_fit_without_endorsement_cla
         "Decision",
         "## Non-Claim Boundary",
         "No production-ready or externally audited claim",
+        "Rava is evaluating external reviewers for the R3 V0 draft target.",
     ] {
         assert!(
             selection.contains(required),
             "external review selection rubric missing: {required}"
         );
     }
+    assert!(
+        !selection.contains("R2 V0 draft target"),
+        "current selection examples must not refer to the superseded R2 target"
+    );
 
     for docs in [
         plan,
