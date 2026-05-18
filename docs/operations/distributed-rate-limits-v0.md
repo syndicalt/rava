@@ -6,7 +6,7 @@ The preview service can enforce a local per-process request limit. That is usefu
 
 ## Local Preview Guardrails
 
-When `rava serve verify --rate-limit-per-minute <N>` is configured, the preview service enforces a local in-memory request limit for the running process. If `--caller-id <label>` is also configured, health and 429 responses report `rate_limit_scope` as `caller`; otherwise they report `process`.
+When `rava serve verify --rate-limit-per-minute <N>` is configured, the preview service enforces a local in-memory request limit for the running process. The configured limit must be greater than zero; invalid zero limits fail closed at startup. If `--caller-id <label>` is also configured, health and 429 responses report `rate_limit_scope` as `caller`; otherwise they report `process`.
 
 The caller-scoped preview label depends on `--caller-id`, which requires `--auth-token-env`. It is not inferred from action actors and does not create a shared quota across processes, nodes, tenants, regions, or deployments.
 

@@ -53,6 +53,9 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     if let Some(caller_id) = &args.caller_id {
         validate_caller_id(caller_id)?;
     }
+    if args.rate_limit_per_minute == Some(0) {
+        return Err("rate-limit-per-minute must be greater than zero".into());
+    }
     let listener = TcpListener::bind(&args.addr)?;
     let mut rate_limit = args.rate_limit_per_minute.map(RateLimitState::new);
     let mut metrics = MetricsState::default();

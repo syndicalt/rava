@@ -199,6 +199,28 @@ fn serve_verify_with_rate_limit_rejects_excess_requests() -> Result<(), Box<dyn 
 }
 
 #[test]
+fn serve_verify_rejects_zero_rate_limit() -> Result<(), Box<dyn Error>> {
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "serve",
+            "verify",
+            "--addr",
+            "127.0.0.1:0",
+            "--rate-limit-per-minute",
+            "0",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("rate-limit-per-minute must be greater than zero"),
+        "{stderr}"
+    );
+    Ok(())
+}
+
+#[test]
 fn serve_verify_with_rate_limit_reports_caller_scope_when_caller_id_configured(
 ) -> Result<(), Box<dyn Error>> {
     let responses = run_server_raw_requests_with_env(
