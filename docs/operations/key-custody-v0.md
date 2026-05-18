@@ -34,6 +34,12 @@ If a deployment intentionally places private keys in a browser, test harness, or
 
 These guardrails reduce accidental local exposure. They do not replace a production custody provider, hardware-backed key storage, cloud KMS, recovery process, or operator access review.
 
+## Local Compromise Response Helper
+
+`rava key revoke --id <signer-id> --revocation-store <path>` records a signer ID in the local revocation snapshot consumed by `rava verify action --revocation-store`. Existing `fresh_until_unix` metadata is preserved when the store is updated.
+
+This helper gives controlled deployments a local break-glass path for suspected signer compromise. It is not a managed custody provider, rotation ceremony, emergency propagation system, key-discovery update, operator approval workflow, or production incident-response process.
+
 ## Rotation
 
 Rotation should define:

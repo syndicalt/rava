@@ -247,6 +247,8 @@ rava inspect capability-chain --capability-chain capability-chain.json
 
 `rava key generate` refuses to overwrite an existing key file unless `--force` is passed. On Unix, Rava writes local key files with owner-only permissions and rejects loading private key files that are readable, writable, or executable by group or others.
 
+`rava key revoke --id <signer-id> --revocation-store revocations.json` records a signer ID in the local revocation snapshot used by `rava verify action --revocation-store`. This is a local compromise-response helper, not managed custody, rotation, recovery, or key-discovery infrastructure.
+
 ## HTTP Verifier Preview
 
 Start the local preview verifier:

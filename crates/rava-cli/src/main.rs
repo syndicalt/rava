@@ -21,7 +21,7 @@ use cli::{
 };
 use demo::run_flight_booking_demo;
 use inspect::{run_inspect_action, run_inspect_capability_chain};
-use key::run_key_generate;
+use key::{run_key_generate, run_key_revoke};
 use serve::run_serve_verify;
 use verify::{run_verify_action, run_verify_attestation, run_verify_receipt};
 
@@ -45,6 +45,9 @@ fn main() -> ExitCode {
         Command::Key {
             command: KeyCommand::Generate(args),
         } => run_key_generate(args),
+        Command::Key {
+            command: KeyCommand::Revoke(args),
+        } => run_key_revoke(args),
         Command::Serve {
             command: ServeCommand::Verify(args),
         } => run_serve_verify(args),

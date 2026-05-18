@@ -32,6 +32,8 @@ Operators using the preview service should prefer all six controls for nontrivia
 
 `rava verify action --require-fresh-revocations` requires a local `--revocation-store` snapshot to include `fresh_until_unix` greater than verifier `now_unix`. Missing or stale freshness fails closed before verifier execution. This is local snapshot freshness checking, not distributed revocation publication or outage handling.
 
+`rava key revoke --id <signer-id> --revocation-store <path>` updates the local revocation snapshot for a suspected compromised signer. It preserves existing `fresh_until_unix` metadata and remains local compromise-response tooling, not production custody or emergency propagation.
+
 ## HTTP Service Shape
 
 `POST /verify/action` still wraps Rust verification and returns:
