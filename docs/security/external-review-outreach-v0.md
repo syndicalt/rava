@@ -53,7 +53,7 @@ No production-ready or externally audited claim may be made from candidate selec
 
 Permitted wording before review completion is limited to process status, for example:
 
-- "Rava is seeking external review for the R2 V0 draft target."
+- "Rava is seeking external review for the R3 V0 draft target."
 - "Reviewer outreach is tracked in `docs/security/external-review-outreach-v0.md`."
 
 Forbidden wording includes broad claims such as:

@@ -2,7 +2,7 @@
 
 This bounded one-hour campaign is review evidence only. It is not a proof of security, external audit, production readiness certification, and not evidence that Rava has been externally reviewed.
 
-This campaign ran after the R2 frozen external-review candidate target was recorded. It does not change the frozen external-review target and should be treated as supplemental evidence unless a reviewer explicitly agrees to evaluate this later commit.
+This campaign ran after the R2 frozen external-review candidate target was recorded. It is included as supplemental evidence in the R3 frozen review target.
 
 ## Campaign Metadata
 
