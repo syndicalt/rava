@@ -23,6 +23,24 @@ If the caller cannot select an authentic public key for the actor, issuer, verif
 
 Using an unauthenticated fallback key can turn signature verification into a false proof of authority.
 
+## Static Trust Bundles
+
+`rava verify action` supports an explicit local static trust bundle for controlled deployments:
+
+```json
+{
+  "version": "rava-static-trust-bundle-v0",
+  "keys": {
+    "rava:agent:<actor-public-key-prefix>": "<actor-public-key-hex>",
+    "rava:human:<issuer-public-key-prefix>": "<issuer-public-key-hex>"
+  }
+}
+```
+
+When a trust bundle is provided, the CLI can select the actor and issuer public keys by signer ID. Explicit `--actor-key` or `--issuer-key` values must match any corresponding bundle entry; conflicts fail closed as CLI errors instead of silently choosing one source.
+
+Static trust bundles are the selected first production-trust step because they are inspectable and avoid unaudited network resolver behavior. They do not provide dynamic DID, web, registry, resolver freshness, cache invalidation, rotation, rollback, or outage guarantees.
+
 ## Freshness
 
 Resolver freshness should define:

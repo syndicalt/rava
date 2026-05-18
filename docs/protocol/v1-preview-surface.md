@@ -33,6 +33,8 @@ The preview verifier service supports these service-boundary options:
 They do not replace production caller identity, distributed rate limiting, or
 network-edge access control.
 
+`rava verify action` supports `--trust-bundle` for a local `rava-static-trust-bundle-v0` signer-ID to public-key map. This is explicit static trust-policy input; it does not add dynamic key discovery, resolver freshness, rotation, rollback, or outage guarantees.
+
 ## HTTP Request Shape
 
 `POST /verify/action` accepts a JSON object with these fields:

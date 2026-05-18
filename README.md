@@ -186,6 +186,28 @@ rava verify action \
   --receipt-key verifier-key.json
 ```
 
+For controlled deployments that use explicit static trust roots, `rava verify action` can also read signer public keys from a local trust bundle:
+
+```json
+{
+  "version": "rava-static-trust-bundle-v0",
+  "keys": {
+    "rava:agent:<actor-public-key-prefix>": "<actor-public-key-hex>",
+    "rava:human:<issuer-public-key-prefix>": "<issuer-public-key-hex>"
+  }
+}
+```
+
+```bash
+rava verify action \
+  --action action.json \
+  --capability-chain capability-chain.json \
+  --trust-bundle trust-bundle.json \
+  --now-unix 1650000000
+```
+
+If explicit `--actor-key` or `--issuer-key` values conflict with the trust bundle, verification fails before an authorization decision is reported. Static trust bundles are local trust-policy input; they do not provide dynamic DID, web, registry, resolver freshness, or rotation guarantees.
+
 Verify a signed receipt:
 
 ```bash

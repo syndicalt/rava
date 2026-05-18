@@ -28,6 +28,8 @@ The `rava serve verify` preview service has gained optional service-boundary con
 
 Operators using the preview service should prefer all six controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
 
+`rava verify action` also supports `--trust-bundle` for a local `rava-static-trust-bundle-v0` signer-ID to public-key map. This is static caller trust-policy input for controlled deployments; it does not add dynamic resolver freshness, cache invalidation, rotation, rollback, or outage guarantees.
+
 ## HTTP Service Shape
 
 `POST /verify/action` still wraps Rust verification and returns:
