@@ -62,7 +62,7 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
     let replay_store_arg = replay_store.to_string_lossy().into_owned();
     let audit_log = temp_file_path("rava-serve-health-audit");
     let audit_log_arg = audit_log.to_string_lossy().into_owned();
-    let response = run_server_raw_request(
+    let response = run_server_raw_request_with_env(
         &[
             "--max-request-bytes",
             "4096",
@@ -72,8 +72,12 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
             "--audit-log",
             &audit_log_arg,
             "--require-audit-log",
+            "--auth-token-env",
+            "RAVA_TEST_AUTH_TOKEN",
+            "--require-auth-token-env",
         ],
-        "GET /healthz HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
+        &[("RAVA_TEST_AUTH_TOKEN", "secret-token")],
+        "GET /healthz HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer secret-token\r\nConnection: close\r\n\r\n",
     )?;
 
     assert!(response.starts_with("HTTP/1.1 200 OK"), "{response}");
@@ -109,6 +113,16 @@ fn serve_verify_exposes_health_endpoint_with_limits() -> Result<(), Box<dyn Erro
     );
     assert_eq!(
         json.get("require_audit_log")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    assert_eq!(
+        json.get("auth_required")
+            .and_then(serde_json::Value::as_bool),
+        Some(true)
+    );
+    assert_eq!(
+        json.get("require_auth_token_env")
             .and_then(serde_json::Value::as_bool),
         Some(true)
     );
@@ -312,6 +326,27 @@ fn serve_verify_requires_audit_log_requires_audit_log() -> Result<(), Box<dyn Er
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
         stderr.contains("require-audit-log requires audit-log"),
+        "{stderr}"
+    );
+    Ok(())
+}
+
+#[test]
+fn serve_verify_requires_auth_token_env_requires_auth_token_env() -> Result<(), Box<dyn Error>> {
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "serve",
+            "verify",
+            "--addr",
+            "127.0.0.1:0",
+            "--require-auth-token-env",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("require-auth-token-env requires auth-token-env"),
         "{stderr}"
     );
     Ok(())
