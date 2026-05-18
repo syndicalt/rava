@@ -9,12 +9,20 @@ use uuid::Uuid;
 /// Replay registry contract for one-time action verification.
 ///
 /// Implementations must report whether an accepted action ID has already been
-/// consumed. `record` must be durable for the caller's one-time-use boundary
-/// before returning success. If recording fails, verification must not report
-/// successful one-time consumption.
+/// consumed. `consume_action_id` must atomically record the action ID only if it
+/// has not already been consumed, and the record must be durable for the
+/// caller's one-time-use boundary before returning `Ok(true)`. If recording
+/// fails, verification must not report successful one-time consumption.
 pub trait ReplayRegistry {
     fn has_seen(&self, action_id: &str) -> bool;
     fn record(&mut self, action_id: String) -> Result<(), ReplayStoreError>;
+    fn consume_action_id(&mut self, action_id: String) -> Result<bool, ReplayStoreError> {
+        if self.has_seen(&action_id) {
+            return Ok(false);
+        }
+        self.record(action_id)?;
+        Ok(true)
+    }
 }
 
 #[derive(Debug, Default, Clone)]
@@ -30,6 +38,10 @@ impl ReplayRegistry for InMemoryReplayRegistry {
     fn record(&mut self, action_id: String) -> Result<(), ReplayStoreError> {
         self.action_ids.insert(action_id);
         Ok(())
+    }
+
+    fn consume_action_id(&mut self, action_id: String) -> Result<bool, ReplayStoreError> {
+        Ok(self.action_ids.insert(action_id))
     }
 }
 
@@ -91,6 +103,14 @@ impl ReplayRegistry for FileReplayRegistry {
     }
 
     fn record(&mut self, action_id: String) -> Result<(), ReplayStoreError> {
+        self.consume_action_id(action_id)?;
+        Ok(())
+    }
+
+    fn consume_action_id(&mut self, action_id: String) -> Result<bool, ReplayStoreError> {
+        if self.action_ids.contains(&action_id) {
+            return Ok(false);
+        }
         let previous_action_ids = self.action_ids.clone();
         self.action_ids.insert(action_id);
         if let Err(error) = self.persist() {
@@ -98,7 +118,7 @@ impl ReplayRegistry for FileReplayRegistry {
             return Err(error);
         }
 
-        Ok(())
+        Ok(true)
     }
 }
 

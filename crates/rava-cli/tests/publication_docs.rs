@@ -2060,8 +2060,10 @@ fn production_operations_runbooks_define_external_systems_without_core_claims(
             &[
                 "# Rava Production Distributed Replay V0",
                 "not implemented by the V0 preview service",
+                "atomic consume operation",
                 "atomic action-ID consumption",
                 "durability before acceptance",
+                "reports `action_replayed`",
                 "partial failure",
                 "cross-region",
                 "fail closed",

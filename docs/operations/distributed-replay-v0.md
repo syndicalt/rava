@@ -4,6 +4,8 @@ This runbook defines distributed replay requirements for production deployments.
 
 The Rust core provides a replay registry trait and local development implementations. Production deployments need a shared one-time-use boundary when the same signed action can reach more than one verifier.
 
+The verifier contract now calls an atomic consume operation after an action is otherwise accepted. A replay backend must report duplicate consumption in that operation instead of relying on a separate stale pre-check.
+
 ## Required Properties
 
 A production replay system should provide:
@@ -21,6 +23,8 @@ A production replay system should provide:
 An action should be reported as accepted only after the action ID is durably consumed inside the deployment's one-time-use boundary.
 
 If durable consumption cannot be confirmed, verification should fail closed rather than risk accepting the same signed action in multiple places.
+
+If the replay backend reports that another verifier already consumed the action ID during the consume operation, the verifier reports `action_replayed` even if an earlier local view would have considered the action unseen.
 
 ## Partial Failure
 
