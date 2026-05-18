@@ -42,6 +42,8 @@ When a trust bundle is provided, the CLI can select the actor and issuer public 
 
 `rava verify action --require-fresh-trust-bundle` requires the local static trust bundle to include `fresh_until_unix` greater than verifier `now_unix`. Missing or stale trust-bundle freshness fails closed before verifier execution.
 
+When a static trust bundle is used, `rava verify action` prints `Rava key source: static-trust-bundle`. This is local CLI key-source evidence for controlled deployments; it is not managed resolver audit evidence, dynamic key discovery, or production resolver policy.
+
 Static trust bundles are the selected first production-trust step because they are inspectable and avoid unaudited network resolver behavior. Local `fresh_until_unix` checking gives operators an explicit cache-lifetime guard for static bundles. It does not provide dynamic DID, web, registry, resolver selection, cache invalidation, rotation, rollback, or outage guarantees.
 
 ## Freshness
