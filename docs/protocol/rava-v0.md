@@ -127,7 +127,9 @@ Replay recording is fallible. If an accepted action cannot be recorded, one-time
 Replay registry contract:
 
 - a replay registry answers whether an action ID has already been consumed inside the caller's one-time-use boundary;
+- one-time verification asks the replay registry to atomically consume an accepted action ID;
 - recording an accepted action ID must be durable before the verifier reports one-time verification success;
+- if atomic consumption reports that the action ID was already consumed, one-time verification reports `action_replayed`;
 - recording failure must return an error instead of an accepted one-time verification result;
 - Rejected actions must not be recorded;
 - Registry lookup failures must fail closed before verification claims acceptance.

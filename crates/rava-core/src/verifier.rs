@@ -482,14 +482,6 @@ pub fn verify_action<R: RevocationRegistry>(
 pub fn verify_action_once<R: RevocationRegistry, P: ReplayRegistry>(
     input: VerifyActionOnceInput<'_, R, P>,
 ) -> Result<VerificationResult, VerifyActionOnceError> {
-    if input.replay.has_seen(&input.action.id) {
-        return Ok(VerificationResult::Rejected(
-            VerificationError::ActionReplayed {
-                action_id: input.action.id.clone(),
-            },
-        ));
-    }
-
     let result = verify_action(VerifyActionInput {
         action: input.action,
         capability_chain: input.capability_chain,
@@ -500,7 +492,14 @@ pub fn verify_action_once<R: RevocationRegistry, P: ReplayRegistry>(
     })?;
 
     if result == VerificationResult::Accepted {
-        input.replay.record(input.action.id.clone())?;
+        let consumed = input.replay.consume_action_id(input.action.id.clone())?;
+        if !consumed {
+            return Ok(VerificationResult::Rejected(
+                VerificationError::ActionReplayed {
+                    action_id: input.action.id.clone(),
+                },
+            ));
+        }
     }
 
     Ok(result)
@@ -1737,6 +1736,50 @@ mod tests {
         assert_eq!(first, VerificationResult::Accepted);
         assert_eq!(
             second,
+            VerificationResult::Rejected(VerificationError::ActionReplayed {
+                action_id: action.id
+            })
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn verify_action_once_rejects_when_atomic_replay_consumption_reports_duplicate(
+    ) -> Result<(), Box<dyn Error>> {
+        struct RaceReplayRegistry;
+
+        impl ReplayRegistry for RaceReplayRegistry {
+            fn has_seen(&self, _action_id: &str) -> bool {
+                false
+            }
+
+            fn record(&mut self, _action_id: String) -> Result<(), ReplayStoreError> {
+                Ok(())
+            }
+
+            fn consume_action_id(&mut self, _action_id: String) -> Result<bool, ReplayStoreError> {
+                Ok(false)
+            }
+        }
+
+        let scenario = scenario()?;
+        let action = purchase_action(&scenario, 750)?;
+        let issuer_keys = issuer_keys(&scenario);
+        let revocations = InMemoryRevocationRegistry::default();
+        let mut replay = RaceReplayRegistry;
+
+        let result = verify_action_once(VerifyActionOnceInput {
+            action: &action,
+            capability_chain: &[scenario.root, scenario.purchase],
+            actor_public_key_hex: &scenario.booking_agent.public_key_hex,
+            capability_issuer_public_keys: &issuer_keys,
+            revocations: &revocations,
+            replay: &mut replay,
+            now: at(1_650_000_000)?,
+        })?;
+
+        assert_eq!(
+            result,
             VerificationResult::Rejected(VerificationError::ActionReplayed {
                 action_id: action.id
             })
