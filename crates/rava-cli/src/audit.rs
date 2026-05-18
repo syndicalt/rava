@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::io::BufRead;
+use std::path::Path;
 
 use serde_json::Value;
 
@@ -38,9 +39,48 @@ pub fn run_audit_export(args: ExportAuditArgs) -> Result<(), Box<dyn Error>> {
         entries.push(entry);
     }
 
-    serde_json::to_writer_pretty(std::io::stdout(), &entries)?;
-    println!();
+    if let Some(output) = &args.output {
+        let mut file = create_export_file(output)?;
+        serde_json::to_writer_pretty(&mut file, &entries)?;
+        use std::io::Write;
+        writeln!(file)?;
+        file.sync_data()?;
+    } else {
+        serde_json::to_writer_pretty(std::io::stdout(), &entries)?;
+        println!();
+    }
     Ok(())
+}
+
+#[cfg(unix)]
+fn create_export_file(path: &Path) -> Result<std::fs::File, Box<dyn Error>> {
+    use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+
+    let file = std::fs::OpenOptions::new()
+        .write(true)
+        .create(true)
+        .mode(0o600)
+        .custom_flags(libc::O_NOFOLLOW)
+        .open(path)?;
+    let mode = file.metadata()?.permissions().mode();
+    if mode & 0o177 != 0 {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::PermissionDenied,
+            "audit export file must be owner-only on Unix",
+        )
+        .into());
+    }
+    file.set_len(0)?;
+    Ok(file)
+}
+
+#[cfg(not(unix))]
+fn create_export_file(path: &Path) -> Result<std::fs::File, Box<dyn Error>> {
+    Ok(std::fs::OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(path)?)
 }
 
 fn entry_is_in_time_window(
