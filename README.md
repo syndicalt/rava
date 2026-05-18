@@ -257,7 +257,7 @@ Start the local preview verifier:
 
 ```bash
 RAVA_VERIFIER_TOKEN="$(openssl rand -hex 32)" \
-rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --caller-id local-operator --rate-limit-per-minute 120 --metrics
+rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --require-fresh-revocations --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --caller-id local-operator --rate-limit-per-minute 120 --metrics
 ```
 
 It exposes `POST /verify/action` for JSON requests containing an action, capability chain, actor public key, issuer public key map, and `now_unix`.

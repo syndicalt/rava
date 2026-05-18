@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 use std::env;
 use std::error::Error;
 use std::fs::OpenOptions;
-use std::io::{Read, Write};
+use std::io::{self, Read, Write};
 use std::net::{TcpListener, TcpStream};
 use std::path::Path;
 use std::time::{Duration, Instant};
@@ -49,6 +49,9 @@ struct VerifyActionRejection {
 pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     if args.caller_id.is_some() && args.auth_token_env.is_none() {
         return Err("--caller-id requires --auth-token-env".into());
+    }
+    if args.require_fresh_revocations && args.revocation_store.is_none() {
+        return Err("require-fresh-revocations requires revocation-store".into());
     }
     if let Some(caller_id) = &args.caller_id {
         validate_caller_id(caller_id)?;
@@ -157,6 +160,7 @@ fn handle_connection(
                 "max_request_bytes": args.max_request_bytes,
                 "replay_store_configured": args.replay_store.is_some(),
                 "revocation_store_configured": args.revocation_store.is_some(),
+                "require_fresh_revocations": args.require_fresh_revocations,
                 "audit_log_configured": args.audit_log.is_some(),
                 "auth_required": args.auth_token_env.is_some(),
                 "caller_id_configured": args.caller_id.is_some(),
@@ -192,6 +196,9 @@ fn handle_connection(
                 return Err(error.into());
             }
         };
+        if args.require_fresh_revocations {
+            require_fresh_revocation_snapshot(&revocations, request.now_unix)?;
+        }
         verify_action_with_optional_replay(&request, &revocations, args, now)
     } else {
         let revocations = InMemoryRevocationRegistry::default();
@@ -314,6 +321,22 @@ fn verify_action_with_optional_replay<R: RevocationRegistry>(
     };
 
     Ok(result)
+}
+
+fn require_fresh_revocation_snapshot(
+    revocations: &FileRevocationRegistry,
+    now_unix: i64,
+) -> Result<(), Box<dyn Error>> {
+    let fresh_until_unix = revocations.fresh_until_unix().ok_or_else(|| {
+        io::Error::new(
+            io::ErrorKind::InvalidData,
+            "revocation store missing fresh_until_unix",
+        )
+    })?;
+    if fresh_until_unix <= now_unix {
+        return Err(io::Error::new(io::ErrorKind::InvalidData, "revocation store is stale").into());
+    }
+    Ok(())
 }
 
 fn rate_limit_scope(args: &ServeVerifyArgs) -> &'static str {

@@ -149,6 +149,9 @@ pub struct ServeVerifyArgs {
     #[arg(long = "revocation-store")]
     pub revocation_store: Option<PathBuf>,
 
+    #[arg(long = "require-fresh-revocations")]
+    pub require_fresh_revocations: bool,
+
     #[arg(long = "audit-log")]
     pub audit_log: Option<PathBuf>,
 

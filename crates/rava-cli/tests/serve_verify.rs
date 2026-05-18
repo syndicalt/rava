@@ -221,6 +221,28 @@ fn serve_verify_rejects_zero_rate_limit() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
+fn serve_verify_requires_fresh_revocations_requires_revocation_store() -> Result<(), Box<dyn Error>>
+{
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "serve",
+            "verify",
+            "--addr",
+            "127.0.0.1:0",
+            "--require-fresh-revocations",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("require-fresh-revocations requires revocation-store"),
+        "{stderr}"
+    );
+    Ok(())
+}
+
+#[test]
 fn serve_verify_with_rate_limit_reports_caller_scope_when_caller_id_configured(
 ) -> Result<(), Box<dyn Error>> {
     let responses = run_server_raw_requests_with_env(
@@ -644,6 +666,70 @@ fn serve_verify_with_revocation_store_rejects_revoked_capability() -> Result<(),
         run_server_request_with_args(&["--revocation-store", &revocation_store_arg], &body)?;
 
     assert_rejection_code(&response, "capability_revoked")?;
+    std::fs::remove_file(revocation_store)?;
+    Ok(())
+}
+
+#[test]
+fn serve_verify_requires_fresh_revocations_rejects_stale_snapshot() -> Result<(), Box<dyn Error>> {
+    let revocation_store = temp_file_path("rava-serve-stale-revocations");
+    let revocation_store_arg = revocation_store.to_string_lossy().into_owned();
+    std::fs::write(
+        &revocation_store,
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "revoked_ids": [],
+            "fresh_until_unix": 1650000000
+        }))?,
+    )?;
+    let body = accepted_request_body()?;
+
+    let response = run_server_request_with_args(
+        &[
+            "--revocation-store",
+            &revocation_store_arg,
+            "--require-fresh-revocations",
+        ],
+        &body,
+    )?;
+
+    assert!(
+        response.starts_with("HTTP/1.1 500 Internal Server Error"),
+        "{response}"
+    );
+    let response_body = response_body(&response)?;
+    let json: serde_json::Value = serde_json::from_str(response_body)?;
+    assert_eq!(
+        json.get("error").and_then(serde_json::Value::as_str),
+        Some("revocation store is stale")
+    );
+
+    std::fs::remove_file(revocation_store)?;
+    Ok(())
+}
+
+#[test]
+fn serve_verify_requires_fresh_revocations_accepts_fresh_snapshot() -> Result<(), Box<dyn Error>> {
+    let revocation_store = temp_file_path("rava-serve-fresh-revocations");
+    let revocation_store_arg = revocation_store.to_string_lossy().into_owned();
+    std::fs::write(
+        &revocation_store,
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "revoked_ids": [],
+            "fresh_until_unix": 1650000001
+        }))?,
+    )?;
+    let body = accepted_request_body()?;
+
+    let response = run_server_request_with_args(
+        &[
+            "--revocation-store",
+            &revocation_store_arg,
+            "--require-fresh-revocations",
+        ],
+        &body,
+    )?;
+
+    assert_accepted_response(&response)?;
     std::fs::remove_file(revocation_store)?;
     Ok(())
 }

@@ -37,7 +37,7 @@ The preview verifier service supports these service-boundary options:
 
 `rava verify action` supports `--trust-bundle` for a local `rava-static-trust-bundle-v0` signer-ID to public-key map. `--require-fresh-trust-bundle` requires that local bundle to include `fresh_until_unix` greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution. This is explicit static trust-policy input; it does not add dynamic key discovery, resolver selection, cache invalidation, rotation, rollback, or outage guarantees.
 
-`rava verify action` also supports `--require-fresh-revocations` with `--revocation-store`. The local snapshot must include `fresh_until_unix` greater than verifier `now_unix`; otherwise verification fails closed before verifier execution. This is local snapshot freshness checking, not distributed revocation freshness.
+`rava verify action` and `rava serve verify` also support `--require-fresh-revocations` with `--revocation-store`. The local snapshot must include `fresh_until_unix` greater than verifier `now_unix`; otherwise verification fails closed before verifier execution. This is local snapshot freshness checking, not distributed revocation freshness.
 
 `rava key revoke --id <signer-id> --revocation-store <path>` records a signer ID in the local revocation snapshot. Local file-backed updates are lock-serialized and merge existing revoked IDs before persisting. This is a local compromise-response helper, not managed key custody, rotation, key discovery, distributed revocation, or emergency propagation.
 
@@ -89,6 +89,7 @@ authorization decisions:
 - `max_request_bytes`;
 - `replay_store_configured`;
 - `revocation_store_configured`;
+- `require_fresh_revocations`;
 - `audit_log_configured`;
 - `auth_required`;
 - `caller_id_configured`;
