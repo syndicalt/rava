@@ -348,6 +348,9 @@ fn release_audit_tracks_current_release_and_operations_artifacts() -> Result<(),
         "exact capability expiry boundary",
         "npm pack --dry-run",
         "The functional roadmap now includes evidence maps for release readiness, V0 hardening, V1 developer preview, interop, and production trust work.",
+        "The production-trust runbook includes a local controlled-deployment exercise",
+        "zero-budget local readiness evidence",
+        "not production infrastructure or external review evidence",
     ] {
         assert!(
             audit.contains(required),
