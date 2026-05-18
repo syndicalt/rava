@@ -47,6 +47,14 @@ Before publishing a V0 draft release candidate, update or confirm:
 - `docs/security/review-register-v0.md`;
 - `docs/security/threat-model-v0.md`;
 - `docs/operations/production-trust-v0.md`;
+- `docs/operations/key-custody-v0.md`;
+- `docs/operations/key-discovery-v0.md`;
+- `docs/operations/distributed-replay-v0.md`;
+- `docs/operations/distributed-revocation-v0.md`;
+- `docs/operations/audit-storage-v0.md`;
+- `docs/operations/caller-identity-v0.md`;
+- `docs/operations/distributed-rate-limits-v0.md`;
+- `docs/operations/monitoring-v0.md`;
 - `docs/roadmap.md`;
 - [../roadmap.md](../roadmap.md);
 - [../security/release-audit-v0.md](../security/release-audit-v0.md);
