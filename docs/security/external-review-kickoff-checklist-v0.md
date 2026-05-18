@@ -24,6 +24,7 @@ npm --prefix packages/rava-wasm-js test
 
 - Confirm `docs/security/external-review-cover-note-v0.md` names the frozen target, scope, non-production boundary, and expected verification commands.
 - Confirm `docs/security/external-review-packet-v0.md` lists the packet artifacts from the frozen target.
+- Use `docs/security/external-review-request-v0.md` when contacting reviewers so the engagement request names expertise, deliverables, finding intake, out-of-scope production requirements, and the non-claim boundary.
 - Confirm `docs/security/review-register-v0.md` still says no external review has been completed unless real findings have been recorded.
 
 ## Reviewer Handoff
