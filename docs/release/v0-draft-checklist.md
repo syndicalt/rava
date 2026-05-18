@@ -43,6 +43,7 @@ cargo fuzz run v0_wire_entrypoints
 Before publishing a V0 draft release candidate, update or confirm:
 
 - `SECURITY.md`;
+- `docs/security/external-review-packet-v0.md`;
 - `docs/security/release-audit-v0.md`;
 - `docs/security/review-plan-v0.md`;
 - `docs/security/review-register-v0.md`;

@@ -10,6 +10,8 @@ The target should be a clean commit on `master` with the full local gate passing
 
 ## Reviewer Packet
 
+The concrete handoff manifest is `docs/security/external-review-packet-v0.md`.
+
 Send reviewers these repository artifacts:
 
 - `README.md`;
