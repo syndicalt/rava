@@ -1965,6 +1965,8 @@ fn production_trust_docs_define_external_operational_requirements() -> Result<()
         "fail-closed behavior when key, replay, revocation, caller, or audit state is missing, stale, ambiguous, or unverifiable",
         "## Decision Baseline",
         "These decisions convert the production-trust tracker into the default architecture target for V0 operations work.",
+        "The V0 architecture decisions in this table were maintainer-approved on 2026-05-18.",
+        "Maintainer approval records the architecture direction only; it does not satisfy the required production evidence for #118 through #125.",
         "## Local Controlled-Deployment Exercise",
         "This exercise is zero-budget local readiness evidence",
         "Start the preview verifier with every local require flag enabled",
