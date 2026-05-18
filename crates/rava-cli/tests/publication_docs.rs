@@ -2580,6 +2580,8 @@ fn pull_request_template_requires_security_boundary_and_gate_evidence() -> Resul
         "No verifier shortcuts",
         "No test-only bypasses",
         "No production-ready or externally audited claim",
+        "Do not use GitHub auto-close keywords for #118-#125 unless the PR fully satisfies the named production-trust issue acceptance evidence",
+        "Use evidence language such as `Partial evidence for #118` instead of `closes #118`",
         "## Required Evidence",
         "cargo fmt --check",
         "cargo clippy --workspace --all-targets -- -D warnings",

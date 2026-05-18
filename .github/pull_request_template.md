@@ -20,6 +20,12 @@ Confirm:
 - [ ] No test-only bypasses
 - [ ] No production-ready or externally audited claim
 
+Production-trust tracker guard:
+
+- [ ] Do not use GitHub auto-close keywords for #118-#125 unless the PR fully satisfies the named production-trust issue acceptance evidence
+
+Use evidence language such as `Partial evidence for #118` instead of `closes #118` when a PR only adds local, partial, or non-production evidence.
+
 ## Required Evidence
 
 Record exact command results before requesting review:
