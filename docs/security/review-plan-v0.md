@@ -12,6 +12,8 @@ Security-sensitive paths are mapped in `.github/CODEOWNERS`; changes to protocol
 
 Pull requests should use `.github/pull_request_template.md` to record boundary impact, verification evidence, and affected review artifacts before merge.
 
+Dependency updates for Cargo, the TypeScript wrapper, and GitHub Actions are tracked in `.github/dependabot.yml` and should still pass the full local gate before merge.
+
 ## Reviewer Packet
 
 The concrete handoff manifest is `docs/security/external-review-packet-v0.md`.

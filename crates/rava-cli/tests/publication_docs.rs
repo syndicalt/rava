@@ -1774,6 +1774,47 @@ fn pull_request_template_requires_security_boundary_and_gate_evidence() -> Resul
     Ok(())
 }
 
+#[test]
+fn dependabot_tracks_security_sensitive_dependency_update_surfaces() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let dependabot = std::fs::read_to_string(root.join(".github/dependabot.yml"))?;
+    let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
+    let review_plan = std::fs::read_to_string(root.join("docs/security/review-plan-v0.md"))?;
+
+    for required in [
+        "version: 2",
+        "package-ecosystem: cargo",
+        "directory: /",
+        "package-ecosystem: npm",
+        "directory: /packages/rava-wasm-js",
+        "package-ecosystem: github-actions",
+        "interval: weekly",
+        "open-pull-requests-limit: 5",
+        "labels:",
+        "dependencies",
+        "security-review",
+        "groups:",
+        "rust-dependencies:",
+        "typescript-wrapper-dependencies:",
+        "github-actions-dependencies:",
+        "applies-to: version-updates",
+    ] {
+        assert!(
+            dependabot.contains(required),
+            "Dependabot missing: {required}"
+        );
+    }
+
+    for docs in [security_policy, review_plan] {
+        assert!(
+            docs.contains(".github/dependabot.yml"),
+            "security docs must link dependency update guardrails"
+        );
+    }
+
+    Ok(())
+}
+
 fn repository_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
