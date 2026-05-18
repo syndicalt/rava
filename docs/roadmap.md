@@ -107,6 +107,17 @@ Detailed production runbooks live in:
 - [operations/distributed-rate-limits-v0.md](operations/distributed-rate-limits-v0.md);
 - [operations/monitoring-v0.md](operations/monitoring-v0.md).
 
+Production-trust tracker issues make those external blockers executable without converting them into implemented guarantees:
+
+- [#118 key custody, rotation, and compromise response](https://github.com/syndicalt/rava/issues/118);
+- [#119 public-key discovery and resolver freshness](https://github.com/syndicalt/rava/issues/119);
+- [#120 distributed replay coordination](https://github.com/syndicalt/rava/issues/120);
+- [#121 distributed revocation freshness and outage policy](https://github.com/syndicalt/rava/issues/121);
+- [#122 managed audit storage, retention, and export](https://github.com/syndicalt/rava/issues/122);
+- [#123 caller identity and tenant ingress policy](https://github.com/syndicalt/rava/issues/123);
+- [#124 distributed rate limits and abuse controls](https://github.com/syndicalt/rava/issues/124);
+- [#125 monitoring, alerting, and incident evidence](https://github.com/syndicalt/rava/issues/125).
+
 External review findings and remediation are tracked in [security/review-register-v0.md](security/review-register-v0.md).
 The external review execution plan is [security/review-plan-v0.md](security/review-plan-v0.md) (`docs/security/review-plan-v0.md`), kickoff checklist is [security/external-review-kickoff-checklist-v0.md](security/external-review-kickoff-checklist-v0.md) (`docs/security/external-review-kickoff-checklist-v0.md`), reviewer selection rubric is [security/external-review-selection-v0.md](security/external-review-selection-v0.md) (`docs/security/external-review-selection-v0.md`), outreach tracker is [security/external-review-outreach-v0.md](security/external-review-outreach-v0.md) (`docs/security/external-review-outreach-v0.md`), reviewer response intake template is [security/external-review-response-intake-template-v0.md](security/external-review-response-intake-template-v0.md) (`docs/security/external-review-response-intake-template-v0.md`), reviewer request is [security/external-review-request-v0.md](security/external-review-request-v0.md) (`docs/security/external-review-request-v0.md`), review closeout template is [security/external-review-closeout-template-v0.md](security/external-review-closeout-template-v0.md) (`docs/security/external-review-closeout-template-v0.md`), and optional longer fuzz campaigns should use [security/fuzz-campaigns/template-v0.md](security/fuzz-campaigns/template-v0.md) (`docs/security/fuzz-campaigns/template-v0.md`).
 
