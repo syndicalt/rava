@@ -183,7 +183,14 @@ fn handle_connection(
     let request: VerifyActionRequest = serde_json::from_slice(&request.body)?;
     let now = OffsetDateTime::from_unix_timestamp(request.now_unix)?;
     let result = if let Some(revocation_store) = &args.revocation_store {
-        let revocations = FileRevocationRegistry::open(revocation_store)?;
+        let revocations = match FileRevocationRegistry::open(revocation_store) {
+            Ok(revocations) => revocations,
+            Err(error) => {
+                metrics.revocation_read_failures += 1;
+                metrics.record_http(route, "500");
+                return Err(error.into());
+            }
+        };
         verify_action_with_optional_replay(&request, &revocations, args, now)?
     } else {
         let revocations = InMemoryRevocationRegistry::default();
@@ -324,6 +331,7 @@ struct MetricsState {
     verifier_rejected: u64,
     verifier_rejections: BTreeMap<String, u64>,
     replay_attempts: u64,
+    revocation_read_failures: u64,
     audit_write_failures: u64,
 }
 
@@ -447,6 +455,12 @@ impl MetricsState {
             "rava_preview_replay_attempts_total",
             &[],
             self.replay_attempts,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_revocation_read_failures_total",
+            &[],
+            self.revocation_read_failures,
         );
         push_metric(
             &mut output,
