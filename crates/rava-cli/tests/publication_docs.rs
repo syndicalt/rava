@@ -1460,6 +1460,9 @@ fn v0_review_candidate_r3_records_current_review_readiness_target() -> Result<()
         "not evidence that an external security review has been completed",
         "v0-review-candidate-2026-05-18-r3",
         "416d8a9661e75bd66dd60bed72d9485d833f36e2",
+        "post-target control-plane artifact",
+        "is not part of the frozen target tree",
+        "The frozen target is the tag and commit above",
         "External security review: V0 review candidate",
         "https://github.com/syndicalt/rava/issues/87",
         "docs/security/external-review-packet-v0.md",
@@ -1487,6 +1490,16 @@ fn v0_review_candidate_r3_records_current_review_readiness_target() -> Result<()
         assert!(
             notes.contains(required),
             "R3 review candidate notes missing: {required}"
+        );
+    }
+    for required in [
+        "post-target control-plane artifact",
+        "Review candidate notes are handoff metadata outside the frozen target tree",
+        "Do not treat post-target control-plane docs as reviewed target contents",
+    ] {
+        assert!(
+            packet.contains(required),
+            "external review packet must distinguish frozen target contents from control-plane notes: {required}"
         );
     }
 

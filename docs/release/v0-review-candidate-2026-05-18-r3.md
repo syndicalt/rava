@@ -13,6 +13,8 @@ R3 supersedes `docs/release/v0-review-candidate-2026-05-18-r2.md` for new review
 
 The tag is an immutable review target. If the target changes, create a new candidate note and rerun the full verification baseline.
 
+This note is a post-target control-plane artifact. It is not part of the frozen target tree because it records the tag and commit after the target was selected and verified. The frozen target is the tag and commit above. Reviewers should use this note to locate the target, then evaluate the contents of `v0-review-candidate-2026-05-18-r3` unless they explicitly agree to evaluate later commits.
+
 ## Reviewer Packet
 
 Reviewers should start with:
