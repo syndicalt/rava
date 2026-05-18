@@ -28,7 +28,7 @@ The `rava serve verify` preview service has gained optional service-boundary con
 
 Operators using the preview service should prefer all six controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
 
-`rava verify action` also supports `--trust-bundle` for a local `rava-static-trust-bundle-v0` signer-ID to public-key map. This is static caller trust-policy input for controlled deployments; it does not add dynamic resolver freshness, cache invalidation, rotation, rollback, or outage guarantees.
+`rava verify action` also supports `--trust-bundle` for a local `rava-static-trust-bundle-v0` signer-ID to public-key map. `--require-fresh-trust-bundle` requires `fresh_until_unix` greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution. This is static caller trust-policy input for controlled deployments; it does not add dynamic resolver selection, cache invalidation, rotation, rollback, or outage guarantees.
 
 `rava verify action --require-fresh-revocations` requires a local `--revocation-store` snapshot to include `fresh_until_unix` greater than verifier `now_unix`. Missing or stale freshness fails closed before verifier execution. This is local snapshot freshness checking, not distributed revocation publication or outage handling.
 

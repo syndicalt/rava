@@ -201,6 +201,9 @@ pub struct VerifyActionArgs {
     #[arg(long = "trust-bundle")]
     pub trust_bundle: Option<PathBuf>,
 
+    #[arg(long = "require-fresh-trust-bundle")]
+    pub require_fresh_trust_bundle: bool,
+
     #[arg(long = "now-unix")]
     pub now_unix: Option<i64>,
 

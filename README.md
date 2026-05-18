@@ -192,6 +192,7 @@ For controlled deployments that use explicit static trust roots, `rava verify ac
 ```json
 {
   "version": "rava-static-trust-bundle-v0",
+  "fresh_until_unix": 1650003600,
   "keys": {
     "rava:agent:<actor-public-key-prefix>": "<actor-public-key-hex>",
     "rava:human:<issuer-public-key-prefix>": "<issuer-public-key-hex>"
@@ -204,10 +205,11 @@ rava verify action \
   --action action.json \
   --capability-chain capability-chain.json \
   --trust-bundle trust-bundle.json \
+  --require-fresh-trust-bundle \
   --now-unix 1650000000
 ```
 
-If explicit `--actor-key` or `--issuer-key` values conflict with the trust bundle, verification fails before an authorization decision is reported. Static trust bundles are local trust-policy input; they do not provide dynamic DID, web, registry, resolver freshness, or rotation guarantees.
+If explicit `--actor-key` or `--issuer-key` values conflict with the trust bundle, verification fails before an authorization decision is reported. `--require-fresh-trust-bundle` requires the bundle to include `fresh_until_unix` greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution. Static trust bundles are local trust-policy input; they do not provide dynamic DID, web, registry, cache invalidation, rollback, outage, or rotation guarantees.
 
 Verify a signed receipt:
 
