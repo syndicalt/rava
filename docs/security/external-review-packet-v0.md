@@ -113,3 +113,11 @@ No finding that weakens fail-closed verification may remain unresolved for any r
 The packet includes the bounded `v0_wire_entrypoints` fuzz campaign recorded at `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md`.
 
 That campaign is useful negative evidence for one bounded run. It is not a proof of security and does not replace external review. If reviewers request longer fuzzing, copy `docs/security/fuzz-campaigns/template-v0.md` to a dated campaign file and record command, duration, seed, corpus, artifacts, crashes, remediation, and final rerun evidence.
+
+## Additional Post-Candidate Evidence
+
+A bounded 1800-second `v0_wire_entrypoints` fuzz campaign is recorded at `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-1800s.md`.
+
+That campaign ran on commit `becbff9e2326f5304822decf636aadcd0e37bb48` after the frozen review-candidate target was recorded. It does not change the frozen review target and should be treated as supplemental review evidence.
+
+Like the shorter bounded campaign, it is not a proof of security and not evidence that Rava has been externally reviewed.
