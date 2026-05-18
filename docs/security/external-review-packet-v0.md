@@ -8,6 +8,8 @@ Before sending this packet, record the immutable commit SHA or signed tag under 
 
 The current review-candidate notes are `docs/release/v0-review-candidate-2026-05-18.md`.
 
+The reviewer cover note is `docs/security/external-review-cover-note-v0.md`.
+
 Do not change the target during review unless the reviewer explicitly agrees to review the new commit or tag. If the target changes, rerun the full verification baseline and record the new evidence.
 
 The review target should be a clean commit on `master` with no uncommitted files and a passing full local gate.
