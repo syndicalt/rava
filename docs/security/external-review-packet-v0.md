@@ -8,6 +8,8 @@ Before sending this packet, record the immutable commit SHA or signed tag under 
 
 The current review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r3.md`.
 
+Review candidate notes are handoff metadata outside the frozen target tree when they are created after a tag is selected and verified. They are a post-target control-plane artifact. Do not treat post-target control-plane docs as reviewed target contents unless a reviewer explicitly agrees to include that later commit in scope.
+
 The historical R2 review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r2.md`.
 
 The historical first review-candidate notes are `docs/release/v0-review-candidate-2026-05-18.md`.
