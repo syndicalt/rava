@@ -39,6 +39,7 @@ Send reviewers these repository artifacts from the frozen target:
 - `docs/security/review-register-v0.md`;
 - `docs/security/external-review-kickoff-checklist-v0.md`;
 - `docs/security/external-review-outreach-v0.md`;
+- `docs/security/external-review-selection-v0.md`;
 - `docs/security/external-review-request-v0.md`;
 - `docs/security/external-review-closeout-template-v0.md`;
 - `docs/security/release-audit-v0.md`;
