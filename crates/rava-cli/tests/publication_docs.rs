@@ -959,6 +959,7 @@ fn security_review_register_tracks_external_findings_without_claiming_review(
         "../operations/caller-identity-v0.md",
         "../operations/distributed-rate-limits-v0.md",
         "../operations/monitoring-v0.md",
+        ".github/ISSUE_TEMPLATE/security-review-finding.yml",
     ] {
         assert!(
             register.contains(required),
@@ -973,6 +974,7 @@ fn security_review_register_tracks_external_findings_without_claiming_review(
         "Do not include private keys, credentials, access tokens, or raw sensitive action payloads",
         "docs/security/review-register-v0.md",
         "docs/security/review-guide-v0.md",
+        ".github/ISSUE_TEMPLATE/security-review-finding.yml",
         "docs/operations/key-custody-v0.md",
         "docs/operations/key-discovery-v0.md",
         "docs/operations/distributed-replay-v0.md",
