@@ -50,6 +50,19 @@ Rotation should define:
 - how emergency rotation revokes compromised signer IDs or capability IDs;
 - how operators test rollback and recovery.
 
+## Local Rotation Exercise
+
+For a controlled local deployment, operators can rehearse the non-production rotation path with existing explicit-trust primitives:
+
+1. Generate a replacement key with `rava key generate --kind <kind> --out <new-key.json>`.
+2. Stop using the old private key for new protocol objects.
+3. Update the explicit static trust bundle with the new signer ID and public key.
+4. Verify newly signed objects with the updated trust bundle before relying on the replacement key.
+5. For emergency rotation after suspected compromise, revoke the old signer ID with `rava key revoke --id <old-signer-id> --revocation-store <revocations.json>`.
+6. If revocation freshness is required, publish or refresh the local revocation snapshot so `fresh_until_unix` remains greater than verifier `now_unix`.
+
+This exercise is useful for local readiness evidence. It is not a production rotation ceremony, custody-system test, trust-bundle publication system, rollback test, or operator approval workflow.
+
 ## Compromise Response
 
 On suspected key compromise, production operators should:
