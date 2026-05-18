@@ -126,6 +126,9 @@ pub struct ServeVerifyArgs {
 
     #[arg(long = "rate-limit-per-minute")]
     pub rate_limit_per_minute: Option<usize>,
+
+    #[arg(long)]
+    pub metrics: bool,
 }
 
 #[derive(Debug, Subcommand)]

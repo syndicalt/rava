@@ -28,6 +28,7 @@ The preview verifier service supports these service-boundary options:
 - `--audit-log`
 - `--auth-token-env`
 - `--rate-limit-per-minute`
+- `--metrics`
 
 `--auth-token-env` and `--rate-limit-per-minute` are local preview controls.
 They do not replace production caller identity, distributed rate limiting, or
@@ -86,9 +87,18 @@ authorization decisions:
 - `revocation_store_configured`;
 - `audit_log_configured`;
 - `auth_required`;
-- `rate_limit_per_minute`.
+- `rate_limit_per_minute`;
+- `metrics_configured`.
 
 This endpoint reports local process configuration only. It does not prove key freshness, revocation freshness, replay coordination, or external reachability.
+
+## Metrics Shape
+
+When `--metrics` is configured, `GET /metrics` returns Prometheus-style text counters for local HTTP statuses, verifier accepted/rejected decisions, verifier rejection codes, and audit-write failures. If `--auth-token-env` is configured, the same bearer-token gate protects `GET /metrics`.
+
+Metric labels are bounded local categories such as route, status, decision, and rejection code. Metrics intentionally omit raw action payloads, capability envelopes, signatures, public or private keys, credentials, access tokens, action IDs, actor IDs, controller IDs, resource names, and constraints.
+
+This endpoint is process-local preview evidence. Operators that need managed monitoring, alerting, dashboards, long-term retention, cross-node aggregation, or incident response must provide those systems outside the preview service.
 
 ## Audit Log Shape
 
