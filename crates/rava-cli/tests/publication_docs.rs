@@ -518,6 +518,7 @@ fn production_trust_docs_define_external_operational_requirements() -> Result<()
         "rejection patterns",
         "## External Security Review",
         "required before Rava is represented as a production authorization system",
+        "caller identity and distributed rate limiting",
     ] {
         assert!(
             docs.contains(required),

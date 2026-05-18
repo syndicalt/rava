@@ -108,6 +108,7 @@ An external security review is required before Rava is represented as a producti
 - replay and revocation freshness;
 - key custody and discovery;
 - service ingress controls;
+- caller identity and distributed rate limiting;
 - wrapper/adaptor fail-closed behavior;
 - audit and monitoring controls.
 
