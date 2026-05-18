@@ -15,7 +15,7 @@ pub fn run_key_generate(args: GenerateKeyArgs) -> Result<(), Box<dyn Error>> {
         .into());
     }
     let signer = Signer::generate(parse_signer_kind(&args.kind)?);
-    write_signer_key_file(&args.out, &signer)?;
+    write_signer_key_file(&args.out, &signer, args.force)?;
     println!("Rava key written: {}", args.out.display());
     println!("Rava key id: {}", signer.id);
     println!("Rava key public key: {}", signer.public_key_hex);

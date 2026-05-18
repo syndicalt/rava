@@ -23,6 +23,17 @@ Private keys must not be logged, committed to examples, embedded in browser bund
 
 If a deployment intentionally places private keys in a browser, test harness, or low-assurance runtime, that custody boundary is a deployment risk and not a Rava core guarantee.
 
+## Local CLI Guardrails
+
+`rava key generate` is a local development and controlled-deployment helper, not a managed custody system. It provides these local guardrails:
+
+- generated key output prints the signer ID and public key, not `private_key_hex`;
+- generated private-key files are owner-only on Unix;
+- loading a private-key file on Unix fails if the file is readable, writable, or executable by group or others;
+- forced key generation replaces the destination path instead of writing private key material through an existing symlink.
+
+These guardrails reduce accidental local exposure. They do not replace a production custody provider, hardware-backed key storage, cloud KMS, recovery process, or operator access review.
+
 ## Rotation
 
 Rotation should define:

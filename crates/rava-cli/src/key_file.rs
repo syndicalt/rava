@@ -1,11 +1,15 @@
 use std::error::Error;
-use std::fs;
-use std::io;
-use std::path::PathBuf;
+use std::fs::{self, File, OpenOptions};
+use std::io::{self, Write};
+use std::path::{Path, PathBuf};
 
 use rava_core::identity::{Signer, SignerKind};
 
-pub fn write_signer_key_file(path: &PathBuf, signer: &Signer) -> Result<(), Box<dyn Error>> {
+pub fn write_signer_key_file(
+    path: &Path,
+    signer: &Signer,
+    force: bool,
+) -> Result<(), Box<dyn Error>> {
     let bytes = serde_json::to_vec_pretty(&serde_json::json!({
         "version": "rava-local-signer-key-v0",
         "id": signer.id,
@@ -13,8 +17,13 @@ pub fn write_signer_key_file(path: &PathBuf, signer: &Signer) -> Result<(), Box<
         "public_key_hex": signer.public_key_hex,
         "private_key_hex": signer.signing_key_hex(),
     }))?;
-    fs::write(path, bytes)?;
-    restrict_key_file_permissions(path)?;
+    if force {
+        write_forced_key_file(path, &bytes)?;
+    } else {
+        let mut file = create_new_key_file(path)?;
+        file.write_all(&bytes)?;
+        file.sync_all()?;
+    }
     Ok(())
 }
 
@@ -98,16 +107,59 @@ fn validate_key_file_permissions(_path: &PathBuf) -> Result<(), Box<dyn Error>> 
 }
 
 #[cfg(unix)]
-fn restrict_key_file_permissions(path: &PathBuf) -> Result<(), Box<dyn Error>> {
-    use std::os::unix::fs::PermissionsExt;
+fn create_new_key_file(path: &Path) -> Result<File, Box<dyn Error>> {
+    use std::os::unix::fs::OpenOptionsExt;
 
-    let mut permissions = fs::metadata(path)?.permissions();
-    permissions.set_mode(0o600);
-    fs::set_permissions(path, permissions)?;
+    Ok(OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .open(path)?)
+}
+
+#[cfg(not(unix))]
+fn create_new_key_file(path: &Path) -> Result<File, Box<dyn Error>> {
+    Ok(OpenOptions::new().write(true).create_new(true).open(path)?)
+}
+
+fn write_forced_key_file(path: &Path, bytes: &[u8]) -> Result<(), Box<dyn Error>> {
+    let temp_path = forced_key_temp_path(path);
+    let result = (|| -> Result<(), Box<dyn Error>> {
+        let mut file = create_new_key_file(&temp_path)?;
+        file.write_all(bytes)?;
+        file.sync_all()?;
+        rename_forced_key_file(&temp_path, path)?;
+        Ok(())
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temp_path);
+    }
+    result
+}
+
+fn forced_key_temp_path(path: &Path) -> PathBuf {
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("rava-key");
+    path.with_file_name(format!(".{file_name}.rava-new-{}", std::process::id()))
+}
+
+#[cfg(unix)]
+fn rename_forced_key_file(temp_path: &Path, path: &Path) -> Result<(), Box<dyn Error>> {
+    fs::rename(temp_path, path)?;
     Ok(())
 }
 
 #[cfg(not(unix))]
-fn restrict_key_file_permissions(_path: &PathBuf) -> Result<(), Box<dyn Error>> {
-    Ok(())
+fn rename_forced_key_file(temp_path: &Path, path: &Path) -> Result<(), Box<dyn Error>> {
+    match fs::rename(temp_path, path) {
+        Ok(()) => Ok(()),
+        Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
+            fs::remove_file(path)?;
+            fs::rename(temp_path, path)?;
+            Ok(())
+        }
+        Err(error) => Err(error.into()),
+    }
 }
