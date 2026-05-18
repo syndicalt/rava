@@ -2115,6 +2115,7 @@ fn production_operations_runbooks_define_external_systems_without_core_claims(
                 "rava-static-trust-bundle-v0",
                 "--require-fresh-trust-bundle",
                 "fresh_until_unix",
+                "Rava key source: static-trust-bundle",
                 "Explicit `--actor-key` or `--issuer-key` values must match any corresponding bundle entry",
                 "It does not provide dynamic DID, web, registry, resolver selection, cache invalidation, rotation, rollback, or outage guarantees.",
                 "rollback",

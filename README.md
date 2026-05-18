@@ -209,7 +209,7 @@ rava verify action \
   --now-unix 1650000000
 ```
 
-If explicit `--actor-key` or `--issuer-key` values conflict with the trust bundle, verification fails before an authorization decision is reported. `--require-fresh-trust-bundle` requires the bundle to include `fresh_until_unix` greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution. Static trust bundles are local trust-policy input; they do not provide dynamic DID, web, registry, cache invalidation, rollback, outage, or rotation guarantees.
+If explicit `--actor-key` or `--issuer-key` values conflict with the trust bundle, verification fails before an authorization decision is reported. `--require-fresh-trust-bundle` requires the bundle to include `fresh_until_unix` greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution. When a static trust bundle is used, the CLI prints `Rava key source: static-trust-bundle` as local key-source evidence. Static trust bundles are local trust-policy input; they do not provide dynamic DID, web, registry, cache invalidation, rollback, outage, or rotation guarantees.
 
 Verify a signed receipt:
 

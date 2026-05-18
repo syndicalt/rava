@@ -85,7 +85,9 @@ fn verify_action_files_accepts_static_trust_bundle() -> Result<(), Box<dyn Error
         "verify failed with stderr: {}",
         String::from_utf8_lossy(&output.stderr)
     );
-    assert!(String::from_utf8(output.stdout)?.contains("Rava verification accepted: true\n"));
+    let stdout = String::from_utf8(output.stdout)?;
+    assert!(stdout.contains("Rava verification accepted: true\n"));
+    assert!(stdout.contains("Rava key source: static-trust-bundle\n"));
     Ok(())
 }
 

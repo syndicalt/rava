@@ -94,6 +94,9 @@ pub fn run_verify_action(args: VerifyActionArgs) -> Result<(), Box<dyn Error>> {
         "Rava verification accepted: {}",
         result == VerificationResult::Accepted
     );
+    if trust_bundle.is_some() {
+        println!("Rava key source: static-trust-bundle");
+    }
     if let VerificationResult::Rejected(error) = &result {
         println!("Rava rejection: {error:?}");
     }
