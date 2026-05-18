@@ -44,8 +44,10 @@ Before publishing a V0 draft release candidate, update or confirm:
 
 - `SECURITY.md`;
 - `docs/security/release-audit-v0.md`;
+- `docs/security/review-plan-v0.md`;
 - `docs/security/review-register-v0.md`;
 - `docs/security/threat-model-v0.md`;
+- `docs/security/fuzz-campaigns/template-v0.md`;
 - `docs/operations/production-trust-v0.md`;
 - `docs/operations/key-custody-v0.md`;
 - `docs/operations/key-discovery-v0.md`;
