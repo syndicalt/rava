@@ -462,6 +462,14 @@ fn v1_preview_surface_docs_pin_cli_and_json_shapes() -> Result<(), Box<dyn Error
         "`rate_limit_per_minute`",
         "docs/operators/rejection-codes-v0.md",
         "not a production authorization boundary",
+        "../operations/key-custody-v0.md",
+        "../operations/key-discovery-v0.md",
+        "../operations/distributed-replay-v0.md",
+        "../operations/distributed-revocation-v0.md",
+        "../operations/audit-storage-v0.md",
+        "../operations/caller-identity-v0.md",
+        "../operations/distributed-rate-limits-v0.md",
+        "../operations/monitoring-v0.md",
     ] {
         assert!(
             docs.contains(required),
