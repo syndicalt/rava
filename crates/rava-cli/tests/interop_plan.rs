@@ -79,6 +79,7 @@ fn wasm_wrapper_is_documented_as_rust_verifier_boundary() -> Result<(), Box<dyn 
 fn typescript_package_calls_wasm_and_runs_vectors() -> Result<(), Box<dyn Error>> {
     let root = repository_root();
     let manifest = std::fs::read_to_string(root.join("packages/rava-wasm-js/package.json"))?;
+    let tsconfig = std::fs::read_to_string(root.join("packages/rava-wasm-js/tsconfig.json"))?;
     let wrapper = std::fs::read_to_string(root.join("packages/rava-wasm-js/src/index.ts"))?;
     let tests = std::fs::read_to_string(root.join("packages/rava-wasm-js/test/vectors.test.ts"))?;
     let docs = std::fs::read_to_string(root.join("docs/interop/typescript-v0.md"))?;
@@ -93,6 +94,14 @@ fn typescript_package_calls_wasm_and_runs_vectors() -> Result<(), Box<dyn Error>
             manifest.contains(required),
             "missing TS package manifest: {required}"
         );
+    }
+
+    for required in [
+        r#""module": "Node16""#,
+        r#""moduleResolution": "Node16""#,
+        r#""types": ["node"]"#,
+    ] {
+        assert!(tsconfig.contains(required), "missing TS config: {required}");
     }
 
     for required in ["verifyAction", "verify_action_json", "../wasm/rava_wasm.js"] {
