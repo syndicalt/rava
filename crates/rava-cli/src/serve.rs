@@ -182,6 +182,7 @@ fn handle_connection(
 
     let request: VerifyActionRequest = serde_json::from_slice(&request.body)?;
     let now = OffsetDateTime::from_unix_timestamp(request.now_unix)?;
+    let verifier_started = Instant::now();
     let result = if let Some(revocation_store) = &args.revocation_store {
         let revocations = match FileRevocationRegistry::open(revocation_store) {
             Ok(revocations) => revocations,
@@ -196,6 +197,7 @@ fn handle_connection(
         let revocations = InMemoryRevocationRegistry::default();
         verify_action_with_optional_replay(&request, &revocations, args, now)?
     };
+    metrics.record_verifier_latency(verifier_started.elapsed());
     if let Some(audit_log) = &args.audit_log {
         if let Err(error) =
             append_audit_log(audit_log, &request, &result, now, args.caller_id.as_deref())
@@ -330,6 +332,8 @@ struct MetricsState {
     verifier_accepted: u64,
     verifier_rejected: u64,
     verifier_rejections: BTreeMap<String, u64>,
+    verifier_latency_ms_count: u64,
+    verifier_latency_ms_total: u64,
     replay_attempts: u64,
     missing_public_keys: u64,
     revocation_read_failures: u64,
@@ -370,6 +374,13 @@ impl MetricsState {
                 }
             }
         }
+    }
+
+    fn record_verifier_latency(&mut self, duration: Duration) {
+        self.verifier_latency_ms_count += 1;
+        self.verifier_latency_ms_total = self
+            .verifier_latency_ms_total
+            .saturating_add(duration.as_millis().try_into().unwrap_or(u64::MAX));
     }
 
     fn render(&self) -> String {
@@ -454,6 +465,18 @@ impl MetricsState {
                 *count,
             );
         }
+        push_metric(
+            &mut output,
+            "rava_preview_verifier_latency_ms_count",
+            &[],
+            self.verifier_latency_ms_count,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_verifier_latency_ms_total",
+            &[],
+            self.verifier_latency_ms_total,
+        );
         push_metric(
             &mut output,
             "rava_preview_replay_attempts_total",
