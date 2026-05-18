@@ -6,6 +6,10 @@ The Rust core provides a replay registry trait and local development implementat
 
 The verifier contract now calls an atomic consume operation after an action is otherwise accepted. A replay backend must report duplicate consumption in that operation instead of relying on a separate stale pre-check.
 
+The local file-backed replay registry serializes consume operations with a lock file and reloads the replay store while holding that lock. This prevents stale local handles in the same filesystem boundary from both consuming the same action ID. Lock acquisition, read, write, or rename failure is a replay-store error and fails closed before one-time verification reports acceptance.
+
+This local hardening is useful for controlled single-host or shared-filesystem tests. It is not a distributed replay system, cross-node lock service, cross-region consistency model, outage policy, or managed replay audit trail.
+
 ## Required Properties
 
 A production replay system should provide:

@@ -13,6 +13,8 @@ fn protocol_documents_replay_and_revocation_registry_contracts() -> Result<(), B
     assert!(protocol.contains(
         "if atomic consumption reports that the action ID was already consumed, one-time verification reports `action_replayed`"
     ));
+    assert!(protocol.contains("serializes consume operations with a lock file"));
+    assert!(protocol.contains("not distributed replay coordination across nodes or regions"));
     assert!(protocol.contains("Rejected actions must not be recorded"));
     assert!(protocol.contains("Revocation registry contract"));
     assert!(protocol.contains(
