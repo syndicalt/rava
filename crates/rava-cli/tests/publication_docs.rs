@@ -1726,6 +1726,54 @@ fn codeowners_marks_security_sensitive_protocol_surfaces_for_review() -> Result<
     Ok(())
 }
 
+#[test]
+fn pull_request_template_requires_security_boundary_and_gate_evidence() -> Result<(), Box<dyn Error>>
+{
+    let root = repository_root();
+    let template = std::fs::read_to_string(root.join(".github/pull_request_template.md"))?;
+    let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
+    let review_plan = std::fs::read_to_string(root.join("docs/security/review-plan-v0.md"))?;
+
+    for required in [
+        "## Summary",
+        "## Security Boundary",
+        "Does this change affect canonicalization, signing, verification, expiry, revocation, replay, receipts, attestations, wrappers, workflows, release docs, or security docs?",
+        "No new cryptographic primitives",
+        "No verifier shortcuts",
+        "No test-only bypasses",
+        "No production-ready or externally audited claim",
+        "## Required Evidence",
+        "cargo fmt --check",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo test --workspace",
+        "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
+        "npm --prefix packages/rava-wasm-js test",
+        "(cd packages/rava-wasm-js && npm pack --dry-run)",
+        "## Review Artifacts",
+        "docs/security/threat-model-v0.md",
+        "docs/security/review-register-v0.md",
+        ".github/CODEOWNERS",
+        ".github/ISSUE_TEMPLATE/security-review-finding.yml",
+    ] {
+        assert!(
+            template.contains(required),
+            "pull request template missing: {required}"
+        );
+    }
+
+    for docs in [security_policy, review_plan] {
+        assert!(
+            docs.contains(".github/pull_request_template.md"),
+            "security docs must link PR template guardrails"
+        );
+    }
+
+    Ok(())
+}
+
 fn repository_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }

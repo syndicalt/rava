@@ -1,9 +1,9 @@
 use std::collections::BTreeMap;
 use std::error::Error;
-use std::io::{ErrorKind, Read, Write};
-use std::net::{TcpListener, TcpStream};
+use std::io::{BufRead, BufReader, ErrorKind, Read, Write};
+use std::net::TcpStream;
 use std::path::{Path, PathBuf};
-use std::process::{Child, Command};
+use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::thread;
 use std::time::{Duration, Instant};
@@ -354,12 +354,7 @@ fn run_server_requests_with_args(
     extra_args: &[&str],
     bodies: &[serde_json::Value],
 ) -> Result<Vec<String>, Box<dyn Error>> {
-    let address = free_loopback_address()?;
-    let mut args = vec!["serve", "verify", "--addr", &address];
-    args.extend_from_slice(extra_args);
-    let mut server = Command::new(env!("CARGO_BIN_EXE_rava"))
-        .args(args)
-        .spawn()?;
+    let (mut server, address) = spawn_server(extra_args, &[])?;
 
     let mut responses = Vec::new();
     for body in bodies {
@@ -403,15 +398,7 @@ fn run_server_raw_requests_with_env(
     envs: &[(&str, &str)],
     requests: &[&str],
 ) -> Result<Vec<String>, Box<dyn Error>> {
-    let address = free_loopback_address()?;
-    let mut args = vec!["serve", "verify", "--addr", &address];
-    args.extend_from_slice(extra_args);
-    let mut command = Command::new(env!("CARGO_BIN_EXE_rava"));
-    command.args(args);
-    for (name, value) in envs {
-        command.env(name, value);
-    }
-    let mut server = command.spawn()?;
+    let (mut server, address) = spawn_server(extra_args, envs)?;
 
     let mut responses = Vec::new();
     for request in requests {
@@ -427,9 +414,31 @@ fn run_server_raw_requests_with_env(
     Ok(responses)
 }
 
-fn free_loopback_address() -> Result<String, Box<dyn Error>> {
-    let listener = TcpListener::bind("127.0.0.1:0")?;
-    Ok(listener.local_addr()?.to_string())
+fn spawn_server(
+    extra_args: &[&str],
+    envs: &[(&str, &str)],
+) -> Result<(Child, String), Box<dyn Error>> {
+    let mut args = vec!["serve", "verify", "--addr", "127.0.0.1:0"];
+    args.extend_from_slice(extra_args);
+    let mut command = Command::new(env!("CARGO_BIN_EXE_rava"));
+    command.args(args).stdout(Stdio::piped());
+    for (name, value) in envs {
+        command.env(name, value);
+    }
+    let mut server = command.spawn()?;
+    let stdout = server.stdout.take().ok_or("server stdout was not piped")?;
+    let mut lines = BufReader::new(stdout).lines();
+    let Some(line) = lines.next() else {
+        terminate(&mut server);
+        return Err("server exited before reporting listening address".into());
+    };
+    let line = line?;
+    let Some(address) = line.strip_prefix("Rava verifier service listening: ") else {
+        terminate(&mut server);
+        return Err(format!("unexpected server startup line: {line}").into());
+    };
+
+    Ok((server, address.to_owned()))
 }
 
 fn string_field<'a>(value: &'a serde_json::Value, key: &str) -> Result<&'a str, Box<dyn Error>> {

@@ -10,6 +10,8 @@ The target should be a clean commit on `master` with the full local gate passing
 
 Security-sensitive paths are mapped in `.github/CODEOWNERS`; changes to protocol core, verifier service, wrappers, review docs, release docs, workflows, examples, and test vectors should preserve explicit review ownership.
 
+Pull requests should use `.github/pull_request_template.md` to record boundary impact, verification evidence, and affected review artifacts before merge.
+
 ## Reviewer Packet
 
 The concrete handoff manifest is `docs/security/external-review-packet-v0.md`.
