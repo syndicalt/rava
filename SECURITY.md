@@ -25,6 +25,8 @@ The V0 external review scope is documented in [docs/security/review-guide-v0.md]
 
 Findings and remediation status are tracked in [docs/security/review-register-v0.md](docs/security/review-register-v0.md).
 
+External review kickoff should use [docs/security/external-review-kickoff-checklist-v0.md](docs/security/external-review-kickoff-checklist-v0.md) to freeze the review target, hand off the packet, track findings, and record optional longer fuzz evidence.
+
 External reviewers can open structured remediation issues with [.github/ISSUE_TEMPLATE/security-review-finding.yml](.github/ISSUE_TEMPLATE/security-review-finding.yml). That issue form is a tracking aid, not evidence that Rava has been externally reviewed.
 
 Security-sensitive repository paths are mapped in [.github/CODEOWNERS](.github/CODEOWNERS) so protocol, release, security, workflow, wrapper, fixture, and example changes have explicit review ownership.

@@ -20,6 +20,8 @@ The concrete handoff manifest is `docs/security/external-review-packet-v0.md`.
 
 Use `docs/security/external-review-cover-note-v0.md` as the reviewer-facing cover note for the frozen target, scope, non-production boundary, and expected verification commands.
 
+Use `docs/security/external-review-kickoff-checklist-v0.md` to execute the review kickoff, issue intake, remediation tracking, and optional longer fuzz campaign workflow.
+
 Send reviewers these repository artifacts:
 
 - `README.md`;

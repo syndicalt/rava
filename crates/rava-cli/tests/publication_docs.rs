@@ -818,6 +818,73 @@ fn external_review_cover_note_preserves_scope_and_non_production_boundary(
 }
 
 #[test]
+fn external_review_kickoff_checklist_ties_review_remediation_and_fuzz_tracking(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let checklist_path = "docs/security/external-review-kickoff-checklist-v0.md";
+    let checklist = std::fs::read_to_string(root.join(checklist_path))?;
+    let plan = std::fs::read_to_string(root.join("docs/security/review-plan-v0.md"))?;
+    let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+    let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
+
+    for required in [
+        "# Rava V0 External Review Kickoff Checklist",
+        "not evidence that Rava has been externally reviewed",
+        "## Before Contacting Reviewers",
+        "Record the frozen commit SHA or signed tag",
+        "Run the full local gate",
+        "docs/security/external-review-cover-note-v0.md",
+        "docs/security/external-review-packet-v0.md",
+        "## Reviewer Handoff",
+        "canonicalization",
+        "signature binding",
+        "delegation attenuation",
+        "replay semantics",
+        "revocation semantics",
+        "receipt and attestation verification",
+        "fail-closed behavior",
+        "## Finding Intake",
+        ".github/ISSUE_TEMPLATE/security-review-finding.yml",
+        "security-review",
+        "V0 external security review",
+        "RAVA-REVIEW-001",
+        "docs/security/review-register-v0.md",
+        "## Remediation Tracking",
+        "reported",
+        "accepted",
+        "remediated",
+        "verified",
+        "accepted-risk",
+        "out-of-scope",
+        "No finding that weakens fail-closed verification may remain unresolved",
+        "## Optional Longer Fuzz Campaigns",
+        "docs/security/fuzz-campaigns/template-v0.md",
+        "cargo fuzz run v0_wire_entrypoints",
+        "corpus",
+        "artifacts",
+        "crash",
+        "## Closeout",
+        "No production-ready or externally audited claim",
+    ] {
+        assert!(
+            checklist.contains(required),
+            "external review kickoff checklist missing: {required}"
+        );
+    }
+
+    for docs in [plan, register, packet, security_policy, roadmap] {
+        assert!(
+            docs.contains(checklist_path),
+            "review docs must link kickoff checklist: {checklist_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn security_review_finding_template_requires_remediation_evidence() -> Result<(), Box<dyn Error>> {
     let root = repository_root();
     let template_path = "docs/security/review-findings/template-v0.md";
