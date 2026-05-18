@@ -27,12 +27,11 @@ The preview verifier service supports these service-boundary options:
 - `--revocation-store`
 - `--audit-log`
 - `--auth-token-env`
+- `--caller-id`
 - `--rate-limit-per-minute`
 - `--metrics`
 
-`--auth-token-env` and `--rate-limit-per-minute` are local preview controls.
-They do not replace production caller identity, distributed rate limiting, or
-network-edge access control.
+`--auth-token-env`, `--caller-id`, and `--rate-limit-per-minute` are local preview controls. `--caller-id` requires `--auth-token-env` and records an explicit deployment label in local audit entries; it is not inferred from the action actor or from request headers. These controls do not replace production caller identity, distributed rate limiting, or network-edge access control.
 
 `rava verify action` supports `--trust-bundle` for a local `rava-static-trust-bundle-v0` signer-ID to public-key map. This is explicit static trust-policy input; it does not add dynamic key discovery, resolver freshness, rotation, rollback, or outage guarantees.
 
@@ -87,6 +86,7 @@ authorization decisions:
 - `revocation_store_configured`;
 - `audit_log_configured`;
 - `auth_required`;
+- `caller_id_configured`;
 - `rate_limit_per_minute`;
 - `metrics_configured`.
 
@@ -107,6 +107,7 @@ When `--audit-log` is configured, the service appends one newline-delimited JSON
 - `service`;
 - `action_id`;
 - `actor_id`;
+- `caller_id`;
 - `controller_id`;
 - `capability_id`;
 - `accepted`;
