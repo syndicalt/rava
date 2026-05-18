@@ -178,6 +178,57 @@ fn serve_verify_with_rate_limit_rejects_excess_requests() -> Result<(), Box<dyn 
 }
 
 #[test]
+fn serve_verify_with_rate_limit_reports_caller_scope_when_caller_id_configured(
+) -> Result<(), Box<dyn Error>> {
+    let responses = run_server_raw_requests_with_env(
+        &[
+            "--auth-token-env",
+            "RAVA_TEST_AUTH_TOKEN",
+            "--caller-id",
+            "tenant-a",
+            "--rate-limit-per-minute",
+            "1",
+        ],
+        &[("RAVA_TEST_AUTH_TOKEN", "secret-token")],
+        &[
+            "GET /healthz HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer secret-token\r\nConnection: close\r\n\r\n",
+            "GET /healthz HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer secret-token\r\nConnection: close\r\n\r\n",
+        ],
+    )?;
+
+    assert!(
+        responses[0].starts_with("HTTP/1.1 200 OK"),
+        "{}",
+        responses[0]
+    );
+    let health_body = response_body(&responses[0])?;
+    let health: serde_json::Value = serde_json::from_str(health_body)?;
+    assert_eq!(
+        health
+            .get("rate_limit_scope")
+            .and_then(serde_json::Value::as_str),
+        Some("caller")
+    );
+    assert!(
+        responses[1].starts_with("HTTP/1.1 429 Too Many Requests"),
+        "{}",
+        responses[1]
+    );
+    let response_body = response_body(&responses[1])?;
+    let json: serde_json::Value = serde_json::from_str(response_body)?;
+    assert_eq!(
+        json.get("rate_limit_scope")
+            .and_then(serde_json::Value::as_str),
+        Some("caller")
+    );
+    assert_eq!(
+        json.get("caller_id").and_then(serde_json::Value::as_str),
+        Some("tenant-a")
+    );
+    Ok(())
+}
+
+#[test]
 fn serve_verify_with_metrics_reports_metadata_counters() -> Result<(), Box<dyn Error>> {
     let accepted_body = accepted_request_body()?;
     let mut rejected_body = accepted_body.clone();

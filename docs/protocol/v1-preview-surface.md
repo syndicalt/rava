@@ -71,6 +71,7 @@ authorization decisions:
 
 - `401 Unauthorized` for missing or mismatched bearer tokens when `--auth-token-env` is configured;
 - `429 Too Many Requests` for local per-process rate-limit exhaustion, with `rate_limit_per_minute`;
+- when local rate limiting is configured, `rate_limit_scope` is `process` or `caller`;
 - `413 Payload Too Large` when `Content-Length` exceeds `max_request_bytes`, with `max_request_bytes`;
 - `431 Request Header Fields Too Large` when request headers exceed the local header limit;
 - `404 Not Found` for routes other than `GET /healthz` and `POST /verify/action`.
@@ -88,9 +89,10 @@ authorization decisions:
 - `auth_required`;
 - `caller_id_configured`;
 - `rate_limit_per_minute`;
+- `rate_limit_scope`;
 - `metrics_configured`.
 
-This endpoint reports local process configuration only. It does not prove key freshness, revocation freshness, replay coordination, or external reachability.
+This endpoint reports local process configuration only. It does not prove key freshness, revocation freshness, replay coordination, shared quota state, cross-node rate-limit consistency, or external reachability.
 
 ## Metrics Shape
 

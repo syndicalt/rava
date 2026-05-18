@@ -105,6 +105,7 @@ fn handle_connection(
     }
     if let Some(rate_limit) = rate_limit {
         if !rate_limit.allow_request() {
+            let rate_limit_scope = rate_limit_scope(args);
             metrics.record_http(route, "429");
             write_json_response(
                 stream,
@@ -113,6 +114,8 @@ fn handle_connection(
                     "service": SERVICE_NAME,
                     "error": "rate limit exceeded",
                     "rate_limit_per_minute": rate_limit.limit,
+                    "rate_limit_scope": rate_limit_scope,
+                    "caller_id": args.caller_id,
                 }),
             )?;
             return Ok(());
@@ -138,6 +141,7 @@ fn handle_connection(
                 "auth_required": args.auth_token_env.is_some(),
                 "caller_id_configured": args.caller_id.is_some(),
                 "rate_limit_per_minute": args.rate_limit_per_minute,
+                "rate_limit_scope": rate_limit_scope(args),
                 "metrics_configured": args.metrics,
             }),
         )?;
@@ -272,6 +276,16 @@ fn verify_action_with_optional_replay<R: RevocationRegistry>(
     };
 
     Ok(result)
+}
+
+fn rate_limit_scope(args: &ServeVerifyArgs) -> &'static str {
+    if args.rate_limit_per_minute.is_none() {
+        "none"
+    } else if args.caller_id.is_some() {
+        "caller"
+    } else {
+        "process"
+    }
 }
 
 #[derive(Default)]

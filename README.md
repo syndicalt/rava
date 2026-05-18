@@ -265,7 +265,7 @@ It also exposes `GET /healthz` with the service name, status, and configured req
 `--audit-log` appends newline-delimited JSON decision metadata without raw action intent, resource, constraints, capability envelopes, or signatures. On Unix, local audit log files are created owner-only, and group/world-accessible existing logs are rejected.
 `--auth-token-env` requires `Authorization: Bearer <token>` on every request and reads the token from an environment variable so it is not passed on the command line.
 `--caller-id` records an explicit deployment-configured caller label in audit entries and requires `--auth-token-env`; it is not inferred from the signed action actor and does not implement production caller-to-policy mapping.
-`--rate-limit-per-minute` applies a local per-process request limit.
+`--rate-limit-per-minute` applies a local request limit. Health and 429 responses report whether the preview limit is process-scoped or scoped to the explicit `--caller-id` label.
 `--metrics` enables `GET /metrics` with Prometheus-style process-local counters for HTTP statuses, verifier decisions, rejection codes, and audit-write failures without raw action payloads, capability envelopes, signatures, keys, credentials, or tokens.
 
 The pinned preview service request, response, health, audit, and error shapes are documented in [docs/protocol/v1-preview-surface.md](docs/protocol/v1-preview-surface.md).
