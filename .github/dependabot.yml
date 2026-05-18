@@ -1,0 +1,43 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - security-review
+    groups:
+      rust-dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: npm
+    directory: /packages/rava-wasm-js
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - security-review
+    groups:
+      typescript-wrapper-dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - security-review
+    groups:
+      github-actions-dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"

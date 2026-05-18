@@ -31,6 +31,8 @@ Security-sensitive repository paths are mapped in [.github/CODEOWNERS](.github/C
 
 Pull requests should use [.github/pull_request_template.md](.github/pull_request_template.md) to record security-boundary impact, required verification commands, and review artifacts.
 
+Dependency update surfaces are tracked in [.github/dependabot.yml](.github/dependabot.yml) for Rust crates, the TypeScript wrapper package, and GitHub Actions.
+
 Production deployment issues involving key custody, public-key discovery, distributed replay, distributed revocation, caller identity, distributed rate limiting, audit storage, or monitoring should also reference [docs/operations/production-trust-v0.md](docs/operations/production-trust-v0.md) and the relevant detailed runbook:
 
 - [docs/operations/key-custody-v0.md](docs/operations/key-custody-v0.md);
