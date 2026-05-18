@@ -393,6 +393,36 @@ fn serve_verify_metrics_reports_revocation_read_failures() -> Result<(), Box<dyn
 }
 
 #[test]
+fn serve_verify_metrics_reports_missing_public_keys() -> Result<(), Box<dyn Error>> {
+    let mut body = accepted_request_body()?;
+    let issuer = body["issuer_public_keys"]
+        .as_object()
+        .and_then(|keys| keys.keys().next())
+        .ok_or("missing issuer key")?
+        .to_owned();
+    body["issuer_public_keys"]
+        .as_object_mut()
+        .ok_or("issuer_public_keys must be an object")?
+        .remove(&issuer);
+    let requests = [
+        post_json_request("/verify/action", &body)?,
+        "GET /metrics HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n".to_owned(),
+    ];
+    let request_refs = requests.iter().map(String::as_str).collect::<Vec<_>>();
+
+    let responses = run_server_raw_requests(&["--metrics"], &request_refs)?;
+
+    assert_rejection_code(&responses[0], "missing_issuer_public_key")?;
+    let metrics = response_body(&responses[1])?;
+    assert!(
+        metrics.contains("rava_preview_missing_public_keys_total 1"),
+        "{metrics}"
+    );
+    assert!(!metrics.contains(issuer.as_str()), "{metrics}");
+    Ok(())
+}
+
+#[test]
 fn serve_verify_metrics_requires_auth_when_configured() -> Result<(), Box<dyn Error>> {
     let responses = run_server_raw_requests_with_env(
         &["--metrics", "--auth-token-env", "RAVA_TEST_AUTH_TOKEN"],
