@@ -61,7 +61,17 @@ If any compatibility-impacting change exists, link to the relevant migration not
 
 Link to `docs/roadmap.md` and summarize any roadmap evidence maps that changed in this release.
 
-List remaining external blockers, including external security review, publishing or tagging decisions, and production systems in `docs/operations/production-trust-v0.md` that are still documented requirements rather than implemented guarantees.
+List remaining external blockers, including external security review, publishing or tagging decisions, and production systems that are still documented requirements rather than implemented guarantees:
+
+- `docs/operations/production-trust-v0.md`;
+- `docs/operations/key-custody-v0.md`;
+- `docs/operations/key-discovery-v0.md`;
+- `docs/operations/distributed-replay-v0.md`;
+- `docs/operations/distributed-revocation-v0.md`;
+- `docs/operations/audit-storage-v0.md`;
+- `docs/operations/caller-identity-v0.md`;
+- `docs/operations/distributed-rate-limits-v0.md`;
+- `docs/operations/monitoring-v0.md`.
 
 ## Known Non-Goals and External Requirements
 
