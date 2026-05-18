@@ -1891,6 +1891,21 @@ fn production_trust_docs_define_external_operational_requirements() -> Result<()
     for required in [
         "# Rava Production Trust and Operations V0",
         "not implemented guarantees",
+        "## Selected Deployment Profile",
+        "controlled deployment profile",
+        "single-tenant or small explicitly trusted tenant set",
+        "explicit static trust roots",
+        "fail-closed behavior when key, replay, revocation, caller, or audit state is missing, stale, ambiguous, or unverifiable",
+        "## Decision Baseline",
+        "These decisions convert the production-trust tracker into the default architecture target for V0 operations work.",
+        "Rava core verifies signatures but does not custody private keys.",
+        "Start with explicit static trust bundles.",
+        "Hosted verifier callers must authenticate independently from the signed action actor.",
+        "action-ID consumption must be atomic and durable before acceptance is reported",
+        "fail closed unless revocation state satisfies local freshness policy",
+        "Store decision metadata and stable identifiers by default.",
+        "Rate limits and abuse controls must be keyed to authenticated caller and tenant identity.",
+        "Monitor verifier availability and trust-decision failures without logging private keys, credentials, or sensitive payload fields.",
         "## Key Custody",
         "rotation",
         "compromise response",
@@ -1915,6 +1930,7 @@ fn production_trust_docs_define_external_operational_requirements() -> Result<()
     }
 
     for required in [
+        "Production trust requirements and selected V0 operational decisions are defined in [operations/production-trust-v0.md](operations/production-trust-v0.md).",
         "Production trust evidence lives in `SECURITY.md`, `docs/operations/production-trust-v0.md`, `docs/operations/key-custody-v0.md`, `docs/operations/key-discovery-v0.md`, `docs/operations/distributed-replay-v0.md`, `docs/operations/distributed-revocation-v0.md`, `docs/operations/audit-storage-v0.md`, `docs/operations/caller-identity-v0.md`, `docs/operations/distributed-rate-limits-v0.md`, `docs/operations/monitoring-v0.md`, `docs/security/review-register-v0.md`, `docs/security/external-review-selection-v0.md`, `docs/security/release-audit-v0.md`, and `crates/rava-cli/tests/publication_docs.rs`.",
         "SECURITY.md",
         "docs/operations/production-trust-v0.md",

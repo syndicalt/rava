@@ -6,6 +6,36 @@ Rava V0 verifies signed actions and attenuated capability chains against caller-
 
 The preview verifier service is not a production ingress boundary. Caller identity requirements are detailed in [caller-identity-v0.md](caller-identity-v0.md), and distributed rate-limit requirements are detailed in [distributed-rate-limits-v0.md](distributed-rate-limits-v0.md).
 
+## Selected Deployment Profile
+
+The selected V0 production-trust profile is a controlled deployment profile:
+
+- single-tenant or small explicitly trusted tenant set;
+- self-hosted or otherwise controlled verifier operation;
+- explicit static trust roots before dynamic resolver policy;
+- managed key storage owned by the deployment, not by Rava core;
+- authenticated service ingress before caller-specific policy, quotas, or audit claims;
+- fail-closed behavior when key, replay, revocation, caller, or audit state is missing, stale, ambiguous, or unverifiable;
+- metadata-first audit and monitoring records that avoid raw sensitive action payloads;
+- no production-ready authorization-system claim until the external review and production-trust evidence are complete.
+
+This profile fits Rava's V0 audience: Rust and security-conscious protocol evaluators, agent-tool builders, and early controlled integrators. It does not fit broad unauthenticated public API operation, regulated production authorization, or multi-tenant managed service claims without additional professional security review and deployment evidence.
+
+## Decision Baseline
+
+These decisions convert the production-trust tracker into the default architecture target for V0 operations work. They do not mean the systems are implemented today.
+
+| Tracker | Decision | Required Evidence |
+| --- | --- | --- |
+| [#118](https://github.com/syndicalt/rava/issues/118) key custody | Rava core verifies signatures but does not custody private keys. Production deployments must use managed or OS-backed key storage with rotation, recovery, and compromise response. Development keys are non-production only. | Documented custody boundary, operator access review, rotation and emergency rotation procedure, backup/recovery test, and compromise-response path. |
+| [#119](https://github.com/syndicalt/rava/issues/119) public-key discovery | Start with explicit static trust bundles. Dynamic DID, web, registry, or resolver discovery requires a reviewed resolver policy before production use. | Trust roots, freshness target, cache lifetime, rollback handling, ambiguity handling, outage behavior, and fail-closed tests. |
+| [#123](https://github.com/syndicalt/rava/issues/123) caller identity | Hosted verifier callers must authenticate independently from the signed action actor. Caller identity must not be inferred from unsigned headers or from the action actor alone. | Ingress authentication, caller-to-policy mapping, tenant boundary, rejection behavior for unknown callers, and audit-safe caller identifiers. |
+| [#120](https://github.com/syndicalt/rava/issues/120) distributed replay | If more than one verifier can accept the same signed action, action-ID consumption must be atomic and durable before acceptance is reported. | Shared replay boundary, consume-before-accept semantics, duplicate rejection tests, outage behavior, and recovery procedure. |
+| [#121](https://github.com/syndicalt/rava/issues/121) distributed revocation | Verifiers must fail closed unless revocation state satisfies local freshness policy. Stale or unavailable revocation state is a security decision, not a cache miss. | Revocation publication path, maximum staleness, emergency propagation, cache invalidation, outage behavior, and audit evidence. |
+| [#122](https://github.com/syndicalt/rava/issues/122) audit storage | Store decision metadata and stable identifiers by default. Raw sensitive action payloads require an explicit data-handling policy. | Retention, access control, tamper evidence, privacy review, export path, deletion/legal-hold policy, and audit-write failure behavior. |
+| [#124](https://github.com/syndicalt/rava/issues/124) distributed rate limits | Rate limits and abuse controls must be keyed to authenticated caller and tenant identity. Production multi-node deployments require shared quota state. | Caller/tenant quotas, shared quota consistency, retry behavior, accepted/rejected request accounting, and dependency outage behavior. |
+| [#125](https://github.com/syndicalt/rava/issues/125) monitoring | Monitor verifier availability and trust-decision failures without logging private keys, credentials, or sensitive payload fields. | Metrics and alerts for rejection codes, replay attempts, missing keys, stale revocation, caller-auth failures, audit-write failures, latency, saturation, and dependency outages. |
+
 ## Key Custody
 
 Production deployments need documented key custody for human, agent, service, evaluator, and verifier keys:
