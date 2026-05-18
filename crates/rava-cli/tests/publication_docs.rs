@@ -2036,6 +2036,8 @@ fn audit_storage_runbook_defines_managed_audit_requirements_without_preview_clai
         "rava audit export",
         "--since-unix",
         "--until-unix",
+        "--output",
+        "audit export file",
         "verified_at_unix",
         "raw payload-style fields",
         "not managed retention",

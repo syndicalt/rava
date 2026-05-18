@@ -58,6 +58,9 @@ pub struct ExportAuditArgs {
 
     #[arg(long = "until-unix")]
     pub until_unix: Option<i64>,
+
+    #[arg(long)]
+    pub output: Option<PathBuf>,
 }
 
 #[derive(Debug, Subcommand)]
