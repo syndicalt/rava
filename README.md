@@ -279,10 +279,10 @@ The preview service is not a production authorization service. It does not imple
 Export local preview audit metadata:
 
 ```bash
-rava audit export --audit-log audit.ndjson
+rava audit export --audit-log audit.ndjson --since-unix 1650000000 --until-unix 1650003600
 ```
 
-`rava audit export` converts local newline-delimited audit metadata into a JSON array and fails closed if an entry contains raw payload-style fields such as action intent, resource, constraints, proofs, actions, or capability chains. It is a local development export helper, not managed retention, access control, tamper evidence, legal hold, or production audit export.
+`rava audit export` converts local newline-delimited audit metadata into a JSON array. Optional `--since-unix` and `--until-unix` bounds are inclusive and filter on `verified_at_unix`; when a time filter is used, entries missing `verified_at_unix` fail closed. The exporter also fails closed if an entry contains raw payload-style fields such as action intent, resource, constraints, proofs, actions, or capability chains. It is a local development export helper, not managed retention, access control, tamper evidence, legal hold, or production audit export.
 
 ## Examples, Test Vectors, and Schemas
 

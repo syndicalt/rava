@@ -14,7 +14,7 @@ These guardrails reduce accidental local disclosure during development and integ
 
 ## Local Export Helper
 
-`rava audit export --audit-log <path>` reads local preview audit NDJSON and writes a JSON array to standard output. The export helper rejects entries that contain raw payload-style fields such as `action`, `capability_chain`, `intent`, `resource`, `constraints`, or `proof`.
+`rava audit export --audit-log <path>` reads local preview audit NDJSON and writes a JSON array to standard output. Optional `--since-unix` and `--until-unix` bounds are inclusive and filter on `verified_at_unix`; when a time filter is used, entries missing `verified_at_unix` fail closed. The export helper rejects entries that contain raw payload-style fields such as `action`, `capability_chain`, `intent`, `resource`, `constraints`, or `proof`.
 
 This helper is useful for local review and issue evidence. It is not managed retention, access control, tamper evidence, deletion policy, legal hold, customer reporting, or production audit export.
 

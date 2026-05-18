@@ -52,6 +52,12 @@ pub enum AuditCommand {
 pub struct ExportAuditArgs {
     #[arg(long = "audit-log")]
     pub audit_log: PathBuf,
+
+    #[arg(long = "since-unix")]
+    pub since_unix: Option<i64>,
+
+    #[arg(long = "until-unix")]
+    pub until_unix: Option<i64>,
 }
 
 #[derive(Debug, Subcommand)]
