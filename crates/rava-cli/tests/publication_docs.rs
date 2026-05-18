@@ -324,6 +324,8 @@ fn security_review_register_tracks_external_findings_without_claiming_review(
         "verified",
         "## Register",
         "No external findings are recorded yet.",
+        "caller identity",
+        "distributed rate limiting",
     ] {
         assert!(
             register.contains(required),
