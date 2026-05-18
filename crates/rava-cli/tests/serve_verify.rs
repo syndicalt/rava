@@ -357,6 +357,39 @@ fn serve_verify_metrics_reports_replay_attempts() -> Result<(), Box<dyn Error>> 
 }
 
 #[test]
+fn serve_verify_metrics_reports_replay_store_failures() -> Result<(), Box<dyn Error>> {
+    let replay_store = temp_file_path("rava-serve-metrics-replay-corrupt");
+    std::fs::write(&replay_store, b"not json")?;
+    let replay_store_arg = replay_store.to_string_lossy().into_owned();
+    let body = accepted_request_body()?;
+    let verify_request = post_json_request("/verify/action", &body)?;
+
+    let responses = run_server_raw_requests(
+        &["--metrics", "--replay-store", &replay_store_arg],
+        &[
+            verify_request.as_str(),
+            "GET /metrics HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
+        ],
+    )?;
+
+    assert!(
+        responses[0].starts_with("HTTP/1.1 500 Internal Server Error"),
+        "{}",
+        responses[0]
+    );
+    let metrics = response_body(&responses[1])?;
+    assert!(
+        metrics.contains("rava_preview_replay_store_failures_total 1"),
+        "{metrics}"
+    );
+    assert!(!metrics.contains(replay_store_arg.as_str()), "{metrics}");
+    assert!(!metrics.contains("not json"), "{metrics}");
+
+    std::fs::remove_file(replay_store)?;
+    Ok(())
+}
+
+#[test]
 fn serve_verify_metrics_reports_revocation_read_failures() -> Result<(), Box<dyn Error>> {
     let revocation_store = temp_file_path("rava-serve-metrics-revocations");
     std::fs::write(&revocation_store, b"not json")?;

@@ -192,10 +192,19 @@ fn handle_connection(
                 return Err(error.into());
             }
         };
-        verify_action_with_optional_replay(&request, &revocations, args, now)?
+        verify_action_with_optional_replay(&request, &revocations, args, now)
     } else {
         let revocations = InMemoryRevocationRegistry::default();
-        verify_action_with_optional_replay(&request, &revocations, args, now)?
+        verify_action_with_optional_replay(&request, &revocations, args, now)
+    };
+    let result = match result {
+        Ok(result) => result,
+        Err(error) if args.replay_store.is_some() => {
+            metrics.replay_store_failures += 1;
+            metrics.record_http(route, "500");
+            return Err(error);
+        }
+        Err(error) => return Err(error),
     };
     metrics.record_verifier_latency(verifier_started.elapsed());
     if let Some(audit_log) = &args.audit_log {
@@ -335,6 +344,7 @@ struct MetricsState {
     verifier_latency_ms_count: u64,
     verifier_latency_ms_total: u64,
     replay_attempts: u64,
+    replay_store_failures: u64,
     missing_public_keys: u64,
     revocation_read_failures: u64,
     audit_write_failures: u64,
@@ -482,6 +492,12 @@ impl MetricsState {
             "rava_preview_replay_attempts_total",
             &[],
             self.replay_attempts,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_replay_store_failures_total",
+            &[],
+            self.replay_store_failures,
         );
         push_metric(
             &mut output,
