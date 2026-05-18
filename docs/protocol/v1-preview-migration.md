@@ -52,6 +52,8 @@ When `--rate-limit-per-minute` is configured, health and 429 responses now repor
 
 `--audit-log` writes newline-delimited JSON decision metadata. It intentionally omits raw action intent, resource, constraints, capability envelopes, and signatures.
 
+`rava audit export --audit-log <path>` converts local preview audit NDJSON into a JSON array and rejects raw payload-style fields. This is local review tooling, not managed audit export.
+
 Operators that need managed retention, export, tamper evidence, privacy controls, or legal holds must provide those systems outside the preview service.
 
 ## Wrapper Changes
