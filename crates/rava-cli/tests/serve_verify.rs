@@ -149,6 +149,27 @@ fn serve_verify_rejects_caller_id_without_auth_token_env() -> Result<(), Box<dyn
 }
 
 #[test]
+fn serve_verify_rejects_invalid_caller_id_label() -> Result<(), Box<dyn Error>> {
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "serve",
+            "verify",
+            "--addr",
+            "127.0.0.1:0",
+            "--auth-token-env",
+            "RAVA_TEST_AUTH_TOKEN",
+            "--caller-id",
+            "tenant a",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("invalid caller-id"), "{stderr}");
+    Ok(())
+}
+
+#[test]
 fn serve_verify_with_rate_limit_rejects_excess_requests() -> Result<(), Box<dyn Error>> {
     let responses = run_server_raw_requests(
         &["--rate-limit-per-minute", "1"],

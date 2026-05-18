@@ -25,7 +25,7 @@ The action actor is the signer attempting to perform the action. The caller is t
 
 When `rava serve verify --caller-id <label>` is configured, the preview service records that explicit deployment label in local audit entries as `caller_id`. The value is not derived from the signed action actor or from unauthenticated request headers.
 
-`--caller-id` requires `--auth-token-env`, so the preview service fails closed at startup rather than recording a caller label without the local bearer-token ingress guard. `GET /healthz` reports whether a caller label is configured.
+`--caller-id` requires `--auth-token-env`, so the preview service fails closed at startup rather than recording a caller label without the local bearer-token ingress guard. Caller labels must be 1 to 128 ASCII characters using letters, digits, `.`, `_`, `-`, `:`, or `@`; invalid labels fail closed at startup. `GET /healthz` reports whether a caller label is configured.
 
 This is local audit correlation evidence for a controlled deployment. It is not caller-to-policy mapping, tenant isolation, authorization to use trust stores or audit destinations, multi-caller identity, or a production ingress identity system.
 
