@@ -46,6 +46,8 @@ Operators using the preview service should prefer all six controls for nontrivia
 
 `rava serve verify --caller-id <label>` records an explicit deployment caller label in audit entries and requires `--auth-token-env`. It is local audit correlation evidence, not tenant isolation or production caller identity.
 
+When `--rate-limit-per-minute` is configured, health and 429 responses now report `rate_limit_scope`. The value is `caller` when the local preview limit is tied to an explicit `--caller-id` label and `process` otherwise. This is not shared quota state or distributed rate limiting.
+
 ## Audit Output
 
 `--audit-log` writes newline-delimited JSON decision metadata. It intentionally omits raw action intent, resource, constraints, capability envelopes, and signatures.
