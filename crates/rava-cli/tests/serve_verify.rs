@@ -156,6 +156,122 @@ fn serve_verify_with_rate_limit_rejects_excess_requests() -> Result<(), Box<dyn 
 }
 
 #[test]
+fn serve_verify_with_metrics_reports_metadata_counters() -> Result<(), Box<dyn Error>> {
+    let accepted_body = accepted_request_body()?;
+    let mut rejected_body = accepted_body.clone();
+    rejected_body["action"]["constraints"]["amount_usd"]["integer"] = serde_json::json!(900);
+    let action_id = string_field(&accepted_body["action"], "id")?.to_owned();
+
+    let requests = [
+        post_json_request("/verify/action", &accepted_body)?,
+        post_json_request("/verify/action", &rejected_body)?,
+        "GET /metrics HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n".to_owned(),
+    ];
+    let request_refs = requests.iter().map(String::as_str).collect::<Vec<_>>();
+
+    let responses = run_server_raw_requests(&["--metrics"], &request_refs)?;
+
+    assert_accepted_response(&responses[0])?;
+    assert_rejection_code(&responses[1], "action_signature_invalid")?;
+    assert!(
+        responses[2].starts_with("HTTP/1.1 200 OK"),
+        "{}",
+        responses[2]
+    );
+    let metrics = response_body(&responses[2])?;
+    assert!(
+        metrics.contains(
+            "rava_preview_http_requests_total{route=\"/verify/action\",status=\"200\"} 2"
+        ),
+        "{metrics}"
+    );
+    assert!(
+        metrics.contains("rava_preview_verifier_decisions_total{decision=\"accepted\"} 1"),
+        "{metrics}"
+    );
+    assert!(
+        metrics.contains("rava_preview_verifier_decisions_total{decision=\"rejected\"} 1"),
+        "{metrics}"
+    );
+    assert!(
+        metrics.contains(
+            "rava_preview_verifier_rejections_total{code=\"action_signature_invalid\"} 1"
+        ),
+        "{metrics}"
+    );
+    assert!(!metrics.contains(action_id.as_str()), "{metrics}");
+    assert!(!metrics.contains("intent"), "{metrics}");
+    assert!(!metrics.contains("resource"), "{metrics}");
+    assert!(!metrics.contains("constraints"), "{metrics}");
+    assert!(!metrics.contains("proof"), "{metrics}");
+    Ok(())
+}
+
+#[test]
+fn serve_verify_metrics_requires_auth_when_configured() -> Result<(), Box<dyn Error>> {
+    let responses = run_server_raw_requests_with_env(
+        &["--metrics", "--auth-token-env", "RAVA_TEST_AUTH_TOKEN"],
+        &[("RAVA_TEST_AUTH_TOKEN", "secret-token")],
+        &[
+            "GET /metrics HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
+            "GET /metrics HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer secret-token\r\nConnection: close\r\n\r\n",
+        ],
+    )?;
+
+    assert!(
+        responses[0].starts_with("HTTP/1.1 401 Unauthorized"),
+        "{}",
+        responses[0]
+    );
+    assert!(
+        responses[1].starts_with("HTTP/1.1 200 OK"),
+        "{}",
+        responses[1]
+    );
+    let metrics = response_body(&responses[1])?;
+    assert!(
+        metrics.contains("rava_preview_http_requests_total{route=\"/metrics\",status=\"401\"} 1"),
+        "{metrics}"
+    );
+    assert!(!metrics.contains("secret-token"), "{metrics}");
+    Ok(())
+}
+
+#[test]
+fn serve_verify_metrics_reports_request_body_limit_rejections() -> Result<(), Box<dyn Error>> {
+    let oversized = format!(
+        "POST /verify/action HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+        4096
+    );
+    let responses = run_server_raw_requests(
+        &["--metrics", "--max-request-bytes", "128"],
+        &[
+            oversized.as_str(),
+            "GET /metrics HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
+        ],
+    )?;
+
+    assert!(
+        responses[0].starts_with("HTTP/1.1 413 Payload Too Large"),
+        "{}",
+        responses[0]
+    );
+    assert!(
+        responses[1].starts_with("HTTP/1.1 200 OK"),
+        "{}",
+        responses[1]
+    );
+    let metrics = response_body(&responses[1])?;
+    assert!(
+        metrics.contains(
+            "rava_preview_http_requests_total{route=\"/verify/action\",status=\"413\"} 1"
+        ),
+        "{metrics}"
+    );
+    Ok(())
+}
+
+#[test]
 fn serve_verify_rejects_request_bodies_over_configured_limit() -> Result<(), Box<dyn Error>> {
     let request = format!(
         "POST /verify/action HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
@@ -574,6 +690,14 @@ fn raw_request_when_ready(address: &str, request: &str) -> Result<String, Box<dy
             Err(error) => return Err(error.into()),
         }
     }
+}
+
+fn post_json_request(path: &str, body: &serde_json::Value) -> Result<String, Box<dyn Error>> {
+    let body = serde_json::to_string(body)?;
+    Ok(format!(
+        "POST {path} HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+        body.len()
+    ))
 }
 
 fn read_response_allowing_reset(stream: &mut TcpStream) -> Result<String, std::io::Error> {

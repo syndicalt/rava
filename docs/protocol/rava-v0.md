@@ -188,7 +188,7 @@ It exposes `POST /verify/action` as an HTTP wrapper around the V0 Rust verifier.
 - `issuer_public_keys`;
 - `now_unix`.
 
-It also exposes `GET /healthz`, which returns the service name, `ok` status, and configured `max_request_bytes`.
+It also exposes `GET /healthz`, which returns the service name, `ok` status, and configured local service flags. When `--metrics` is configured, it exposes `GET /metrics` with process-local Prometheus-style counters for non-sensitive preview monitoring.
 `--max-request-bytes` limits request bodies before JSON parsing and verification.
 `--replay-store` records accepted action IDs in a local file and rejects later replays.
 `--revocation-store` loads a local revoked-ID snapshot for signer and capability checks on each request.

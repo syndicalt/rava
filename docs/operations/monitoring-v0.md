@@ -4,6 +4,14 @@ This runbook defines production monitoring requirements around Rava deployments.
 
 The preview service can be observed by ordinary process and log tooling, but managed metrics, alerting, dashboards, and incident response are deployment responsibilities.
 
+## Local Preview Guardrails
+
+When `rava serve verify --metrics` is configured, the preview service exposes `GET /metrics` with Prometheus-style text counters for local HTTP statuses, verifier accepted/rejected decisions, rejection codes, and audit-write failures. If `--auth-token-env` is configured, the same bearer-token gate protects `GET /metrics`.
+
+Preview metrics are process-local and metadata-only. They do not include private keys, credentials, raw action payloads, access tokens, capability envelopes, signatures, or downstream secrets.
+
+These metrics are useful for development, demos, and self-hosted integration checks. They are not managed dashboards, alerting, incident response, long-term retention, cross-node aggregation, service-level objectives, or production monitoring coverage.
+
 ## Required Signals
 
 Production monitoring should track:

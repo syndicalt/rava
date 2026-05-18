@@ -49,6 +49,7 @@ struct VerifyActionRejection {
 pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     let listener = TcpListener::bind(&args.addr)?;
     let mut rate_limit = args.rate_limit_per_minute.map(RateLimitState::new);
+    let mut metrics = MetricsState::default();
     println!(
         "Rava verifier service listening: {}",
         listener.local_addr()?
@@ -57,7 +58,9 @@ pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                if let Err(error) = handle_connection(&mut stream, &args, &mut rate_limit) {
+                if let Err(error) =
+                    handle_connection(&mut stream, &args, &mut rate_limit, &mut metrics)
+                {
                     write_json_response(
                         &mut stream,
                         "500 Internal Server Error",
@@ -79,11 +82,14 @@ fn handle_connection(
     stream: &mut TcpStream,
     args: &ServeVerifyArgs,
     rate_limit: &mut Option<RateLimitState>,
+    metrics: &mut MetricsState,
 ) -> Result<(), Box<dyn Error>> {
-    let Some(request) = read_http_request(stream, args.max_request_bytes)? else {
+    let Some(request) = read_http_request(stream, args.max_request_bytes, metrics)? else {
         return Ok(());
     };
+    let route = route_label(&request.method, &request.path);
     if !request_is_authorized(&request, args)? {
+        metrics.record_http(route, "401");
         write_json_response(
             stream,
             "401 Unauthorized",
@@ -96,6 +102,7 @@ fn handle_connection(
     }
     if let Some(rate_limit) = rate_limit {
         if !rate_limit.allow_request() {
+            metrics.record_http(route, "429");
             write_json_response(
                 stream,
                 "429 Too Many Requests",
@@ -108,7 +115,13 @@ fn handle_connection(
             return Ok(());
         }
     }
+    if request.method == "GET" && request.path == "/metrics" && args.metrics {
+        metrics.record_http(route, "200");
+        write_text_response(stream, "200 OK", &metrics.render())?;
+        return Ok(());
+    }
     if request.method == "GET" && request.path == "/healthz" {
+        metrics.record_http(route, "200");
         write_json_response(
             stream,
             "200 OK",
@@ -121,11 +134,13 @@ fn handle_connection(
                 "audit_log_configured": args.audit_log.is_some(),
                 "auth_required": args.auth_token_env.is_some(),
                 "rate_limit_per_minute": args.rate_limit_per_minute,
+                "metrics_configured": args.metrics,
             }),
         )?;
         return Ok(());
     }
     if request.method != "POST" || request.path != "/verify/action" {
+        metrics.record_http(route, "404");
         write_json_response(
             stream,
             "404 Not Found",
@@ -147,8 +162,14 @@ fn handle_connection(
         verify_action_with_optional_replay(&request, &revocations, args, now)?
     };
     if let Some(audit_log) = &args.audit_log {
-        append_audit_log(audit_log, &request, &result, now)?;
+        if let Err(error) = append_audit_log(audit_log, &request, &result, now) {
+            metrics.audit_write_failures += 1;
+            metrics.record_http(route, "500");
+            return Err(error);
+        }
     }
+    metrics.record_verifier_decision(&result);
+    metrics.record_http(route, "200");
     let response = match result {
         VerificationResult::Accepted => VerifyActionResponse {
             service: SERVICE_NAME,
@@ -247,6 +268,183 @@ fn verify_action_with_optional_replay<R: RevocationRegistry>(
     Ok(result)
 }
 
+#[derive(Default)]
+struct MetricsState {
+    http_get_healthz_200: u64,
+    http_get_metrics_200: u64,
+    http_get_metrics_401: u64,
+    http_post_verify_200: u64,
+    http_post_verify_429: u64,
+    http_post_verify_413: u64,
+    http_post_verify_500: u64,
+    http_other_401: u64,
+    http_other_404: u64,
+    http_other_431: u64,
+    verifier_accepted: u64,
+    verifier_rejected: u64,
+    verifier_rejections: BTreeMap<String, u64>,
+    audit_write_failures: u64,
+}
+
+impl MetricsState {
+    fn record_http(&mut self, route: RouteLabel, status: &'static str) {
+        match (route, status) {
+            (RouteLabel::Healthz, "200") => self.http_get_healthz_200 += 1,
+            (RouteLabel::Metrics, "200") => self.http_get_metrics_200 += 1,
+            (RouteLabel::Metrics, "401") => self.http_get_metrics_401 += 1,
+            (RouteLabel::VerifyAction, "200") => self.http_post_verify_200 += 1,
+            (RouteLabel::VerifyAction, "429") => self.http_post_verify_429 += 1,
+            (RouteLabel::VerifyAction, "413") => self.http_post_verify_413 += 1,
+            (RouteLabel::VerifyAction, "500") => self.http_post_verify_500 += 1,
+            (_, "401") => self.http_other_401 += 1,
+            (_, "404") => self.http_other_404 += 1,
+            (_, "431") => self.http_other_431 += 1,
+            _ => {}
+        }
+    }
+
+    fn record_verifier_decision(&mut self, result: &VerificationResult) {
+        match result {
+            VerificationResult::Accepted => self.verifier_accepted += 1,
+            VerificationResult::Rejected(error) => {
+                self.verifier_rejected += 1;
+                *self
+                    .verifier_rejections
+                    .entry(error.code().to_owned())
+                    .or_insert(0) += 1;
+            }
+        }
+    }
+
+    fn render(&self) -> String {
+        let mut output = String::new();
+        push_metric(
+            &mut output,
+            "rava_preview_http_requests_total",
+            &[("route", "/healthz"), ("status", "200")],
+            self.http_get_healthz_200,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_http_requests_total",
+            &[("route", "/metrics"), ("status", "200")],
+            self.http_get_metrics_200,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_http_requests_total",
+            &[("route", "/metrics"), ("status", "401")],
+            self.http_get_metrics_401,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_http_requests_total",
+            &[("route", "/verify/action"), ("status", "200")],
+            self.http_post_verify_200,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_http_requests_total",
+            &[("route", "/verify/action"), ("status", "429")],
+            self.http_post_verify_429,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_http_requests_total",
+            &[("route", "/verify/action"), ("status", "413")],
+            self.http_post_verify_413,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_http_requests_total",
+            &[("route", "/verify/action"), ("status", "500")],
+            self.http_post_verify_500,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_http_requests_total",
+            &[("route", "other"), ("status", "401")],
+            self.http_other_401,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_http_requests_total",
+            &[("route", "other"), ("status", "404")],
+            self.http_other_404,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_http_requests_total",
+            &[("route", "other"), ("status", "431")],
+            self.http_other_431,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_verifier_decisions_total",
+            &[("decision", "accepted")],
+            self.verifier_accepted,
+        );
+        push_metric(
+            &mut output,
+            "rava_preview_verifier_decisions_total",
+            &[("decision", "rejected")],
+            self.verifier_rejected,
+        );
+        for (code, count) in &self.verifier_rejections {
+            push_metric(
+                &mut output,
+                "rava_preview_verifier_rejections_total",
+                &[("code", code.as_str())],
+                *count,
+            );
+        }
+        push_metric(
+            &mut output,
+            "rava_preview_audit_write_failures_total",
+            &[],
+            self.audit_write_failures,
+        );
+        output
+    }
+}
+
+#[derive(Clone, Copy)]
+enum RouteLabel {
+    Healthz,
+    Metrics,
+    VerifyAction,
+    Other,
+}
+
+fn route_label(method: &str, path: &str) -> RouteLabel {
+    match (method, path) {
+        ("GET", "/healthz") => RouteLabel::Healthz,
+        ("GET", "/metrics") => RouteLabel::Metrics,
+        ("POST", "/verify/action") => RouteLabel::VerifyAction,
+        _ => RouteLabel::Other,
+    }
+}
+
+fn push_metric(output: &mut String, name: &str, labels: &[(&str, &str)], value: u64) {
+    output.push_str(name);
+    if !labels.is_empty() {
+        output.push('{');
+        for (index, (key, value)) in labels.iter().enumerate() {
+            if index > 0 {
+                output.push(',');
+            }
+            output.push_str(key);
+            output.push_str("=\"");
+            output.push_str(value);
+            output.push('"');
+        }
+        output.push('}');
+    }
+    output.push(' ');
+    output.push_str(&value.to_string());
+    output.push('\n');
+}
+
 #[derive(Debug, Serialize)]
 struct AuditLogEntry<'a> {
     service: &'static str,
@@ -333,6 +531,7 @@ struct HttpRequest {
 fn read_http_request(
     stream: &mut TcpStream,
     max_request_bytes: usize,
+    metrics: &mut MetricsState,
 ) -> Result<Option<HttpRequest>, Box<dyn Error>> {
     let mut bytes = Vec::new();
     let header_end = loop {
@@ -343,6 +542,7 @@ fn read_http_request(
         }
         bytes.extend_from_slice(&chunk[..count]);
         if bytes.len() > MAX_HEADER_BYTES {
+            metrics.record_http(RouteLabel::Other, "431");
             write_json_response(
                 stream,
                 "431 Request Header Fields Too Large",
@@ -385,6 +585,7 @@ fn read_http_request(
         .unwrap_or(0);
 
     if content_length > max_request_bytes {
+        metrics.record_http(route_label(&method, &path), "413");
         write_json_response(
             stream,
             "413 Payload Too Large",
@@ -430,5 +631,19 @@ fn write_json_response<T: Serialize>(
     );
     stream.write_all(response.as_bytes())?;
     stream.write_all(&body)?;
+    Ok(())
+}
+
+fn write_text_response(
+    stream: &mut TcpStream,
+    status: &str,
+    body: &str,
+) -> Result<(), Box<dyn Error>> {
+    let response = format!(
+        "HTTP/1.1 {status}\r\nContent-Type: text/plain; version=0.0.4\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+        body.len()
+    );
+    stream.write_all(response.as_bytes())?;
+    stream.write_all(body.as_bytes())?;
     Ok(())
 }
