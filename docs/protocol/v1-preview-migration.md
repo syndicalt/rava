@@ -26,9 +26,10 @@ The `rava serve verify` preview service has gained optional service-boundary con
 - `--require-replay-store`;
 - `--revocation-store`;
 - `--require-fresh-revocations`;
-- `--audit-log`.
+- `--audit-log`;
+- `--require-audit-log`.
 
-Operators using the preview service should prefer all eight controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
+Operators using the preview service should prefer all nine controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
 
 `rava serve verify --require-replay-store` requires `--replay-store` at startup. This is local preview configuration hygiene so controlled deployments cannot accidentally omit local one-time-use enforcement; it is not distributed replay coordination.
 
@@ -57,6 +58,8 @@ When `--rate-limit-per-minute` is configured, the value must be greater than zer
 ## Audit Output
 
 `--audit-log` writes newline-delimited JSON decision metadata. It intentionally omits raw action intent, resource, constraints, capability envelopes, and signatures.
+
+`rava serve verify --require-audit-log` requires `--audit-log` at startup. This is local preview configuration hygiene so controlled deployments cannot accidentally omit local decision metadata; it is not managed audit storage, retention, or export.
 
 `rava audit export --audit-log <path>` converts local preview audit NDJSON into a JSON array and rejects raw payload-style fields. Optional `--since-unix` and `--until-unix` bounds filter on `verified_at_unix`; entries missing `verified_at_unix` fail closed when filtering is requested. This is local review tooling, not managed audit export.
 
