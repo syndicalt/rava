@@ -4,6 +4,14 @@ This runbook defines audit-storage requirements for production deployments aroun
 
 The preview service can append local decision metadata for development and integration testing. That local file is not durable, replicated, access-controlled, or retention-managed by Rava.
 
+## Local Preview Guardrails
+
+When `rava serve verify --audit-log <path>` is configured, the preview service appends newline-delimited decision metadata only. It does not write raw action payloads, capability envelopes, signatures, keys, credentials, or downstream secrets.
+
+On Unix, newly created local audit log files are owner-only. Existing audit log files that are readable, writable, or executable by group or others are rejected before a decision entry is written. The preview service also opens the final audit log path without following a symlink and flushes and syncs the appended entry before returning a verifier response.
+
+These guardrails reduce accidental local disclosure during development and integration testing. They are not managed audit storage, retention, export, tamper evidence, access-control review, deletion policy, or legal-hold support.
+
 ## Required Properties
 
 A production audit system should provide:

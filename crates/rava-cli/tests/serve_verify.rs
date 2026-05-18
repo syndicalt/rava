@@ -306,6 +306,72 @@ fn serve_verify_with_audit_log_appends_decision_metadata_without_raw_payload(
     Ok(())
 }
 
+#[cfg(unix)]
+#[test]
+fn serve_verify_with_audit_log_creates_owner_only_file() -> Result<(), Box<dyn Error>> {
+    use std::os::unix::fs::PermissionsExt;
+
+    let audit_log = temp_file_path("rava-serve-audit-permissions");
+    let audit_log_arg = audit_log.to_string_lossy().into_owned();
+    let body = accepted_request_body()?;
+
+    let response = run_server_request_with_args(&["--audit-log", &audit_log_arg], &body)?;
+
+    assert_accepted_response(&response)?;
+    assert_eq!(
+        std::fs::metadata(&audit_log)?.permissions().mode() & 0o777,
+        0o600
+    );
+    std::fs::remove_file(audit_log)?;
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn serve_verify_with_audit_log_rejects_insecure_file_permissions() -> Result<(), Box<dyn Error>> {
+    use std::os::unix::fs::PermissionsExt;
+
+    let audit_log = temp_file_path("rava-serve-audit-insecure");
+    std::fs::write(&audit_log, b"")?;
+    let mut permissions = std::fs::metadata(&audit_log)?.permissions();
+    permissions.set_mode(0o644);
+    std::fs::set_permissions(&audit_log, permissions)?;
+    let audit_log_arg = audit_log.to_string_lossy().into_owned();
+    let body = accepted_request_body()?;
+
+    let response = run_server_request_with_args(&["--audit-log", &audit_log_arg], &body)?;
+
+    assert!(response.starts_with("HTTP/1.1 500 Internal Server Error"));
+    assert_eq!(std::fs::read_to_string(&audit_log)?, "");
+    std::fs::remove_file(audit_log)?;
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn serve_verify_with_audit_log_rejects_symlink_path() -> Result<(), Box<dyn Error>> {
+    use std::os::unix::fs::PermissionsExt;
+
+    let target = temp_file_path("rava-serve-audit-symlink-target");
+    std::fs::write(&target, b"")?;
+    let mut permissions = std::fs::metadata(&target)?.permissions();
+    permissions.set_mode(0o600);
+    std::fs::set_permissions(&target, permissions)?;
+
+    let audit_log = temp_file_path("rava-serve-audit-symlink");
+    std::os::unix::fs::symlink(&target, &audit_log)?;
+    let audit_log_arg = audit_log.to_string_lossy().into_owned();
+    let body = accepted_request_body()?;
+
+    let response = run_server_request_with_args(&["--audit-log", &audit_log_arg], &body)?;
+
+    assert!(response.starts_with("HTTP/1.1 500 Internal Server Error"));
+    assert_eq!(std::fs::read_to_string(&target)?, "");
+    std::fs::remove_file(audit_log)?;
+    std::fs::remove_file(target)?;
+    Ok(())
+}
+
 fn accepted_request_body() -> Result<serde_json::Value, Box<dyn Error>> {
     let vector = repository_root().join("test-vectors/v0/flight-booking");
     let action: serde_json::Value =

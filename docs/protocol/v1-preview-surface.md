@@ -103,7 +103,7 @@ When `--audit-log` is configured, the service appends one newline-delimited JSON
 - `rejection`;
 - `verified_at_unix`.
 
-Audit entries intentionally omit raw action intent, resource, constraints, capability envelopes, and signatures. Operators that need managed audit retention, export, tamper evidence, or privacy controls must provide those systems outside the preview service.
+Audit entries intentionally omit raw action intent, resource, constraints, capability envelopes, and signatures. On Unix, local audit log files are created owner-only, group/world-accessible existing logs are rejected, the final path is opened without following a symlink, and each append is flushed and synced before the verifier response is returned. Operators that need managed audit retention, export, tamper evidence, or privacy controls must provide those systems outside the preview service.
 
 ## Production Requirements
 
