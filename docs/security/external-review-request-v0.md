@@ -7,6 +7,7 @@ Rava V0 is not production-ready security software. The purpose of this request i
 Reviewer outreach status should be tracked in `docs/security/external-review-outreach-v0.md`.
 Reviewer fit, conflicts, and report constraints should be evaluated with `docs/security/external-review-selection-v0.md` before scheduling review work.
 Reviewer-facing outreach should use `docs/security/external-review-outreach-template-v0.md` so the first contact preserves the frozen target, scope, deliverables, out-of-scope production requirements, and non-claim boundary.
+Reviewer responses should use `docs/security/external-review-response-intake-template-v0.md` so target acceptance, scope constraints, disclosure constraints, and next actions are recorded without implying review completion.
 
 ## Engagement Goal
 

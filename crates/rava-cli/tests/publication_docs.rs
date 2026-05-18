@@ -1070,6 +1070,80 @@ fn external_review_outreach_template_preserves_scope_target_and_non_claim_bounda
 }
 
 #[test]
+fn external_review_response_intake_template_records_scope_decisions_without_audit_claims(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let intake_path = "docs/security/external-review-response-intake-template-v0.md";
+    let intake = std::fs::read_to_string(root.join(intake_path))?;
+    let request =
+        std::fs::read_to_string(root.join("docs/security/external-review-request-v0.md"))?;
+    let outreach =
+        std::fs::read_to_string(root.join("docs/security/external-review-outreach-v0.md"))?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+    let checklist = std::fs::read_to_string(
+        root.join("docs/security/external-review-kickoff-checklist-v0.md"),
+    )?;
+    let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
+    let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
+
+    for required in [
+        "# Rava V0 External Review Response Intake Template",
+        "not evidence that Rava has been externally reviewed",
+        "not production-ready security software",
+        "## Use Rules",
+        "Do not record private keys, credentials, access tokens, raw sensitive action payloads, or private commercial terms",
+        "## Response Metadata",
+        "Reviewer or firm",
+        "Response date",
+        "Current state",
+        "candidate",
+        "declined",
+        "scoping",
+        "scheduled",
+        "in-review",
+        "complete",
+        "cancelled",
+        "## Scope Decision",
+        "frozen target",
+        "v0-review-candidate-2026-05-18-r3",
+        "416d8a9661e75bd66dd60bed72d9485d833f36e2",
+        "docs/security/external-review-packet-v0.md",
+        "## Constraints to Record",
+        "report disclosure",
+        "attribution",
+        "embargo",
+        "finding intake",
+        "## Next Action",
+        "docs/security/external-review-outreach-v0.md",
+        "docs/security/review-register-v0.md",
+        ".github/ISSUE_TEMPLATE/security-review-finding.yml",
+        "docs/security/external-review-closeout-template-v0.md",
+        "No production-ready or externally audited claim",
+    ] {
+        assert!(
+            intake.contains(required),
+            "external review response intake template missing: {required}"
+        );
+    }
+
+    for docs in [
+        request,
+        outreach,
+        packet,
+        checklist,
+        register,
+        security_policy,
+    ] {
+        assert!(
+            docs.contains(intake_path),
+            "review docs must link external review response intake template: {intake_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn external_review_outreach_tracker_records_reviewer_contact_without_audit_claims(
 ) -> Result<(), Box<dyn Error>> {
     let root = repository_root();
