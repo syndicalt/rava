@@ -6,11 +6,13 @@ This packet is a handoff manifest for an external security review of the Rava V0
 
 Before sending this packet, record the immutable commit SHA or signed tag under review in `docs/security/review-register-v0.md`, release notes draft, and reviewer correspondence.
 
-The current review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r3.md`.
+The current review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r4.md`.
 
 Review candidate notes are handoff metadata outside the frozen target tree when they are created after a tag is selected and verified. They are a post-target control-plane artifact. Do not treat post-target control-plane docs as reviewed target contents unless a reviewer explicitly agrees to include that later commit in scope.
 
 The historical R2 review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r2.md`.
+
+The historical R3 review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r3.md`.
 
 The historical first review-candidate notes are `docs/release/v0-review-candidate-2026-05-18.md`.
 
@@ -148,6 +150,6 @@ That campaign ran on commit `becbff9e2326f5304822decf636aadcd0e37bb48` after the
 
 A bounded 3600-second `v0_wire_entrypoints` fuzz campaign is recorded at `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-3600s.md`.
 
-That campaign ran on commit `78857884bd7f6feafcf781cfdde2ce4b89fcb8db` after the R2 frozen review-candidate target was recorded. It is included as supplemental evidence in the R3 frozen review target.
+That campaign ran on commit `78857884bd7f6feafcf781cfdde2ce4b89fcb8db` after the R2 frozen review-candidate target was recorded. It is included as supplemental evidence in the R3 frozen review target and carried forward in the R4 review packet as historical supplemental evidence.
 
 Like the shorter bounded campaigns, it is not a proof of security and not evidence that Rava has been externally reviewed.

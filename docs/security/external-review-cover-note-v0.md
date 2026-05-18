@@ -6,10 +6,10 @@ Rava V0 is not production-ready security software. This cover note is not eviden
 
 ## Review Target
 
-- Review candidate tag: `v0-review-candidate-2026-05-18-r3`
-- Frozen target commit: `416d8a9661e75bd66dd60bed72d9485d833f36e2`
+- Review candidate tag: `v0-review-candidate-2026-05-18-r4`
+- Frozen target commit: `b1b65fb6263b4f9143bdac8a5b46fbce6fdc532d`
 - Tracking issue: https://github.com/syndicalt/rava/issues/87
-- Review candidate notes: `docs/release/v0-review-candidate-2026-05-18-r3.md`
+- Review candidate notes: `docs/release/v0-review-candidate-2026-05-18-r4.md`
 
 Do not treat later commits as part of the frozen review target unless the reviewer explicitly agrees to review the new commit or tag.
 

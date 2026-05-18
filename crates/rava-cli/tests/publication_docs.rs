@@ -729,7 +729,7 @@ fn one_hour_fuzz_campaign_log_records_v0_wire_entrypoints_evidence() -> Result<(
     }
     assert!(
         release_audit.contains("included as supplemental evidence in the R3 frozen review target"),
-        "release audit must describe the 3600s campaign against the current R3 target"
+        "release audit must describe the 3600s campaign against the R3 target"
     );
 
     for ignored in ["fuzz/corpus/", "fuzz/artifacts/"] {
@@ -841,9 +841,9 @@ fn external_review_cover_note_preserves_scope_and_non_production_boundary(
         "# Rava V0 External Review Cover Note",
         "not production-ready security software",
         "not evidence that Rava has been externally reviewed",
-        "v0-review-candidate-2026-05-18-r3",
-        "416d8a9661e75bd66dd60bed72d9485d833f36e2",
-        "docs/release/v0-review-candidate-2026-05-18-r3.md",
+        "v0-review-candidate-2026-05-18-r4",
+        "b1b65fb6263b4f9143bdac8a5b46fbce6fdc532d",
+        "docs/release/v0-review-candidate-2026-05-18-r4.md",
         "https://github.com/syndicalt/rava/issues/87",
         "docs/security/external-review-packet-v0.md",
         "docs/security/threat-model-v0.md",
@@ -1045,8 +1045,8 @@ fn external_review_outreach_template_preserves_scope_target_and_non_claim_bounda
         "docs/security/external-review-selection-v0.md",
         "docs/security/external-review-outreach-v0.md",
         "## Message Template",
-        "v0-review-candidate-2026-05-18-r3",
-        "416d8a9661e75bd66dd60bed72d9485d833f36e2",
+        "v0-review-candidate-2026-05-18-r4",
+        "b1b65fb6263b4f9143bdac8a5b46fbce6fdc532d",
         "https://github.com/syndicalt/rava/issues/87",
         "docs/security/external-review-packet-v0.md",
         "docs/security/external-review-request-v0.md",
@@ -1117,8 +1117,8 @@ fn external_review_response_intake_template_records_scope_decisions_without_audi
         "cancelled",
         "## Scope Decision",
         "frozen target",
-        "v0-review-candidate-2026-05-18-r3",
-        "416d8a9661e75bd66dd60bed72d9485d833f36e2",
+        "v0-review-candidate-2026-05-18-r4",
+        "b1b65fb6263b4f9143bdac8a5b46fbce6fdc532d",
         "docs/security/external-review-packet-v0.md",
         "## Constraints to Record",
         "report disclosure",
@@ -1177,8 +1177,8 @@ fn external_review_outreach_tracker_records_reviewer_contact_without_audit_claim
         "not evidence that Rava has been externally reviewed",
         "not production-ready security software",
         "## Current Review Target",
-        "v0-review-candidate-2026-05-18-r3",
-        "416d8a9661e75bd66dd60bed72d9485d833f36e2",
+        "v0-review-candidate-2026-05-18-r4",
+        "b1b65fb6263b4f9143bdac8a5b46fbce6fdc532d",
         "## Outreach States",
         "candidate",
         "contacted",
@@ -1201,7 +1201,7 @@ fn external_review_outreach_tracker_records_reviewer_contact_without_audit_claim
         "docs/security/review-findings/template-v0.md",
         "docs/security/external-review-closeout-template-v0.md",
         "No production-ready or externally audited claim",
-        "Rava is seeking external review for the R3 V0 draft target.",
+        "Rava is seeking external review for the R4 V0 draft target.",
     ] {
         assert!(
             outreach.contains(required),
@@ -1277,7 +1277,7 @@ fn external_review_selection_rubric_records_reviewer_fit_without_endorsement_cla
         "Decision",
         "## Non-Claim Boundary",
         "No production-ready or externally audited claim",
-        "Rava is evaluating external reviewers for the R3 V0 draft target.",
+        "Rava is evaluating external reviewers for the R4 V0 draft target.",
     ] {
         assert!(
             selection.contains(required),
@@ -1589,9 +1589,9 @@ fn v0_review_candidate_r2_records_historical_review_readiness_target() -> Result
 }
 
 #[test]
-fn v0_review_candidate_r3_records_current_review_readiness_target() -> Result<(), Box<dyn Error>> {
+fn v0_review_candidate_r4_records_current_review_readiness_target() -> Result<(), Box<dyn Error>> {
     let root = repository_root();
-    let notes_path = "docs/release/v0-review-candidate-2026-05-18-r3.md";
+    let notes_path = "docs/release/v0-review-candidate-2026-05-18-r4.md";
     let notes = std::fs::read_to_string(root.join(notes_path))?;
     let cover =
         std::fs::read_to_string(root.join("docs/security/external-review-cover-note-v0.md"))?;
@@ -1602,11 +1602,12 @@ fn v0_review_candidate_r3_records_current_review_readiness_target() -> Result<()
         std::fs::read_to_string(root.join("docs/security/external-review-outreach-v0.md"))?;
 
     for required in [
-        "# Rava V0 Review Candidate Notes: 2026-05-18 R3",
+        "# Rava V0 Review Candidate Notes: 2026-05-18 R4",
         "not a production release",
         "not evidence that an external security review has been completed",
-        "v0-review-candidate-2026-05-18-r3",
-        "416d8a9661e75bd66dd60bed72d9485d833f36e2",
+        "v0-review-candidate-2026-05-18-r4",
+        "b1b65fb6263b4f9143bdac8a5b46fbce6fdc532d",
+        "R4 supersedes `docs/release/v0-review-candidate-2026-05-18-r3.md`",
         "post-target control-plane artifact",
         "is not part of the frozen target tree",
         "The frozen target is the tag and commit above",
@@ -1630,13 +1631,20 @@ fn v0_review_candidate_r3_records_current_review_readiness_target() -> Result<()
         "cargo check -p rava-wasm --target wasm32-unknown-unknown",
         "npm --prefix packages/rava-wasm-js test",
         "(cd packages/rava-wasm-js && npm pack --dry-run)",
-        "master CI run `26022970591`",
-        "Pages run `26022970586`",
+        "master CI run `26045290663`",
+        "Pages run `26045288832`",
+        "R4 includes the R3 candidate materials plus local preview service hardening merged after R3",
+        "--require-replay-store",
+        "--require-audit-log",
+        "--require-auth-token-env",
+        "--require-rate-limit-per-minute",
+        "--require-metrics",
+        "No external reviewer outreach has been sent for R4",
         "No external security review has been completed",
     ] {
         assert!(
             notes.contains(required),
-            "R3 review candidate notes missing: {required}"
+            "R4 review candidate notes missing: {required}"
         );
     }
     for required in [
@@ -1653,18 +1661,18 @@ fn v0_review_candidate_r3_records_current_review_readiness_target() -> Result<()
     for docs in [&cover, &packet, &checklist, &register, &outreach] {
         assert!(
             docs.contains(notes_path),
-            "external review docs must link R3 review candidate notes: {notes_path}"
+            "external review docs must link R4 review candidate notes: {notes_path}"
         );
     }
 
     for required in [
         "## Current Review Target",
-        "v0-review-candidate-2026-05-18-r3",
-        "416d8a9661e75bd66dd60bed72d9485d833f36e2",
+        "v0-review-candidate-2026-05-18-r4",
+        "b1b65fb6263b4f9143bdac8a5b46fbce6fdc532d",
     ] {
         assert!(
             register.contains(required),
-            "review register must record current R3 target: {required}"
+            "review register must record current R4 target: {required}"
         );
     }
 

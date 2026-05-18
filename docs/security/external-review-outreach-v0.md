@@ -6,9 +6,9 @@ Rava V0 is not production-ready security software. Outreach, quotes, availabilit
 
 ## Current Review Target
 
-- Tag: `v0-review-candidate-2026-05-18-r3`
-- Commit: `416d8a9661e75bd66dd60bed72d9485d833f36e2`
-- Candidate notes: `docs/release/v0-review-candidate-2026-05-18-r3.md`
+- Tag: `v0-review-candidate-2026-05-18-r4`
+- Commit: `b1b65fb6263b4f9143bdac8a5b46fbce6fdc532d`
+- Candidate notes: `docs/release/v0-review-candidate-2026-05-18-r4.md`
 - Review packet: `docs/security/external-review-packet-v0.md`
 - Request artifact: `docs/security/external-review-request-v0.md`
 - Selection rubric: `docs/security/external-review-selection-v0.md`
@@ -55,7 +55,7 @@ No production-ready or externally audited claim may be made from candidate selec
 
 Permitted wording before review completion is limited to process status, for example:
 
-- "Rava is seeking external review for the R3 V0 draft target."
+- "Rava is seeking external review for the R4 V0 draft target."
 - "Reviewer outreach is tracked in `docs/security/external-review-outreach-v0.md`."
 
 Forbidden wording includes broad claims such as:
