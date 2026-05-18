@@ -36,7 +36,7 @@ These guardrails reduce accidental local exposure. They do not replace a product
 
 ## Local Compromise Response Helper
 
-`rava key revoke --id <signer-id> --revocation-store <path>` records a signer ID in the local revocation snapshot consumed by `rava verify action --revocation-store`. Existing `fresh_until_unix` metadata is preserved when the store is updated.
+`rava key revoke --id <signer-id> --revocation-store <path>` records a signer ID in the local revocation snapshot consumed by `rava verify action --revocation-store`. Local file-backed updates are lock-serialized, merge existing revoked IDs before persisting, and preserve existing `fresh_until_unix` metadata.
 
 This helper gives controlled deployments a local break-glass path for suspected signer compromise. It is not a managed custody provider, rotation ceremony, emergency propagation system, key-discovery update, operator approval workflow, or production incident-response process.
 
