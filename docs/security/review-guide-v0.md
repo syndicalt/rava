@@ -57,7 +57,7 @@ Detailed production runbooks live in:
 
 ## Evidence Map
 
-The review execution plan is [review-plan-v0.md](review-plan-v0.md). Optional longer fuzz campaigns should use [fuzz-campaigns/template-v0.md](fuzz-campaigns/template-v0.md).
+The review execution plan is [review-plan-v0.md](review-plan-v0.md), and the concrete reviewer handoff manifest is [external-review-packet-v0.md](external-review-packet-v0.md), whose repo-relative path is `docs/security/external-review-packet-v0.md`. Optional longer fuzz campaigns should use [fuzz-campaigns/template-v0.md](fuzz-campaigns/template-v0.md).
 
 | Review area | Primary artifact |
 | --- | --- |

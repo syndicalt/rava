@@ -616,6 +616,67 @@ fn bounded_fuzz_campaign_log_records_v0_wire_entrypoints_evidence() -> Result<()
 }
 
 #[test]
+fn external_review_packet_defines_frozen_handoff_manifest() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let packet_path = "docs/security/external-review-packet-v0.md";
+    let packet = std::fs::read_to_string(root.join(packet_path))?;
+    let plan = std::fs::read_to_string(root.join("docs/security/review-plan-v0.md"))?;
+    let guide = std::fs::read_to_string(root.join("docs/security/review-guide-v0.md"))?;
+    let checklist = std::fs::read_to_string(root.join("docs/release/v0-draft-checklist.md"))?;
+
+    for required in [
+        "# Rava V0 External Review Packet",
+        "not evidence that Rava has been externally reviewed",
+        "## Freeze Rule",
+        "immutable commit SHA or signed tag",
+        "Do not change the target during review",
+        "## Packet Manifest",
+        "README.md",
+        "docs/security/threat-model-v0.md",
+        "docs/protocol/rava-v0.md",
+        "docs/security/review-guide-v0.md",
+        "docs/security/review-register-v0.md",
+        "docs/security/release-audit-v0.md",
+        "docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md",
+        "test-vectors/v0",
+        "examples/flight-booking",
+        "## Verification Baseline",
+        "cargo fmt --check",
+        "cargo clippy --workspace --all-targets -- -D warnings",
+        "cargo test --workspace",
+        "cargo run -p rava -- demo flight-booking",
+        "cargo package --workspace",
+        "cargo check --manifest-path fuzz/Cargo.toml",
+        "cargo check -p rava-wasm --target wasm32-unknown-unknown",
+        "npm --prefix packages/rava-wasm-js test",
+        "(cd packages/rava-wasm-js && npm pack --dry-run)",
+        "## Finding Handling",
+        "RAVA-REVIEW-001",
+        "reported",
+        "accepted",
+        "remediated",
+        "verified",
+        "accepted-risk",
+        "out-of-scope",
+        "No finding that weakens fail-closed verification may remain unresolved",
+    ] {
+        assert!(
+            packet.contains(required),
+            "external review packet missing: {required}"
+        );
+    }
+
+    for docs in [plan, guide, checklist] {
+        assert!(
+            docs.contains(packet_path),
+            "review docs must link external packet manifest: {packet_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn security_review_register_tracks_external_findings_without_claiming_review(
 ) -> Result<(), Box<dyn Error>> {
     let register =
