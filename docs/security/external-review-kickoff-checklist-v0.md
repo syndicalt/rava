@@ -28,6 +28,7 @@ npm --prefix packages/rava-wasm-js test
 - Use `docs/security/external-review-outreach-template-v0.md` for reviewer-facing first-contact wording.
 - Use `docs/security/external-review-request-v0.md` when contacting reviewers so the engagement request names expertise, deliverables, finding intake, out-of-scope production requirements, and the non-claim boundary.
 - Track reviewer outreach in `docs/security/external-review-outreach-v0.md` so contact state, scope alignment, report constraints, and next actions are recorded without creating an audit claim.
+- Use `docs/security/external-review-response-intake-template-v0.md` when reviewers respond so target acceptance, scope decisions, disclosure constraints, and next actions are recorded without creating an audit claim.
 - Confirm `docs/security/review-register-v0.md` still says no external review has been completed unless real findings have been recorded.
 
 ## Reviewer Handoff

@@ -22,6 +22,8 @@ Reviewer outreach is tracked in `docs/security/external-review-outreach-v0.md`.
 
 The reviewer-facing outreach template is `docs/security/external-review-outreach-template-v0.md`.
 
+The reviewer response intake template is `docs/security/external-review-response-intake-template-v0.md`.
+
 The reviewer engagement request is `docs/security/external-review-request-v0.md`.
 
 Do not change the target during review unless the reviewer explicitly agrees to review the new commit or tag. If the target changes, rerun the full verification baseline and record the new evidence.
@@ -46,6 +48,7 @@ Send reviewers these repository artifacts from the frozen target:
 - `docs/security/external-review-kickoff-checklist-v0.md`;
 - `docs/security/external-review-outreach-v0.md`;
 - `docs/security/external-review-selection-v0.md`;
+- `docs/security/external-review-response-intake-template-v0.md`;
 - `docs/security/external-review-request-v0.md`;
 - `docs/security/external-review-closeout-template-v0.md`;
 - `docs/security/release-audit-v0.md`;
