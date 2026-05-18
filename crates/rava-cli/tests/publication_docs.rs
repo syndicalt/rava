@@ -161,6 +161,8 @@ fn release_audit_tracks_current_release_and_operations_artifacts() -> Result<(),
         std::fs::read_to_string(repository_root().join("docs/security/release-audit-v0.md"))?;
 
     for required in [
+        "SECURITY.md",
+        "Vulnerability reporting and external review intake are documented in [../../SECURITY.md](../../SECURITY.md).",
         "../release/v0-draft-checklist.md",
         "../release/notes-template-v0.md",
         "../operations/key-custody-v0.md",
