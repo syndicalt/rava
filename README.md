@@ -275,7 +275,7 @@ It also exposes `GET /healthz` with the service name, status, and configured req
 `--require-caller-id` fails closed at startup unless `--caller-id` is configured. This is local preview audit-correlation configuration hygiene, not production caller identity or tenant isolation.
 `--rate-limit-per-minute` applies a positive local request limit. Invalid zero limits fail closed at startup. Health and 429 responses report whether the preview limit is process-scoped or scoped to the explicit `--caller-id` label.
 `--require-rate-limit-per-minute` fails closed at startup unless `--rate-limit-per-minute` is configured. This is local preview abuse-control configuration hygiene, not distributed rate limiting or shared quota state.
-`--metrics` enables `GET /metrics` with Prometheus-style process-local counters for HTTP statuses, verifier decisions, rejection codes, and audit-write failures without raw action payloads, capability envelopes, signatures, keys, credentials, or tokens.
+`--metrics` enables `GET /metrics` with Prometheus-style process-local counters for HTTP statuses, verifier decisions, rejection codes, verifier latency, replay attempts, replay-store failures, revocation-read failures, revocation freshness failures, missing public keys, and audit-write failures without raw action payloads, capability envelopes, signatures, keys, credentials, or tokens.
 `--require-metrics` fails closed at startup unless `--metrics` is configured. This is local preview monitoring configuration hygiene, not managed monitoring, alerting, retention, or incident response.
 
 The pinned preview service request, response, health, audit, and error shapes are documented in [docs/protocol/v1-preview-surface.md](docs/protocol/v1-preview-surface.md).
