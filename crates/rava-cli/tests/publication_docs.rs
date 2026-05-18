@@ -1085,6 +1085,7 @@ fn external_review_response_intake_template_records_scope_decisions_without_audi
     )?;
     let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
     let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
 
     for required in [
         "# Rava V0 External Review Response Intake Template",
@@ -1133,6 +1134,7 @@ fn external_review_response_intake_template_records_scope_decisions_without_audi
         checklist,
         register,
         security_policy,
+        roadmap,
     ] {
         assert!(
             docs.contains(intake_path),
