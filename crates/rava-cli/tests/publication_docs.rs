@@ -569,6 +569,53 @@ fn security_review_plan_and_fuzz_template_define_external_review_process(
 }
 
 #[test]
+fn bounded_fuzz_campaign_log_records_v0_wire_entrypoints_evidence() -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let campaign_path = "docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints.md";
+    let campaign = std::fs::read_to_string(root.join(campaign_path))?;
+    let audit = std::fs::read_to_string(root.join("docs/security/release-audit-v0.md"))?;
+
+    for required in [
+        "# Rava V0 Fuzz Campaign: v0_wire_entrypoints 2026-05-18",
+        "not a proof of security, external audit, or production readiness certification",
+        "83bf11da3078c643acabb35ccec409725b4f95a2",
+        "cargo +nightly fuzz run v0_wire_entrypoints -- -max_total_time=600",
+        "cargo-fuzz version: `0.13.1`",
+        "Seed: `3852110329`",
+        "JSON parsing",
+        "canonicalization",
+        "action verification",
+        "receipt verification",
+        "attestation verification",
+        "Total executions: 20,742,375",
+        "Final coverage: `cov: 2343`",
+        "Final feature count: `ft: 9732`",
+        "Final corpus: `2315/827Kb`",
+        "Crash count: 0",
+        "Timeout count: 0",
+        "OOM count: 0",
+        "Done 20742375 runs in 601 second(s)",
+        "No crash or bug was found",
+    ] {
+        assert!(
+            campaign.contains(required),
+            "campaign log missing: {required}"
+        );
+    }
+
+    assert!(
+        audit.contains(campaign_path),
+        "release audit must link bounded fuzz campaign evidence"
+    );
+    assert!(
+        audit.contains("longer fuzz campaigns remain optional review evidence"),
+        "release audit must preserve the distinction between bounded fuzz evidence and longer campaigns"
+    );
+
+    Ok(())
+}
+
+#[test]
 fn security_review_register_tracks_external_findings_without_claiming_review(
 ) -> Result<(), Box<dyn Error>> {
     let register =
