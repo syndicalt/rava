@@ -734,6 +734,12 @@ fn one_hour_fuzz_campaign_log_records_v0_wire_entrypoints_evidence() -> Result<(
         release_audit.contains("included as supplemental evidence in the R3 frozen review target"),
         "release audit must describe the 3600s campaign against the R3 target"
     );
+    assert!(
+        release_audit.contains(
+            "carried forward in the R4 review packet as historical supplemental evidence"
+        ),
+        "release audit must describe the 3600s campaign carry-forward into the R4 packet"
+    );
 
     for ignored in ["fuzz/corpus/", "fuzz/artifacts/"] {
         assert!(
