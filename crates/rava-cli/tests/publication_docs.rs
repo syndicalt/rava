@@ -965,6 +965,7 @@ fn external_review_outreach_tracker_records_reviewer_contact_without_audit_claim
         root.join("docs/security/external-review-kickoff-checklist-v0.md"),
     )?;
     let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+    let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
     let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
 
     for required in [
@@ -1003,7 +1004,14 @@ fn external_review_outreach_tracker_records_reviewer_contact_without_audit_claim
         );
     }
 
-    for docs in [request, register, checklist, packet, roadmap] {
+    for docs in [
+        request,
+        register,
+        checklist,
+        packet,
+        security_policy,
+        roadmap,
+    ] {
         assert!(
             docs.contains(outreach_path),
             "review docs must link external review outreach tracker: {outreach_path}"
