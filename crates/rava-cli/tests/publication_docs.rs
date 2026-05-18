@@ -1224,10 +1224,20 @@ fn v0_review_candidate_r2_records_current_review_readiness_target() -> Result<()
         );
     }
 
-    for docs in [cover, packet, checklist, register] {
+    for docs in [&cover, &packet, &checklist, &register] {
         assert!(
             docs.contains(notes_path),
             "external review docs must link R2 review candidate notes: {notes_path}"
+        );
+    }
+    for required in [
+        "## Current Review Target",
+        "v0-review-candidate-2026-05-18-r2",
+        "d611c6d1c2fd00d7a3d46a4031bdea65820fe78b",
+    ] {
+        assert!(
+            register.contains(required),
+            "review register must record current R2 target: {required}"
         );
     }
 
