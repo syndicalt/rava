@@ -22,6 +22,8 @@ Use `docs/security/external-review-cover-note-v0.md` as the reviewer-facing cove
 
 Use `docs/security/external-review-kickoff-checklist-v0.md` to execute the review kickoff, issue intake, remediation tracking, and optional longer fuzz campaign workflow.
 
+Use `docs/security/external-review-selection-v0.md` before outreach to evaluate reviewer fit, conflicts, report constraints, and non-claim boundaries.
+
 Use `docs/security/external-review-request-v0.md` when asking reviewers for quotes, availability, or engagement terms so the requested work stays scoped to the V0 draft security boundaries.
 
 Use `docs/security/external-review-closeout-template-v0.md` after a real review to summarize scope, findings, remediation evidence, residual risk, fuzz evidence, and permitted release wording.

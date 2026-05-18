@@ -11,6 +11,7 @@ Rava V0 is not production-ready security software. Outreach, quotes, availabilit
 - Candidate notes: `docs/release/v0-review-candidate-2026-05-18-r2.md`
 - Review packet: `docs/security/external-review-packet-v0.md`
 - Request artifact: `docs/security/external-review-request-v0.md`
+- Selection rubric: `docs/security/external-review-selection-v0.md`
 - Tracking issue: https://github.com/syndicalt/rava/issues/87
 
 Do not change the review target during outreach unless the reviewer explicitly agrees to evaluate the new commit or tag and the full verification baseline is rerun.
@@ -39,6 +40,7 @@ Only `complete` with findings, remediation decisions, and verification evidence 
 ## Intake Rules
 
 - Use `docs/security/external-review-request-v0.md` for outreach so scope, deliverables, non-goals, and non-claim boundaries stay consistent.
+- Use `docs/security/external-review-selection-v0.md` before scheduling work so reviewer fit, conflicts of interest, report disclosure constraints, and attribution constraints are recorded.
 - Confirm reviewers can evaluate the frozen target in `docs/security/external-review-packet-v0.md`.
 - Record constraints that affect public reporting, disclosure, remediation evidence, or attribution before the review starts.
 - Mirror findings into `docs/security/review-register-v0.md` with IDs such as `RAVA-REVIEW-001`.
