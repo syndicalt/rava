@@ -2205,6 +2205,8 @@ fn service_boundary_runbooks_define_caller_identity_and_distributed_rate_limits(
                 "rate_limit_scope",
                 "caller",
                 "process",
+                "must be greater than zero",
+                "fail closed at startup",
                 "not a distributed rate-limit system",
                 "fail closed",
                 "accepted and rejected requests",
