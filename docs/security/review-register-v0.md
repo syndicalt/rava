@@ -4,15 +4,15 @@ This register tracks external security review findings and remediation for the R
 
 No external security review has been completed yet. This file is a tracking artifact, not evidence that Rava has been externally audited or certified.
 
-The current review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r2.md`.
+The current review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r3.md`.
 
 The review execution plan is [review-plan-v0.md](review-plan-v0.md), whose repo-relative path is `docs/security/review-plan-v0.md`. Review kickoff should use [external-review-kickoff-checklist-v0.md](external-review-kickoff-checklist-v0.md), whose repo-relative path is `docs/security/external-review-kickoff-checklist-v0.md`. Reviewer selection should use [external-review-selection-v0.md](external-review-selection-v0.md), whose repo-relative path is `docs/security/external-review-selection-v0.md`. Reviewer outreach should be tracked in [external-review-outreach-v0.md](external-review-outreach-v0.md), whose repo-relative path is `docs/security/external-review-outreach-v0.md`. Reviewer engagement requests should use [external-review-request-v0.md](external-review-request-v0.md), whose repo-relative path is `docs/security/external-review-request-v0.md`. Review closeout should use [external-review-closeout-template-v0.md](external-review-closeout-template-v0.md), whose repo-relative path is `docs/security/external-review-closeout-template-v0.md`. Individual findings should use [review-findings/template-v0.md](review-findings/template-v0.md), whose repo-relative path is `docs/security/review-findings/template-v0.md`. GitHub issue tracking should use the repository issue form `.github/ISSUE_TEMPLATE/security-review-finding.yml`. Optional longer fuzz campaigns should be recorded using [fuzz-campaigns/template-v0.md](fuzz-campaigns/template-v0.md), whose repo-relative path is `docs/security/fuzz-campaigns/template-v0.md`.
 
 ## Current Review Target
 
-- Tag: `v0-review-candidate-2026-05-18-r2`
-- Commit: `d611c6d1c2fd00d7a3d46a4031bdea65820fe78b`
-- Candidate notes: `docs/release/v0-review-candidate-2026-05-18-r2.md`
+- Tag: `v0-review-candidate-2026-05-18-r3`
+- Commit: `416d8a9661e75bd66dd60bed72d9485d833f36e2`
+- Candidate notes: `docs/release/v0-review-candidate-2026-05-18-r3.md`
 - Tracking issue: https://github.com/syndicalt/rava/issues/87
 
 This target is frozen for reviewer handoff. It is not evidence that Rava has been externally reviewed, certified, or approved for production use.

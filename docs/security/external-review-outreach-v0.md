@@ -6,9 +6,9 @@ Rava V0 is not production-ready security software. Outreach, quotes, availabilit
 
 ## Current Review Target
 
-- Tag: `v0-review-candidate-2026-05-18-r2`
-- Commit: `d611c6d1c2fd00d7a3d46a4031bdea65820fe78b`
-- Candidate notes: `docs/release/v0-review-candidate-2026-05-18-r2.md`
+- Tag: `v0-review-candidate-2026-05-18-r3`
+- Commit: `416d8a9661e75bd66dd60bed72d9485d833f36e2`
+- Candidate notes: `docs/release/v0-review-candidate-2026-05-18-r3.md`
 - Review packet: `docs/security/external-review-packet-v0.md`
 - Request artifact: `docs/security/external-review-request-v0.md`
 - Selection rubric: `docs/security/external-review-selection-v0.md`

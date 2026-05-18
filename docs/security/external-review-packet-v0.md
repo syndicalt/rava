@@ -6,7 +6,9 @@ This packet is a handoff manifest for an external security review of the Rava V0
 
 Before sending this packet, record the immutable commit SHA or signed tag under review in `docs/security/review-register-v0.md`, release notes draft, and reviewer correspondence.
 
-The current review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r2.md`.
+The current review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r3.md`.
+
+The historical R2 review-candidate notes are `docs/release/v0-review-candidate-2026-05-18-r2.md`.
 
 The historical first review-candidate notes are `docs/release/v0-review-candidate-2026-05-18.md`.
 
@@ -139,6 +141,6 @@ That campaign ran on commit `becbff9e2326f5304822decf636aadcd0e37bb48` after the
 
 A bounded 3600-second `v0_wire_entrypoints` fuzz campaign is recorded at `docs/security/fuzz-campaigns/2026-05-18-v0-wire-entrypoints-3600s.md`.
 
-That campaign ran on commit `78857884bd7f6feafcf781cfdde2ce4b89fcb8db` after the R2 frozen review-candidate target was recorded. It does not change the frozen review target and should be treated as supplemental review evidence unless a reviewer explicitly agrees to evaluate the later commit.
+That campaign ran on commit `78857884bd7f6feafcf781cfdde2ce4b89fcb8db` after the R2 frozen review-candidate target was recorded. It is included as supplemental evidence in the R3 frozen review target.
 
 Like the shorter bounded campaigns, it is not a proof of security and not evidence that Rava has been externally reviewed.
