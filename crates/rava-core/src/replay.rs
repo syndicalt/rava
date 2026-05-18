@@ -1,5 +1,6 @@
 use std::collections::BTreeSet;
 use std::fs;
+use std::fs::{File, OpenOptions};
 use std::io;
 use std::path::{Path, PathBuf};
 
@@ -95,6 +96,42 @@ impl FileReplayRegistry {
         fs::rename(&temporary_path, &self.path)?;
         Ok(())
     }
+
+    fn lock_path(&self) -> PathBuf {
+        self.path.with_extension("lock")
+    }
+
+    fn acquire_lock(&self) -> Result<FileReplayRegistryLock, ReplayStoreError> {
+        let path = self.lock_path();
+        let file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)?;
+        Ok(FileReplayRegistryLock { path, file })
+    }
+
+    fn reload_from_disk(&mut self) -> Result<(), ReplayStoreError> {
+        if !self.path.exists() {
+            self.action_ids.clear();
+            return Ok(());
+        }
+        let bytes = fs::read(&self.path)?;
+        let document: ReplayDocument = serde_json::from_slice(&bytes)?;
+        self.action_ids = document.action_ids;
+        Ok(())
+    }
+}
+
+struct FileReplayRegistryLock {
+    path: PathBuf,
+    file: File,
+}
+
+impl Drop for FileReplayRegistryLock {
+    fn drop(&mut self) {
+        let _ = self.file.sync_all();
+        let _ = fs::remove_file(&self.path);
+    }
 }
 
 impl ReplayRegistry for FileReplayRegistry {
@@ -108,6 +145,8 @@ impl ReplayRegistry for FileReplayRegistry {
     }
 
     fn consume_action_id(&mut self, action_id: String) -> Result<bool, ReplayStoreError> {
+        let _lock = self.acquire_lock()?;
+        self.reload_from_disk()?;
         if self.action_ids.contains(&action_id) {
             return Ok(false);
         }
@@ -166,6 +205,21 @@ mod tests {
 
         assert!(matches!(result, Err(ReplayStoreError::Io(_))));
         assert!(!registry.has_seen("act_not_durable"));
+        Ok(())
+    }
+
+    #[test]
+    fn file_registry_consume_reloads_under_lock_for_stale_handles() -> Result<(), Box<dyn Error>> {
+        let path = std::env::temp_dir().join(format!("rava-replay-{}.json", Uuid::new_v4()));
+        let mut first = FileReplayRegistry::open(&path)?;
+        let mut stale_second = FileReplayRegistry::open(&path)?;
+
+        assert!(first.consume_action_id("act_race".to_owned())?);
+        assert!(!stale_second.consume_action_id("act_race".to_owned())?);
+
+        let reloaded = FileReplayRegistry::open(&path)?;
+        assert!(reloaded.has_seen("act_race"));
+        fs::remove_file(path)?;
         Ok(())
     }
 }
