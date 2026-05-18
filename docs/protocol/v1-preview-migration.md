@@ -40,9 +40,11 @@ Operators using the preview service should prefer all six controls for nontrivia
 - `accepted`;
 - `rejection`, with stable `code` and optional `subject`.
 
-`GET /healthz` now reports local configuration flags for request limits, replay/revocation stores, audit logging, auth, rate limiting, and metrics. Health output is local process state only; it does not prove key freshness, revocation freshness, replay coordination, monitoring coverage, or production readiness.
+`GET /healthz` now reports local configuration flags for request limits, replay/revocation stores, audit logging, auth, caller labels, rate limiting, and metrics. Health output is local process state only; it does not prove key freshness, revocation freshness, replay coordination, caller-to-policy mapping, monitoring coverage, or production readiness.
 
 `rava serve verify --metrics` enables `GET /metrics` with process-local Prometheus-style counters. This is metadata-only preview evidence, not managed monitoring, alerting, retention, cross-node aggregation, or incident response.
+
+`rava serve verify --caller-id <label>` records an explicit deployment caller label in audit entries and requires `--auth-token-env`. It is local audit correlation evidence, not tenant isolation or production caller identity.
 
 ## Audit Output
 

@@ -127,6 +127,28 @@ fn serve_verify_with_auth_token_env_accepts_matching_bearer_token() -> Result<()
 }
 
 #[test]
+fn serve_verify_rejects_caller_id_without_auth_token_env() -> Result<(), Box<dyn Error>> {
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "serve",
+            "verify",
+            "--addr",
+            "127.0.0.1:0",
+            "--caller-id",
+            "tenant-a",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("--caller-id requires --auth-token-env"),
+        "{stderr}"
+    );
+    Ok(())
+}
+
+#[test]
 fn serve_verify_with_rate_limit_rejects_excess_requests() -> Result<(), Box<dyn Error>> {
     let responses = run_server_raw_requests(
         &["--rate-limit-per-minute", "1"],
@@ -422,6 +444,58 @@ fn serve_verify_with_audit_log_appends_decision_metadata_without_raw_payload(
     Ok(())
 }
 
+#[test]
+fn serve_verify_with_caller_id_records_audit_correlation() -> Result<(), Box<dyn Error>> {
+    let audit_log = temp_file_path("rava-serve-caller-audit");
+    let audit_log_arg = audit_log.to_string_lossy().into_owned();
+    let body = accepted_request_body()?;
+    let actor_id = string_field(&body["action"], "actor")?.to_owned();
+    let request =
+        post_json_request_with_authorization("/verify/action", &body, "Bearer secret-token")?;
+
+    let response = run_server_raw_request_with_env(
+        &[
+            "--auth-token-env",
+            "RAVA_TEST_AUTH_TOKEN",
+            "--caller-id",
+            "tenant-a",
+            "--audit-log",
+            &audit_log_arg,
+        ],
+        &[("RAVA_TEST_AUTH_TOKEN", "secret-token")],
+        &request,
+    )?;
+
+    assert_accepted_response(&response)?;
+    let audit_lines = std::fs::read_to_string(&audit_log)?;
+    let entries = audit_lines
+        .lines()
+        .map(serde_json::from_str)
+        .collect::<Result<Vec<serde_json::Value>, _>>()?;
+    assert_eq!(entries.len(), 1);
+    assert_eq!(
+        entries[0]
+            .get("caller_id")
+            .and_then(serde_json::Value::as_str),
+        Some("tenant-a")
+    );
+    assert_eq!(
+        entries[0]
+            .get("actor_id")
+            .and_then(serde_json::Value::as_str),
+        Some(actor_id.as_str())
+    );
+    assert_ne!(
+        entries[0]
+            .get("caller_id")
+            .and_then(serde_json::Value::as_str),
+        Some(actor_id.as_str())
+    );
+
+    std::fs::remove_file(audit_log)?;
+    Ok(())
+}
+
 #[cfg(unix)]
 #[test]
 fn serve_verify_with_audit_log_creates_owner_only_file() -> Result<(), Box<dyn Error>> {
@@ -696,6 +770,18 @@ fn post_json_request(path: &str, body: &serde_json::Value) -> Result<String, Box
     let body = serde_json::to_string(body)?;
     Ok(format!(
         "POST {path} HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+        body.len()
+    ))
+}
+
+fn post_json_request_with_authorization(
+    path: &str,
+    body: &serde_json::Value,
+    authorization: &str,
+) -> Result<String, Box<dyn Error>> {
+    let body = serde_json::to_string(body)?;
+    Ok(format!(
+        "POST {path} HTTP/1.1\r\nHost: localhost\r\nAuthorization: {authorization}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
         body.len()
     ))
 }

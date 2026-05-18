@@ -253,7 +253,7 @@ Start the local preview verifier:
 
 ```bash
 RAVA_VERIFIER_TOKEN="$(openssl rand -hex 32)" \
-rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --rate-limit-per-minute 120 --metrics
+rava serve verify --addr 127.0.0.1:8787 --max-request-bytes 1048576 --replay-store replay.json --revocation-store revocations.json --audit-log audit.ndjson --auth-token-env RAVA_VERIFIER_TOKEN --caller-id local-operator --rate-limit-per-minute 120 --metrics
 ```
 
 It exposes `POST /verify/action` for JSON requests containing an action, capability chain, actor public key, issuer public key map, and `now_unix`.
@@ -264,6 +264,7 @@ It also exposes `GET /healthz` with the service name, status, and configured req
 `--require-fresh-revocations` requires the local revocation snapshot to include `fresh_until_unix` greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution.
 `--audit-log` appends newline-delimited JSON decision metadata without raw action intent, resource, constraints, capability envelopes, or signatures. On Unix, local audit log files are created owner-only, and group/world-accessible existing logs are rejected.
 `--auth-token-env` requires `Authorization: Bearer <token>` on every request and reads the token from an environment variable so it is not passed on the command line.
+`--caller-id` records an explicit deployment-configured caller label in audit entries and requires `--auth-token-env`; it is not inferred from the signed action actor and does not implement production caller-to-policy mapping.
 `--rate-limit-per-minute` applies a local per-process request limit.
 `--metrics` enables `GET /metrics` with Prometheus-style process-local counters for HTTP statuses, verifier decisions, rejection codes, and audit-write failures without raw action payloads, capability envelopes, signatures, keys, credentials, or tokens.
 

@@ -47,6 +47,9 @@ struct VerifyActionRejection {
 }
 
 pub fn run_serve_verify(args: ServeVerifyArgs) -> Result<(), Box<dyn Error>> {
+    if args.caller_id.is_some() && args.auth_token_env.is_none() {
+        return Err("--caller-id requires --auth-token-env".into());
+    }
     let listener = TcpListener::bind(&args.addr)?;
     let mut rate_limit = args.rate_limit_per_minute.map(RateLimitState::new);
     let mut metrics = MetricsState::default();
@@ -133,6 +136,7 @@ fn handle_connection(
                 "revocation_store_configured": args.revocation_store.is_some(),
                 "audit_log_configured": args.audit_log.is_some(),
                 "auth_required": args.auth_token_env.is_some(),
+                "caller_id_configured": args.caller_id.is_some(),
                 "rate_limit_per_minute": args.rate_limit_per_minute,
                 "metrics_configured": args.metrics,
             }),
@@ -162,7 +166,9 @@ fn handle_connection(
         verify_action_with_optional_replay(&request, &revocations, args, now)?
     };
     if let Some(audit_log) = &args.audit_log {
-        if let Err(error) = append_audit_log(audit_log, &request, &result, now) {
+        if let Err(error) =
+            append_audit_log(audit_log, &request, &result, now, args.caller_id.as_deref())
+        {
             metrics.audit_write_failures += 1;
             metrics.record_http(route, "500");
             return Err(error);
@@ -450,6 +456,7 @@ struct AuditLogEntry<'a> {
     service: &'static str,
     action_id: &'a str,
     actor_id: &'a str,
+    caller_id: Option<&'a str>,
     controller_id: &'a str,
     capability_id: &'a str,
     accepted: bool,
@@ -468,6 +475,7 @@ fn append_audit_log(
     request: &VerifyActionRequest,
     result: &VerificationResult,
     now: OffsetDateTime,
+    caller_id: Option<&str>,
 ) -> Result<(), Box<dyn Error>> {
     let rejection = match result {
         VerificationResult::Accepted => None,
@@ -480,6 +488,7 @@ fn append_audit_log(
         service: SERVICE_NAME,
         action_id: &request.action.id,
         actor_id: &request.action.actor,
+        caller_id,
         controller_id: &request.action.controller,
         capability_id: &request.action.capability_id,
         accepted: result == &VerificationResult::Accepted,
