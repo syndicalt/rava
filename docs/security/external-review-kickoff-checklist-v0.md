@@ -82,6 +82,7 @@ Fuzzing does not prove security, does not replace external review, and does not 
 - Update `docs/security/review-register-v0.md` with every external finding, state transition, remediation PR, and verification note.
 - Keep GitHub issues, milestone state, and register entries consistent.
 - Confirm unresolved findings are either out of scope for V0 or accepted risks with explicit non-production language.
+- Use `docs/security/external-review-closeout-template-v0.md` to record reviewed target, scope, findings, remediation evidence, residual risk, fuzz evidence, and release claim boundaries after a real review completes.
 - Confirm there is `No production-ready or externally audited claim` in the review closeout.
 - Confirm no public docs contain a `Rava is production-ready` claim, a `Rava has been externally audited` claim, or any equivalent production-ready or externally audited claim unless a real review and production readiness audit have happened.
 - Record final review evidence in release notes before any release announcement.

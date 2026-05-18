@@ -952,6 +952,65 @@ fn external_review_request_scopes_reviewer_engagement_without_audit_claims(
 }
 
 #[test]
+fn external_review_closeout_template_requires_findings_and_residual_risk_evidence(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let closeout_path = "docs/security/external-review-closeout-template-v0.md";
+    let closeout = std::fs::read_to_string(root.join(closeout_path))?;
+    let plan = std::fs::read_to_string(root.join("docs/security/review-plan-v0.md"))?;
+    let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
+    let checklist = std::fs::read_to_string(
+        root.join("docs/security/external-review-kickoff-checklist-v0.md"),
+    )?;
+    let request =
+        std::fs::read_to_string(root.join("docs/security/external-review-request-v0.md"))?;
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
+
+    for required in [
+        "# Rava V0 External Review Closeout Template",
+        "not evidence that Rava has been externally reviewed",
+        "## Reviewed Target",
+        "frozen commit SHA or signed tag",
+        "## Reviewer and Scope",
+        "## Finding Summary",
+        "RAVA-REVIEW-001",
+        "reported",
+        "accepted",
+        "remediated",
+        "verified",
+        "accepted-risk",
+        "out-of-scope",
+        "## Remediation Evidence",
+        "pull request",
+        "regression tests",
+        "verification commands",
+        "reviewer verification",
+        "## Residual Risk",
+        "accepted-risk rationale",
+        "production requirements",
+        "## Fuzz Evidence",
+        "docs/security/fuzz-campaigns/template-v0.md",
+        "## Release Claim Boundary",
+        "No production-ready or externally audited claim",
+        "not production-ready security software",
+    ] {
+        assert!(
+            closeout.contains(required),
+            "external review closeout template missing: {required}"
+        );
+    }
+
+    for docs in [plan, register, checklist, request, roadmap] {
+        assert!(
+            docs.contains(closeout_path),
+            "review docs must link external review closeout template: {closeout_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn security_review_finding_template_requires_remediation_evidence() -> Result<(), Box<dyn Error>> {
     let root = repository_root();
     let template_path = "docs/security/review-findings/template-v0.md";
