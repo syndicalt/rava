@@ -30,6 +30,8 @@ Out of scope for V0 review:
 - hosted verifier operations;
 - model-behavior proofs, reputation, or blockchain anchoring.
 
+Production deployment requirements outside V0 review scope are documented in [../operations/production-trust-v0.md](../operations/production-trust-v0.md).
+
 ## High-Value Review Questions
 
 - Does canonicalization produce one stable byte string for each signed payload?

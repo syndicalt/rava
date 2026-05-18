@@ -285,6 +285,7 @@ fn security_review_guide_maps_review_scope_to_evidence() -> Result<(), Box<dyn E
         "distributed rate limiting",
         "managed audit storage",
         "production monitoring",
+        "../operations/production-trust-v0.md",
         "## Evidence Map",
         "crates/rava-core/src/verifier.rs",
         "docs/security/threat-model-v0.md",
