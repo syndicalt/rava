@@ -30,6 +30,14 @@ git diff -- examples test-vectors
 
 Unexpected fixture or test-vector drift must be investigated before tagging.
 
+## Optional Fuzz Campaign
+
+Long-running fuzz campaigns are not part of the default gate. If a fuzz campaign is run for this release candidate, record the command, corpus, duration, and any minimized crash input in the release notes or review register.
+
+```bash
+cargo fuzz run v0_wire_entrypoints
+```
+
 ## Review Artifacts
 
 Before publishing a V0 draft release candidate, update or confirm:
