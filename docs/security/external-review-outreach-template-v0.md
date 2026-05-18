@@ -22,8 +22,8 @@ I am seeking external security review for Rava V0, a draft Rust reference implem
 
 The current frozen review target is:
 
-- Tag: `v0-review-candidate-2026-05-18-r3`
-- Commit: `416d8a9661e75bd66dd60bed72d9485d833f36e2`
+- Tag: `v0-review-candidate-2026-05-18-r4`
+- Commit: `b1b65fb6263b4f9143bdac8a5b46fbce6fdc532d`
 - Tracking issue: https://github.com/syndicalt/rava/issues/87
 
 Please start with:

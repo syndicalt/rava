@@ -24,8 +24,8 @@ Use `docs/security/external-review-outreach-v0.md` for the public outreach state
 ## Scope Decision
 
 - Frozen target accepted: yes or no
-- Frozen target: `v0-review-candidate-2026-05-18-r3`
-- Frozen target commit: `416d8a9661e75bd66dd60bed72d9485d833f36e2`
+- Frozen target: `v0-review-candidate-2026-05-18-r4`
+- Frozen target commit: `b1b65fb6263b4f9143bdac8a5b46fbce6fdc532d`
 - Review packet: `docs/security/external-review-packet-v0.md`
 - Reviewer can evaluate the frozen target without a target change: yes or no
 - Target change requested: yes or no

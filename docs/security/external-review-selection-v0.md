@@ -58,7 +58,7 @@ No production-ready or externally audited claim may be made from reviewer select
 
 Permitted wording before review completion is limited to process status, for example:
 
-- "Rava is evaluating external reviewers for the R3 V0 draft target."
+- "Rava is evaluating external reviewers for the R4 V0 draft target."
 - "Reviewer selection criteria are recorded in `docs/security/external-review-selection-v0.md`."
 
 Forbidden wording includes broad claims such as:
