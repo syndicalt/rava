@@ -953,6 +953,67 @@ fn external_review_request_scopes_reviewer_engagement_without_audit_claims(
 }
 
 #[test]
+fn external_review_outreach_tracker_records_reviewer_contact_without_audit_claims(
+) -> Result<(), Box<dyn Error>> {
+    let root = repository_root();
+    let outreach_path = "docs/security/external-review-outreach-v0.md";
+    let outreach = std::fs::read_to_string(root.join(outreach_path))?;
+    let request =
+        std::fs::read_to_string(root.join("docs/security/external-review-request-v0.md"))?;
+    let register = std::fs::read_to_string(root.join("docs/security/review-register-v0.md"))?;
+    let checklist = std::fs::read_to_string(
+        root.join("docs/security/external-review-kickoff-checklist-v0.md"),
+    )?;
+    let packet = std::fs::read_to_string(root.join("docs/security/external-review-packet-v0.md"))?;
+    let roadmap = std::fs::read_to_string(root.join("docs/roadmap.md"))?;
+
+    for required in [
+        "# Rava V0 External Review Outreach Tracker",
+        "not evidence that Rava has been externally reviewed",
+        "not production-ready security software",
+        "## Current Review Target",
+        "v0-review-candidate-2026-05-18-r2",
+        "d611c6d1c2fd00d7a3d46a4031bdea65820fe78b",
+        "## Outreach States",
+        "candidate",
+        "contacted",
+        "declined",
+        "scoping",
+        "scheduled",
+        "in-review",
+        "complete",
+        "cancelled",
+        "## Outreach Table",
+        "Reviewer or firm",
+        "State",
+        "Contact date",
+        "Scope alignment",
+        "Report constraints",
+        "Next action",
+        "## Intake Rules",
+        "docs/security/external-review-request-v0.md",
+        "docs/security/review-register-v0.md",
+        "docs/security/review-findings/template-v0.md",
+        "docs/security/external-review-closeout-template-v0.md",
+        "No production-ready or externally audited claim",
+    ] {
+        assert!(
+            outreach.contains(required),
+            "external review outreach tracker missing: {required}"
+        );
+    }
+
+    for docs in [request, register, checklist, packet, roadmap] {
+        assert!(
+            docs.contains(outreach_path),
+            "review docs must link external review outreach tracker: {outreach_path}"
+        );
+    }
+
+    Ok(())
+}
+
+#[test]
 fn external_review_closeout_template_requires_findings_and_residual_risk_evidence(
 ) -> Result<(), Box<dyn Error>> {
     let root = repository_root();

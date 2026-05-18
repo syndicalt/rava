@@ -4,6 +4,8 @@ This request scopes an external security review engagement for the Rava V0 draft
 
 Rava V0 is not production-ready security software. The purpose of this request is to obtain independent review findings and remediation guidance without broadening V0 guarantees.
 
+Reviewer outreach status should be tracked in `docs/security/external-review-outreach-v0.md`.
+
 ## Engagement Goal
 
 Review whether the Rava V0 draft reference implementation fails closed for attacker-controlled protocol inputs and whether the documentation clearly separates implemented guarantees from caller assumptions, production requirements, and non-goals.
