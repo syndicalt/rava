@@ -23,11 +23,14 @@ The `rava serve verify` preview service has gained optional service-boundary con
 - `--auth-token-env`;
 - `--rate-limit-per-minute`;
 - `--replay-store`;
+- `--require-replay-store`;
 - `--revocation-store`;
 - `--require-fresh-revocations`;
 - `--audit-log`.
 
-Operators using the preview service should prefer all seven controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
+Operators using the preview service should prefer all eight controls for nontrivial local integration testing. The bearer token is read from an environment variable so token material is not exposed in command arguments.
+
+`rava serve verify --require-replay-store` requires `--replay-store` at startup. This is local preview configuration hygiene so controlled deployments cannot accidentally omit local one-time-use enforcement; it is not distributed replay coordination.
 
 `rava verify action` also supports `--trust-bundle` for a local `rava-static-trust-bundle-v0` signer-ID to public-key map. `--require-fresh-trust-bundle` requires `fresh_until_unix` greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution. This is static caller trust-policy input for controlled deployments; it does not add dynamic resolver selection, cache invalidation, rotation, rollback, or outage guarantees.
 
@@ -43,7 +46,7 @@ Operators using the preview service should prefer all seven controls for nontriv
 - `accepted`;
 - `rejection`, with stable `code` and optional `subject`.
 
-`GET /healthz` now reports local configuration flags for request limits, replay/revocation stores, audit logging, auth, caller labels, rate limiting, and metrics. Health output is local process state only; it does not prove key freshness, revocation freshness, replay coordination, caller-to-policy mapping, monitoring coverage, or production readiness.
+`GET /healthz` now reports local configuration flags for request limits, replay/revocation stores, replay/revocation freshness requirements, audit logging, auth, caller labels, rate limiting, and metrics. Health output is local process state only; it does not prove key freshness, revocation freshness, replay coordination, caller-to-policy mapping, monitoring coverage, or production readiness.
 
 `rava serve verify --metrics` enables `GET /metrics` with process-local Prometheus-style counters. This is metadata-only preview evidence, not managed monitoring, alerting, retention, cross-node aggregation, or incident response.
 

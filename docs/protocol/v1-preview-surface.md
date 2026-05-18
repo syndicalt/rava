@@ -26,6 +26,7 @@ The preview verifier service supports these service-boundary options:
 - `--addr`
 - `--max-request-bytes`
 - `--replay-store`
+- `--require-replay-store`
 - `--revocation-store`
 - `--audit-log`
 - `--auth-token-env`
@@ -34,6 +35,8 @@ The preview verifier service supports these service-boundary options:
 - `--metrics`
 
 `--auth-token-env`, `--caller-id`, and `--rate-limit-per-minute` are local preview controls. `--caller-id` requires `--auth-token-env`, uses an audit-safe label syntax, and records an explicit deployment label in local audit entries; it is not inferred from the action actor or from request headers. `--rate-limit-per-minute` must be greater than zero when configured. These controls do not replace production caller identity, distributed rate limiting, or network-edge access control.
+
+`rava serve verify --require-replay-store` requires `--replay-store` at startup. This is local preview configuration hygiene so controlled deployments cannot accidentally omit local one-time-use enforcement; it is not distributed replay coordination.
 
 `rava verify action` supports `--trust-bundle` for a local `rava-static-trust-bundle-v0` signer-ID to public-key map. `--require-fresh-trust-bundle` requires that local bundle to include `fresh_until_unix` greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution. This is explicit static trust-policy input; it does not add dynamic key discovery, resolver selection, cache invalidation, rotation, rollback, or outage guarantees.
 
@@ -88,6 +91,7 @@ authorization decisions:
 - `status`;
 - `max_request_bytes`;
 - `replay_store_configured`;
+- `require_replay_store`;
 - `revocation_store_configured`;
 - `require_fresh_revocations`;
 - `audit_log_configured`;

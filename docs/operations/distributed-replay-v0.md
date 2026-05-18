@@ -10,6 +10,8 @@ The local file-backed replay registry serializes consume operations with a lock 
 
 This local hardening is useful for controlled single-host or shared-filesystem tests. It is not a distributed replay system, cross-node lock service, cross-region consistency model, outage policy, or managed replay audit trail.
 
+The preview service also supports `--require-replay-store`, which fails closed at startup unless `--replay-store` is configured. That guardrail helps controlled preview deployments avoid accidentally running without local one-time-use enforcement, but it does not add a shared replay backend, distributed locking, durability guarantees, cross-node consistency, outage policy, or audit evidence.
+
 ## Required Properties
 
 A production replay system should provide:
