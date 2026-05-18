@@ -182,6 +182,7 @@ rava verify action \
   --now-unix 1650000000 \
   --replay-store replay.json \
   --revocation-store revocations.json \
+  --require-fresh-revocations \
   --receipt-out receipt.json \
   --receipt-key verifier-key.json
 ```
@@ -260,6 +261,7 @@ It also exposes `GET /healthz` with the service name, status, and configured req
 `--max-request-bytes` rejects oversized request bodies before verifier parsing.
 `--replay-store` records accepted action IDs in a local file and rejects later replays.
 `--revocation-store` loads a local revoked-ID snapshot for signer and capability checks on each request.
+`--require-fresh-revocations` requires the local revocation snapshot to include `fresh_until_unix` greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution.
 `--audit-log` appends newline-delimited JSON decision metadata without raw action intent, resource, constraints, capability envelopes, or signatures.
 `--auth-token-env` requires `Authorization: Bearer <token>` on every request and reads the token from an environment variable so it is not passed on the command line.
 `--rate-limit-per-minute` applies a local per-process request limit.

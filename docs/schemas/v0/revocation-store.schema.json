@@ -9,6 +9,9 @@
       "type": "array",
       "items": { "type": "string" },
       "uniqueItems": true
+    },
+    "fresh_until_unix": {
+      "type": "integer"
     }
   }
 }

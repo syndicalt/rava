@@ -179,6 +179,9 @@ pub struct VerifyActionArgs {
     #[arg(long = "revocation-store")]
     pub revocation_store: Option<PathBuf>,
 
+    #[arg(long = "require-fresh-revocations")]
+    pub require_fresh_revocations: bool,
+
     #[arg(long = "receipt-out")]
     pub receipt_out: Option<PathBuf>,
 

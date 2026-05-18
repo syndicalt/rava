@@ -46,6 +46,9 @@ pub fn run_verify_action(args: VerifyActionArgs) -> Result<(), Box<dyn Error>> {
 
     let result = if let Some(revocation_store) = &args.revocation_store {
         let revocations = FileRevocationRegistry::open(revocation_store)?;
+        if args.require_fresh_revocations {
+            require_fresh_revocation_snapshot(&revocations, now.unix_timestamp())?;
+        }
         verify_action_with_registries(
             &action,
             &capability_chain,
@@ -56,6 +59,13 @@ pub fn run_verify_action(args: VerifyActionArgs) -> Result<(), Box<dyn Error>> {
             now,
         )?
     } else {
+        if args.require_fresh_revocations {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "require-fresh-revocations requires revocation-store",
+            )
+            .into());
+        }
         let revocations = InMemoryRevocationRegistry::default();
         verify_action_with_registries(
             &action,
@@ -153,6 +163,22 @@ fn verify_action_with_registries<R: RevocationRegistry>(
     };
 
     Ok(result)
+}
+
+fn require_fresh_revocation_snapshot(
+    revocations: &FileRevocationRegistry,
+    now_unix: i64,
+) -> Result<(), Box<dyn Error>> {
+    let fresh_until_unix = revocations.fresh_until_unix().ok_or_else(|| {
+        io::Error::new(
+            io::ErrorKind::InvalidData,
+            "revocation store missing fresh_until_unix",
+        )
+    })?;
+    if fresh_until_unix <= now_unix {
+        return Err(io::Error::new(io::ErrorKind::InvalidData, "revocation store is stale").into());
+    }
+    Ok(())
 }
 
 fn parse_issuer_keys(entries: &[String]) -> Result<BTreeMap<String, String>, Box<dyn Error>> {

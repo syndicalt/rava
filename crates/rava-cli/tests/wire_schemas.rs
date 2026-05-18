@@ -59,6 +59,15 @@ fn v0_wire_schemas_are_documented_for_core_protocol_objects() -> Result<(), Box<
                 "{file_name} does not constrain expected version {expected_version}"
             );
         }
+        if file_name == "revocation-store.schema.json" {
+            assert!(
+                schema
+                    .pointer("/properties/fresh_until_unix/type")
+                    .and_then(serde_json::Value::as_str)
+                    == Some("integer"),
+                "revocation schema must document optional freshness deadline"
+            );
+        }
     }
 
     Ok(())

@@ -319,6 +319,98 @@ fn verify_action_files_with_revocation_store_rejects_revoked_capability(
 }
 
 #[test]
+fn verify_action_requires_fresh_revocation_snapshot_when_configured() -> Result<(), Box<dyn Error>>
+{
+    let scenario = Scenario::new(750)?;
+    let files = scenario.write_files("revocation-fresh")?;
+    let revocation_path = files.directory.join("revocations.json");
+    fs::write(
+        &revocation_path,
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "revoked_ids": [],
+            "fresh_until_unix": 1650000001
+        }))?,
+    )?;
+
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "verify",
+            "action",
+            "--action",
+            files.action_path.to_str().ok_or("invalid action path")?,
+            "--capability-chain",
+            files.chain_path.to_str().ok_or("invalid chain path")?,
+            "--actor-key",
+            &scenario.booking_agent.public_key_hex,
+            "--issuer-key",
+            &format!("{}={}", scenario.human.id, scenario.human.public_key_hex),
+            "--issuer-key",
+            &format!(
+                "{}={}",
+                scenario.personal_agent.id, scenario.personal_agent.public_key_hex
+            ),
+            "--now-unix",
+            "1650000000",
+            "--revocation-store",
+            revocation_path.to_str().ok_or("invalid revocation path")?,
+            "--require-fresh-revocations",
+        ])
+        .output()?;
+
+    assert!(
+        output.status.success(),
+        "fresh revocation snapshot should allow verification: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(String::from_utf8(output.stdout)?.contains("Rava verification accepted: true\n"));
+    Ok(())
+}
+
+#[test]
+fn verify_action_fails_closed_for_stale_required_revocation_snapshot() -> Result<(), Box<dyn Error>>
+{
+    let scenario = Scenario::new(750)?;
+    let files = scenario.write_files("revocation-stale")?;
+    let revocation_path = files.directory.join("revocations.json");
+    fs::write(
+        &revocation_path,
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "revoked_ids": [],
+            "fresh_until_unix": 1650000000
+        }))?,
+    )?;
+
+    let output = Command::new(env!("CARGO_BIN_EXE_rava"))
+        .args([
+            "verify",
+            "action",
+            "--action",
+            files.action_path.to_str().ok_or("invalid action path")?,
+            "--capability-chain",
+            files.chain_path.to_str().ok_or("invalid chain path")?,
+            "--actor-key",
+            &scenario.booking_agent.public_key_hex,
+            "--issuer-key",
+            &format!("{}={}", scenario.human.id, scenario.human.public_key_hex),
+            "--issuer-key",
+            &format!(
+                "{}={}",
+                scenario.personal_agent.id, scenario.personal_agent.public_key_hex
+            ),
+            "--now-unix",
+            "1650000000",
+            "--revocation-store",
+            revocation_path.to_str().ok_or("invalid revocation path")?,
+            "--require-fresh-revocations",
+        ])
+        .output()?;
+
+    assert!(!output.status.success());
+    assert!(String::from_utf8(output.stderr)?.contains("rava:"));
+    Ok(())
+}
+
+#[test]
 fn verify_action_files_with_corrupt_replay_store_fails_closed() -> Result<(), Box<dyn Error>> {
     let scenario = Scenario::new(750)?;
     let files = scenario.write_files("corrupt-replay")?;
