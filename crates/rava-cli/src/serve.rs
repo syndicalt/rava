@@ -288,10 +288,39 @@ fn append_audit_log(
         rejection,
         verified_at_unix: now.unix_timestamp(),
     };
-    let mut file = OpenOptions::new().create(true).append(true).open(path)?;
+    let mut file = open_audit_log(path)?;
     serde_json::to_writer(&mut file, &entry)?;
     writeln!(file)?;
+    file.flush()?;
+    file.sync_data()?;
     Ok(())
+}
+
+#[cfg(unix)]
+fn open_audit_log(path: &Path) -> Result<std::fs::File, Box<dyn Error>> {
+    use std::io;
+    use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+
+    let file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .mode(0o600)
+        .custom_flags(libc::O_NOFOLLOW)
+        .open(path)?;
+    let mode = file.metadata()?.permissions().mode();
+    if mode & 0o177 != 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "audit log file must be owner-only on Unix",
+        )
+        .into());
+    }
+    Ok(file)
+}
+
+#[cfg(not(unix))]
+fn open_audit_log(path: &Path) -> Result<std::fs::File, Box<dyn Error>> {
+    Ok(OpenOptions::new().create(true).append(true).open(path)?)
 }
 
 struct HttpRequest {
