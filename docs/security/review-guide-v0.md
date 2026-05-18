@@ -23,6 +23,10 @@ Out of scope for V0 review:
 - DID resolution and public-key discovery;
 - distributed replay coordination;
 - distributed revocation freshness;
+- caller identity;
+- distributed rate limiting;
+- managed audit storage;
+- production monitoring;
 - hosted verifier operations;
 - model-behavior proofs, reputation, or blockchain anchoring.
 
