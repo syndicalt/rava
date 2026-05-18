@@ -22,6 +22,8 @@ Current allowed path is zero-budget OSS/security-community review only.
 
 No real outreach is authorized yet. Before any message is sent, maintainers must confirm the frozen R4 target is still the intended handoff target and that the selected public or private channel is acceptable for a public draft project.
 
+Maintainer decision on 2026-05-18: keep outreach parked until a specific channel or contact is selected. This parked state is not reviewer contact, scope acceptance, review evidence, or production readiness evidence.
+
 Do not set any reviewer, firm, advisor, OSS program, or community channel to `contacted` until a message is actually sent.
 
 ## Outreach States

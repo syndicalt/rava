@@ -1194,6 +1194,8 @@ fn external_review_outreach_tracker_records_reviewer_contact_without_audit_claim
         "## Maintainer Authorization Status",
         "Current allowed path is zero-budget OSS/security-community review only",
         "No real outreach is authorized yet",
+        "Maintainer decision on 2026-05-18: keep outreach parked until a specific channel or contact is selected.",
+        "This parked state is not reviewer contact, scope acceptance, review evidence, or production readiness evidence.",
         "Do not set any reviewer, firm, advisor, OSS program, or community channel to `contacted` until a message is actually sent",
         "## Outreach States",
         "candidate",
