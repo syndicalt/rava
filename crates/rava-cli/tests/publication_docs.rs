@@ -1683,6 +1683,49 @@ fn ci_workflow_runs_the_documented_local_gate() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[test]
+fn codeowners_marks_security_sensitive_protocol_surfaces_for_review() -> Result<(), Box<dyn Error>>
+{
+    let root = repository_root();
+    let codeowners = std::fs::read_to_string(root.join(".github/CODEOWNERS"))?;
+    let security_policy = std::fs::read_to_string(root.join("SECURITY.md"))?;
+    let review_plan = std::fs::read_to_string(root.join("docs/security/review-plan-v0.md"))?;
+
+    for required in [
+        "# Rava security-sensitive review ownership",
+        "@syndicalt",
+        "/crates/rava-core/",
+        "/crates/rava-cli/src/",
+        "/crates/rava-wasm/",
+        "/packages/rava-wasm-js/",
+        "/fuzz/",
+        "/docs/protocol/",
+        "/docs/security/",
+        "/docs/operations/",
+        "/docs/release/",
+        "/test-vectors/",
+        "/examples/flight-booking/",
+        "/.github/workflows/",
+        "/.github/ISSUE_TEMPLATE/security-review-finding.yml",
+        "/SECURITY.md",
+        "/README.md",
+    ] {
+        assert!(
+            codeowners.contains(required),
+            "CODEOWNERS missing security-sensitive surface: {required}"
+        );
+    }
+
+    for docs in [security_policy, review_plan] {
+        assert!(
+            docs.contains(".github/CODEOWNERS"),
+            "security intake docs must link CODEOWNERS review ownership"
+        );
+    }
+
+    Ok(())
+}
+
 fn repository_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }

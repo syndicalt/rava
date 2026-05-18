@@ -1,0 +1,27 @@
+# Rava security-sensitive review ownership
+
+# Protocol core and trusted implementation surfaces.
+/crates/rava-core/ @syndicalt
+/crates/rava-cli/src/ @syndicalt
+/crates/rava-wasm/ @syndicalt
+/packages/rava-wasm-js/ @syndicalt
+/fuzz/ @syndicalt
+
+# Protocol, security, release, and production-readiness documentation.
+/docs/protocol/ @syndicalt
+/docs/security/ @syndicalt
+/docs/operations/ @syndicalt
+/docs/release/ @syndicalt
+
+# Compatibility fixtures and examples used by wrappers and reviewers.
+/test-vectors/ @syndicalt
+/examples/flight-booking/ @syndicalt
+
+# Repository automation and security intake.
+/.github/workflows/ @syndicalt
+/.github/ISSUE_TEMPLATE/security-review-finding.yml @syndicalt
+/.github/CODEOWNERS @syndicalt
+
+# Top-level publication and security posture.
+/SECURITY.md @syndicalt
+/README.md @syndicalt

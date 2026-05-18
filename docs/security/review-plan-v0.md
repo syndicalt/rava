@@ -8,6 +8,8 @@ Record the exact commit SHA under review in the review register and release note
 
 The target should be a clean commit on `master` with the full local gate passing.
 
+Security-sensitive paths are mapped in `.github/CODEOWNERS`; changes to protocol core, verifier service, wrappers, review docs, release docs, workflows, examples, and test vectors should preserve explicit review ownership.
+
 ## Reviewer Packet
 
 The concrete handoff manifest is `docs/security/external-review-packet-v0.md`.
