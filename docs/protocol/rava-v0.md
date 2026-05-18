@@ -236,6 +236,8 @@ V0 includes in-memory and local file-backed revocation registries. Revocation is
 
 The file-backed registry stores revoked IDs in deterministic JSON and rejects invalid JSON rather than silently ignoring corrupt state.
 
+Local file-backed revocation snapshots may include `fresh_until_unix`. `rava verify action --require-fresh-revocations` requires that field to be present and greater than verifier `now_unix`; missing or stale freshness fails closed before verifier execution.
+
 Future versions should define network distribution, freshness, and consistency rules for shared revocation state.
 
 V0 assumes callers provide a revocation registry that is sufficiently fresh for their risk tolerance. Stale registry input is treated as caller-provided state, not as a freshness guarantee made by the core verifier.
@@ -245,6 +247,7 @@ Revocation registry contract:
 - a revocation registry answers whether a signer or capability ID is revoked in the caller-provided snapshot;
 - Registry lookup failures must fail closed before verification claims acceptance;
 - file-backed registry parse failures must fail closed;
+- required file-backed freshness failures must fail closed before verifier execution;
 - Freshness and distribution are caller responsibilities in V0;
 - V0 local file registries are reference implementations, not a distributed revocation protocol.
 

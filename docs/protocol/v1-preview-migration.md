@@ -30,6 +30,8 @@ Operators using the preview service should prefer all six controls for nontrivia
 
 `rava verify action` also supports `--trust-bundle` for a local `rava-static-trust-bundle-v0` signer-ID to public-key map. This is static caller trust-policy input for controlled deployments; it does not add dynamic resolver freshness, cache invalidation, rotation, rollback, or outage guarantees.
 
+`rava verify action --require-fresh-revocations` requires a local `--revocation-store` snapshot to include `fresh_until_unix` greater than verifier `now_unix`. Missing or stale freshness fails closed before verifier execution. This is local snapshot freshness checking, not distributed revocation publication or outage handling.
+
 ## HTTP Service Shape
 
 `POST /verify/action` still wraps Rust verification and returns:

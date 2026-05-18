@@ -45,11 +45,13 @@ pub enum RevocationStoreError {
 pub struct FileRevocationRegistry {
     path: PathBuf,
     revoked_ids: BTreeSet<String>,
+    fresh_until_unix: Option<i64>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 struct RevocationDocument {
     revoked_ids: BTreeSet<String>,
+    fresh_until_unix: Option<i64>,
 }
 
 impl FileRevocationRegistry {
@@ -59,6 +61,7 @@ impl FileRevocationRegistry {
             return Ok(Self {
                 path,
                 revoked_ids: BTreeSet::new(),
+                fresh_until_unix: None,
             });
         }
 
@@ -68,7 +71,12 @@ impl FileRevocationRegistry {
         Ok(Self {
             path,
             revoked_ids: document.revoked_ids,
+            fresh_until_unix: document.fresh_until_unix,
         })
+    }
+
+    pub fn fresh_until_unix(&self) -> Option<i64> {
+        self.fresh_until_unix
     }
 
     pub fn revoke_and_persist(&mut self, id: String) -> Result<(), RevocationStoreError> {
@@ -79,6 +87,7 @@ impl FileRevocationRegistry {
     fn persist(&self) -> Result<(), RevocationStoreError> {
         let document = RevocationDocument {
             revoked_ids: self.revoked_ids.clone(),
+            fresh_until_unix: self.fresh_until_unix,
         };
         let bytes = serde_json::to_vec_pretty(&document)?;
         let temporary_path = self.path.with_extension(format!("{}.tmp", Uuid::new_v4()));

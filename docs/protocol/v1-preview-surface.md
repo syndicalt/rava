@@ -35,6 +35,8 @@ network-edge access control.
 
 `rava verify action` supports `--trust-bundle` for a local `rava-static-trust-bundle-v0` signer-ID to public-key map. This is explicit static trust-policy input; it does not add dynamic key discovery, resolver freshness, rotation, rollback, or outage guarantees.
 
+`rava verify action` also supports `--require-fresh-revocations` with `--revocation-store`. The local snapshot must include `fresh_until_unix` greater than verifier `now_unix`; otherwise verification fails closed before verifier execution. This is local snapshot freshness checking, not distributed revocation freshness.
+
 ## HTTP Request Shape
 
 `POST /verify/action` accepts a JSON object with these fields:
